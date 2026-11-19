@@ -1,0 +1,13 @@
+{
+  "name": "updraft-css",
+  "version": "1.1.0",
+  "description": "Lightweight CSS animation library: scroll-triggered and keyframe entrances, hover interactions, page arrival",
+  "private": true,
+  "license": "UNLICENSED",
+  "style": "animations.css",
+  "exports": {
+    ".": "./animations.css",
+    "./animations.css": "./animations.css"
+  },
+  "files": ["animations.css"]
+}
