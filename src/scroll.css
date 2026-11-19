@@ -16,6 +16,12 @@
  *   .aero-scrub-root    follow the page scroll instead of the element's own
  *                       view; the range is then two lengths in px or vh (not %),
  *                       and leaving it out means the whole page
+ *   .aero-scrub-track   follow the nearest .aero-track ancestor instead: give a
+ *                       tall wrapper .aero-track, pin its contents with
+ *                       position: sticky, and they play while it passes. The
+ *                       range defaults to contain 0% contain 100% (from the
+ *                       wrapper filling the screen to it starting to leave);
+ *                       contain, cover, entry and exit all work
  * ========================================================================= */
 
 .aero-scrub {
@@ -32,6 +38,13 @@
  .aero-scrub.aero-scrub-root {
   animation-timeline: scroll(root);
   animation-range: var(--aero-scrub-range, normal);
+ }
+ .aero-track {
+  view-timeline-name: --aero-track;
+ }
+ .aero-scrub.aero-scrub-track {
+  animation-timeline: --aero-track;
+  animation-range: var(--aero-scrub-range, contain 0% contain 100%);
  }
 }
 

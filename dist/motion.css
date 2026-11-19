@@ -1,4 +1,4 @@
-/* Aero 2.0.0 — motion. https://github.com/thinair-studios/aero (MIT) */
+/* Aero 2.1.0 — motion. https://github.com/thinair-studios/aero (MIT) */
 @layer aero {
 @media (prefers-reduced-motion: reduce) {
  .aero-reduce-motion :is(.aero-enter, .aero-scrub),

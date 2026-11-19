@@ -17,6 +17,8 @@
     CSS.supports = (...a) => (a.join(" ").includes("animation-timeline") ? false : supports(...a));
   }
   if (q.has("reduce")) document.documentElement.classList.add("aero-reduce-motion");
+  // ?padding: a sticky-header site's scroll-padding, which CSS view timelines measure against.
+  if (q.has("padding")) document.documentElement.style.scrollPaddingTop = "90px";
 </script>
 
 <div class="box aero-enter aero-fade-up" id="enter-aero"></div>
@@ -27,6 +29,10 @@
 <div class="box aero-scrub aero-pass" id="scrub-cover" style="--aero-scrub-range: cover 0% cover 100%"></div>
 <div class="gap"></div>
 <div class="box ae-scrub ae-fade-in" id="scrub-mixed" style="--aero-scrub-range: entry 25% cover 50%"></div>
+<div class="gap"></div>
+<div class="aero-track" id="track" style="height: 300vh">
+  <div class="box aero-scrub aero-scrub-track aero-fade-in" id="scrub-track" style="position: sticky; top: 0"></div>
+</div>
 <div class="gap"></div>
 <div class="aero-hover-group" id="group">
   <a href="#" id="group-link">group link</a>

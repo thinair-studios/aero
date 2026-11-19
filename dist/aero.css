@@ -1,4 +1,4 @@
-/* Aero 2.0.0 — all modules. https://github.com/thinair-studios/aero (MIT) */
+/* Aero 2.1.0 — all modules. https://github.com/thinair-studios/aero (MIT) */
 @layer aero {
 .aero-fast, .ae-fast { --aero-duration: 0.4s; --aero-hover-duration: 0.25s; }
 .aero-slow, .ae-slow { --aero-duration: 1s; --aero-hover-duration: 0.7s; }
@@ -105,6 +105,13 @@
  .aero-scrub.aero-scrub-root, .ae-scrub.ae-scrub-root {
   animation-timeline: scroll(root);
   animation-range: var(--aero-scrub-range, normal);
+ }
+ .aero-track, .ae-track {
+  view-timeline-name: --aero-track;
+ }
+ .aero-scrub.aero-scrub-track, .ae-scrub.ae-scrub-track {
+  animation-timeline: --aero-track;
+  animation-range: var(--aero-scrub-range, contain 0% contain 100%);
  }
 }
 .aero-scrub-js .aero-scrub, .ae-scrub-js .ae-scrub {

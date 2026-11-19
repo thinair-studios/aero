@@ -1,6 +1,8 @@
 # Aero
 
-A small animation library in CSS, with an optional 6 KB script. Entrances, scroll-linked animation, hover and cursor effects, and page arrival, that look the same in every modern browser.
+A small animation library in CSS, with an optional 7 KB script. Entrances, scroll-linked animation, hover and cursor effects, and page arrival, that look the same in every modern browser.
+
+Aero is small, and it grows every day: it covers what our own sites need and gets a new effect whenever a project asks for one. If it's missing something you need, [add it](CONTRIBUTING.md).
 
 - **CSS first.** Add a class, get the motion. Settings are custom properties with sensible defaults.
 - **Scroll-linked everywhere.** Native CSS scroll timelines where the browser has them; where it doesn't, `aero.js` drives the very same animation, so it moves identically.
@@ -11,7 +13,7 @@ A small animation library in CSS, with an optional 6 KB script. Entrances, scrol
 Not on npm yet. Install it from GitHub, pinned to a release tag (a plain HTTPS download, so build machines need no git or SSH):
 
 ```sh
-npm i https://github.com/thinair-studios/aero/archive/refs/tags/v2.0.0.tar.gz
+npm i https://github.com/thinair-studios/aero/archive/refs/tags/v2.1.0.tar.gz
 ```
 
 ```css
@@ -48,7 +50,17 @@ Presets: `aero-fast` `aero-slow` `aero-slower`, `aero-ease-expo` `-quart` `-back
 <svg class="aero-scrub aero-scrub-root" style="animation-name: my-glide; --aero-scrub-range: 0px 600px">…</svg>
 ```
 
-Any entrance variant works, or your own `animation-name`. `--aero-scrub-range` reads like `animation-range` (`cover`, `entry`, `exit` with percentages); with `.aero-scrub-root` the animation follows the page scroll and the range is two lengths.
+Any entrance variant works, or your own `animation-name`. `--aero-scrub-range` reads like `animation-range` (`cover`, `contain`, `entry`, `exit` with percentages); with `.aero-scrub-root` the animation follows the page scroll and the range is two lengths.
+
+To pin something while it animates, give a tall wrapper `.aero-track`, make its contents sticky, and add `.aero-scrub-track`: they follow the wrapper's progress instead of their own (by default from the wrapper filling the screen to it starting to leave).
+
+```html
+<section class="aero-track" style="height: 250vh">
+  <div style="position: sticky; top: 0">
+    <img class="aero-scrub aero-scrub-track aero-fan-left" src="…">
+  </div>
+</section>
+```
 
 ## Hover
 
