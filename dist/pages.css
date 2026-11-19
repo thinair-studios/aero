@@ -1,0 +1,33 @@
+/* Aero 2.2.0 — pages. https://github.com/thinair-studios/aero (MIT) */
+@layer aero {
+html:active-view-transition-type(aero-sheet)::view-transition-old(root) {
+ animation: none;
+}
+html:active-view-transition-type(aero-sheet)::view-transition-new(root) {
+ animation: aero-sheet-in var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
+}
+html:active-view-transition-type(aero-sheet-back)::view-transition-new(root) {
+ animation: none;
+}
+html:active-view-transition-type(aero-sheet-back)::view-transition-old(root) {
+ animation: aero-sheet-out var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
+ z-index: 1;
+}
+html:active-view-transition-type(aero-fade)::view-transition-group(root) {
+ animation-duration: var(--aero-page-fade, 0.3s);
+}
+@keyframes aero-sheet-in {
+ from { transform: translateX(100%); }
+}
+@keyframes aero-sheet-out {
+ to { transform: translateX(100%); }
+}
+.aero-morph, .ae-morph {
+ view-transition-name: match-element;
+ view-transition-class: aero-morph;
+}
+::view-transition-group(.aero-morph), ::view-transition-group(.ae-morph) {
+ animation-duration: var(--aero-morph-duration, 0.5s);
+ animation-timing-function: var(--aero-morph-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+}

@@ -6,12 +6,20 @@
  *     animation from the scroll position, reading the same --aero-scrub-range as the CSS.
  *     Where the browser does it natively, this part does nothing.
  *  3. Cursor: writes --aero-cursor-x / -y / -cx / -cy / -active on every .aero-cursor element.
+ *  4. Text: splits .aero-split elements into words or letters (see text.css).
+ *  5. Numbers: .aero-count counts up to the number in its text when it comes into view.
+ *  6. Repeat: .aero-enter.aero-repeat plays again each time it comes back into view.
  *
+ *  Events (they bubble): "aero:in" when an entrance starts, "aero:done" when it ends.
  *  Elements added later are picked up automatically. Every class works with the ae- prefix too.
  *  With .aero-reduce-motion on <html> and the visitor preferring reduced motion, nothing moves.
  *
  *  window.Aero.refresh()   re-scan now (normally not needed)
  *  window.Aero.progress(el) a scrubbed element's position in its range, 0 to 1 (for debugging)
+ *  window.Aero.replay(el)   play the entrances and once-effects in el again, from the start
+ *  window.Aero.leave(el, { remove })  play el's .aero-leave-* exit; resolves when it ends
+ *  window.Aero.swap(update) change the layout inside update(); .aero-morph elements move to
+ *                           their new places (a View Transition; elsewhere it just updates)
  */
 (() => {
   if (typeof window === "undefined") return; // imported during server rendering: nothing to do
@@ -22,19 +30,162 @@
   const still = () => has(root, "reduce-motion") && matchMedia("(prefers-reduced-motion: reduce)").matches;
   const native = !!(window.CSS && CSS.supports("animation-timeline: view()"));
 
-  // ---- 1. In view
+  // ---- 1. In view, numbers and repeats
+  const enter = (el) => { mark(el, "in"); el.dispatchEvent(new CustomEvent("aero:in", { bubbles: true })); };
+  const counts = new WeakMap(); // .aero-count element -> its number, parsed from its text
   const io = "IntersectionObserver" in window
     ? new IntersectionObserver((entries) => {
-        for (const e of entries) if (e.isIntersecting) { mark(e.target, "in"); io.unobserve(e.target); }
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          const el = e.target;
+          io.unobserve(el);
+          if (has(el, "enter")) enter(el);
+          if (counts.has(el)) count(el);
+          if (has(el, "repeat")) gone.observe(el);
+        }
       }, { threshold: 0.15 })
     : null;
+  // A repeating element that has fully left the screen is reset, to play again when it's back.
+  const gone = io && new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (e.isIntersecting) continue;
+      const el = e.target;
+      gone.unobserve(el);
+      el.classList.remove("aero-in", "ae-in");
+      if (counts.has(el)) write(el, 0);
+      io.observe(el);
+    }
+  }, { threshold: 0 });
+
+  const NUM = /-?[0-9][0-9,]*(?:[.][0-9]+)?/;
+  const write = (el, v) => {
+    const n = counts.get(el);
+    n.node.data = n.before + v.toLocaleString("en-US", { minimumFractionDigits: n.dec, maximumFractionDigits: n.dec, useGrouping: n.group }) + n.after;
+  };
+  const prime = (el) => {
+    const text = el.textContent, m = text.match(NUM);
+    if (!m) return false;
+    el.textContent = text; // one text node, so counting changes its data rather than adding nodes
+    const raw = m[0];
+    counts.set(el, { node: el.firstChild, text, before: text.slice(0, m.index), after: text.slice(m.index + raw.length),
+      to: parseFloat(raw.replace(/,/g, "")), dec: (raw.split(".")[1] || "").length, group: raw.includes(",") });
+    write(el, 0);
+    return true;
+  };
+  const seconds = (el, fallback) => {
+    const v = getComputedStyle(el).getPropertyValue("--aero-duration").trim();
+    return v ? parseFloat(v) * (v.endsWith("ms") ? 0.001 : 1) : fallback;
+  };
+  const count = (el) => {
+    const n = counts.get(el), ms = seconds(el, 1.4) * 1000, t0 = performance.now();
+    const step = (now) => {
+      const k = Math.min(1, (now - t0) / ms);
+      if (k < 1) { write(el, n.to * (1 - Math.pow(1 - k, 3))); requestAnimationFrame(step); }
+      else n.node.data = n.text; // end on the exact original text
+    };
+    requestAnimationFrame(step);
+  };
+
+  // ---- Text split: words, or letters kept inside their words; each piece plays the parent's variant.
+  const splits = new WeakSet();
+  const split = (el) => {
+    if (splits.has(el)) return;
+    splits.add(el);
+    const letters = el.dataset.aeroSplit === "letters";
+    const variants = [...el.classList].filter((c) => /^(aero|ae)-((fade|scale|grow|wipe)-[a-z]+|repeat)$/.test(c));
+    const cls = variants.some((c) => !c.endsWith("repeat")) ? ["aero-piece", "aero-enter", ...variants] : ["aero-piece"];
+    const text = el.textContent.replace(/\s+/g, " ").trim();
+    let i = 0;
+    const piece = (str) => {
+      const p = document.createElement("span");
+      p.className = cls.join(" ");
+      p.style.setProperty("--aero-i", i++);
+      p.textContent = str;
+      return p;
+    };
+    const walk = (node) => {
+      for (const n of [...node.childNodes]) {
+        if (n.nodeType === 1) { walk(n); continue; }
+        if (n.nodeType !== 3 || !n.data.trim()) continue;
+        const frag = document.createDocumentFragment();
+        for (const part of n.data.split(/(\s+)/)) {
+          if (!part) continue;
+          if (!part.trim()) { frag.append(" "); continue; }
+          if (!letters) { frag.append(piece(part)); continue; }
+          const word = document.createElement("span");
+          word.className = "aero-word";
+          word.setAttribute("aria-hidden", "true");
+          for (const ch of part) word.append(piece(ch));
+          frag.append(word);
+        }
+        n.replaceWith(frag);
+      }
+    };
+    walk(el);
+    if (letters) { // letters read badly one by one: screen readers get the text once instead
+      const sr = document.createElement("span");
+      sr.className = "aero-split-text";
+      sr.textContent = text;
+      el.append(sr);
+    }
+  };
+
   const seen = new WeakSet();
   const watch = () => {
-    for (const el of document.querySelectorAll($(["enter"]))) {
+    for (const el of document.querySelectorAll($(["split"]))) split(el);
+    for (const el of document.querySelectorAll($(["enter", "count"]))) {
       if (seen.has(el) || has(el, "in")) continue;
       seen.add(el);
-      if (io && !still()) io.observe(el); else mark(el, "in");
+      const isCount = has(el, "count") && !still() && io && prime(el);
+      if (io && !still()) io.observe(el);
+      else if (has(el, "enter")) mark(el, "in");
+      if (!isCount) counts.delete(el);
     }
+  };
+
+  // "aero:done" when an entrance ends.
+  document.addEventListener("animationend", (e) => {
+    const t = e.target;
+    if (t.classList && has(t, "enter") && e.animationName.startsWith("aero-") && !e.animationName.startsWith("aero-leave")) {
+      t.dispatchEvent(new CustomEvent("aero:done", { bubbles: true }));
+    }
+  });
+
+  // ---- Replay, leave, swap
+  const replay = (el) => {
+    for (const x of [el, ...el.querySelectorAll($(["enter"]))]) if (has(x, "enter") && !has(x, "in")) enter(x);
+    for (const a of el.getAnimations({ subtree: true })) {
+      const t = a.effect && a.effect.target;
+      if (!a.animationName || !a.animationName.startsWith("aero-") || a.timeline !== document.timeline || (t && has(t, "scrub"))) continue;
+      a.cancel(); a.play();
+    }
+  };
+  const leave = (el, { remove = false } = {}) => new Promise((resolve) => {
+    let over = false, timer = 0;
+    const done = () => {
+      if (over) return;
+      over = true;
+      clearTimeout(timer);
+      el.removeEventListener("animationend", end);
+      if (remove) el.remove();
+      resolve(el);
+    };
+    const end = (e) => { if (e.target === el && e.animationName.startsWith("aero-leave")) done(); };
+    el.addEventListener("animationend", end);
+    mark(el, "out");
+    // No exit running (no .aero-leave-* class, or reduced motion): done at once; otherwise a safety net.
+    const anim = el.getAnimations().find((a) => a.animationName && a.animationName.startsWith("aero-leave"));
+    timer = setTimeout(done, anim ? anim.effect.getComputedTiming().endTime + 100 : 0);
+  });
+  const swap = (update, types) => {
+    if (!document.startViewTransition || still()) { update(); return Promise.resolve(); }
+    // Where view-transition-name: match-element isn't supported, name each morphing element ourselves.
+    if (!CSS.supports("view-transition-name", "match-element")) {
+      document.querySelectorAll($(["morph"])).forEach((m, i) => { if (!m.style.viewTransitionName) m.style.viewTransitionName = `aero-morph-${i}`; });
+    }
+    let vt;
+    try { vt = document.startViewTransition({ update, types }); } catch { vt = document.startViewTransition(update); }
+    return vt.finished;
   };
 
   // ---- 2. Scrub
@@ -137,5 +288,5 @@
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
   else start();
-  window.Aero = { refresh, progress };
+  window.Aero = { refresh, progress, replay, leave, swap };
 })();

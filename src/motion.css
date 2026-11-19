@@ -10,9 +10,21 @@
  * ========================================================================= */
 
 @media (prefers-reduced-motion: reduce) {
- .aero-reduce-motion :is(.aero-enter, .aero-scrub),
+ .aero-reduce-motion :is(.aero-enter, .aero-scrub, .aero-shake, .aero-pop, .aero-spin, .aero-pulse, .aero-ping, .aero-bounce, .aero-float),
  .aero-reduce-motion.aero-arrive main {
   animation: none !important;
+ }
+ .aero-reduce-motion :is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover),
+ .aero-reduce-motion :is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover)::backdrop,
+ .aero-reduce-motion .aero-hover-wave .aero-piece {
+  transition-duration: 0s !important;
+ }
+ .aero-reduce-motion .aero-hover-wave .aero-piece {
+  transform: none !important;
+ }
+ /* Exits still end hidden, just at once. */
+ .aero-reduce-motion .aero-out {
+  animation-duration: 0.01ms !important;
  }
  .aero-reduce-motion .aero-enter {
   opacity: 1 !important;

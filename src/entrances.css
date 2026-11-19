@@ -16,6 +16,8 @@
  *                   translate / rotate, so a transform hover never fights it)
  *   aero-lift       the top card of a stack rising into place
  *   aero-pass       arrives, holds, steps back (best scrubbed)
+ *   aero-wipe-right / -left / -up / -down  revealed by a moving edge
+ *                   (clip-path), e.g. wipe-right uncovers left to right
  *
  * Fade-left comes in from the right, moving left; fade-right the reverse.
  * Keyframes only state the start, so each element ends on its own styles.
@@ -54,6 +56,10 @@
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-fan-left { animation-name: aero-fan-left; }
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-fan-right { animation-name: aero-fan-right; }
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-lift { animation-name: aero-lift; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-wipe-right { animation-name: aero-wipe-right; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-wipe-left { animation-name: aero-wipe-left; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-wipe-up { animation-name: aero-wipe-up; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-wipe-down { animation-name: aero-wipe-down; }
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-pass { animation-name: aero-pass; }
 
 /* Stagger: children of .aero-stagger start one after another (--aero-stagger apart). */
@@ -101,6 +107,18 @@
 }
 @keyframes aero-fan-right {
  from { translate: var(--aero-fan-x, 4%) var(--aero-fan-y, 12%); rotate: var(--aero-fan-rot, 1deg); }
+}
+@keyframes aero-wipe-right {
+ from { clip-path: inset(0 100% 0 0); }
+}
+@keyframes aero-wipe-left {
+ from { clip-path: inset(0 0 0 100%); }
+}
+@keyframes aero-wipe-up {
+ from { clip-path: inset(100% 0 0 0); }
+}
+@keyframes aero-wipe-down {
+ from { clip-path: inset(0 0 100% 0); }
 }
 @keyframes aero-lift {
  from { translate: 0 var(--aero-fan-y, 10%); }

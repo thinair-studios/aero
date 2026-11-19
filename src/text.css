@@ -1,0 +1,43 @@
+/* ============================================================================
+ * Aero — text split into words or letters
+ *
+ *   <h2 class="aero-split aero-fade-up">Motion, out of thin air</h2>
+ *   <h2 class="aero-split aero-wipe-up" data-aero-split="letters">…</h2>
+ *
+ * aero.js splits the text into pieces (words, or letters kept inside their
+ * words), and each piece plays the entrance variant on the parent, one after
+ * another. Inline markup inside stays. Screen readers get the text once, whole.
+ *
+ * aero-hover-wave: inside an .aero-hover-group (or on hover/focus of the split
+ * element itself), the pieces rise one after another.
+ *
+ *   --aero-stagger         time between pieces (default 45ms here)
+ *   --aero-wave            how far a wave lifts a piece (default 0.12em)
+ * ========================================================================= */
+
+.aero-split { --aero-stagger: 45ms; }
+.aero-split .aero-word { display: inline-block; white-space: nowrap; }
+.aero-split .aero-piece { display: inline-block; }
+.aero-split-text {
+ position: absolute;
+ width: 1px;
+ height: 1px;
+ overflow: hidden;
+ clip-path: inset(50%);
+ white-space: nowrap;
+}
+
+.aero-hover-wave .aero-piece {
+ transition: transform var(--aero-hover-duration, 0.35s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+ transition-delay: calc(var(--aero-i, 0) * 18ms);
+}
+.aero-hover-wave:is(:hover, :focus-visible) .aero-piece,
+.aero-hover-group:is(:hover, :focus-within) .aero-hover-wave .aero-piece {
+ transform: translateY(calc(var(--aero-wave, 0.12em) * -1));
+}
+@media (hover: none) {
+ .aero-hover-wave:hover:not(:focus-visible) .aero-piece,
+ .aero-hover-group:hover:not(:focus-within) .aero-hover-wave .aero-piece {
+  transform: none;
+ }
+}

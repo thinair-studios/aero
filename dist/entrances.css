@@ -1,4 +1,4 @@
-/* Aero 2.1.0 — entrances. https://github.com/thinair-studios/aero (MIT) */
+/* Aero 2.2.0 — entrances. https://github.com/thinair-studios/aero (MIT) */
 @layer aero {
 .aero-enter, .ae-enter {
  opacity: 0;
@@ -31,6 +31,10 @@
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-fan-left, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-fan-left { animation-name: aero-fan-left; }
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-fan-right, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-fan-right { animation-name: aero-fan-right; }
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-lift, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-lift { animation-name: aero-lift; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-wipe-right, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-wipe-right { animation-name: aero-wipe-right; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-wipe-left, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-wipe-left { animation-name: aero-wipe-left; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-wipe-up, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-wipe-up { animation-name: aero-wipe-up; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-wipe-down, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-wipe-down { animation-name: aero-wipe-down; }
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-pass, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-pass { animation-name: aero-pass; }
 .aero-stagger > :nth-child(2), .ae-stagger > :nth-child(2) { --aero-i: 1; }
 .aero-stagger > :nth-child(3), .ae-stagger > :nth-child(3) { --aero-i: 2; }
@@ -75,6 +79,18 @@
 }
 @keyframes aero-fan-right {
  from { translate: var(--aero-fan-x, 4%) var(--aero-fan-y, 12%); rotate: var(--aero-fan-rot, 1deg); }
+}
+@keyframes aero-wipe-right {
+ from { clip-path: inset(0 100% 0 0); }
+}
+@keyframes aero-wipe-left {
+ from { clip-path: inset(0 0 0 100%); }
+}
+@keyframes aero-wipe-up {
+ from { clip-path: inset(100% 0 0 0); }
+}
+@keyframes aero-wipe-down {
+ from { clip-path: inset(0 0 100% 0); }
 }
 @keyframes aero-lift {
  from { translate: 0 var(--aero-fan-y, 10%); }

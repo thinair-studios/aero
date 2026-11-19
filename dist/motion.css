@@ -1,10 +1,23 @@
-/* Aero 2.1.0 — motion. https://github.com/thinair-studios/aero (MIT) */
+/* Aero 2.2.0 — motion. https://github.com/thinair-studios/aero (MIT) */
 @layer aero {
 @media (prefers-reduced-motion: reduce) {
- .aero-reduce-motion :is(.aero-enter, .aero-scrub),
- .aero-reduce-motion.aero-arrive main, .ae-reduce-motion :is(.ae-enter, .ae-scrub),
+ .aero-reduce-motion :is(.aero-enter, .aero-scrub, .aero-shake, .aero-pop, .aero-spin, .aero-pulse, .aero-ping, .aero-bounce, .aero-float),
+ .aero-reduce-motion.aero-arrive main, .ae-reduce-motion :is(.ae-enter, .ae-scrub, .ae-shake, .ae-pop, .ae-spin, .ae-pulse, .ae-ping, .ae-bounce, .ae-float),
  .ae-reduce-motion.ae-arrive main {
   animation: none !important;
+ }
+ .aero-reduce-motion :is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover),
+ .aero-reduce-motion :is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover)::backdrop,
+ .aero-reduce-motion .aero-hover-wave .aero-piece, .ae-reduce-motion :is(.ae-dialog, .ae-drawer, .ae-drawer-left, .ae-drawer-bottom, .ae-popover),
+ .ae-reduce-motion :is(.ae-dialog, .ae-drawer, .ae-drawer-left, .ae-drawer-bottom, .ae-popover)::backdrop,
+ .ae-reduce-motion .ae-hover-wave .ae-piece {
+  transition-duration: 0s !important;
+ }
+ .aero-reduce-motion .aero-hover-wave .aero-piece, .ae-reduce-motion .ae-hover-wave .ae-piece {
+  transform: none !important;
+ }
+ .aero-reduce-motion .aero-out, .ae-reduce-motion .ae-out {
+  animation-duration: 0.01ms !important;
  }
  .aero-reduce-motion .aero-enter, .ae-reduce-motion .ae-enter {
   opacity: 1 !important;

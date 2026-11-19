@@ -1,19 +1,20 @@
 # Aero
 
-A small animation library in CSS, with an optional 7 KB script. Entrances, scroll-linked animation, hover and cursor effects, and page arrival, that look the same in every modern browser.
+A small animation library in CSS (about 4 KB gzipped), with an optional 5 KB script. Entrances, scroll-linked animation, hover and cursor effects, and page arrival, that look the same in every modern browser.
 
 Aero is small, and it grows every day: it covers what our own sites need and gets a new effect whenever a project asks for one. If it's missing something you need, [add it](CONTRIBUTING.md).
 
 - **CSS first.** Add a class, get the motion. Settings are custom properties with sensible defaults.
 - **Scroll-linked everywhere.** Native CSS scroll timelines where the browser has them; where it doesn't, `aero.js` drives the very same animation, so it moves identically.
 - **Never in your way.** Everything sits in `@layer aero`, so your own CSS always wins.
+- **Comes and goes.** Entrances, exits, dialogs and drawers that open and close, page transitions, text split into words or letters, counters and attention effects.
 - **Pick a prefix.** Every class works as `aero-…` or the short `ae-…`.
 - **Motion by default, reduced motion on request.** See [Reduced motion](#reduced-motion).
 
 Not on npm yet. Install it from GitHub, pinned to a release tag (a plain HTTPS download, so build machines need no git or SSH):
 
 ```sh
-npm i https://github.com/thinair-studios/aero/archive/refs/tags/v2.1.0.tar.gz
+npm i https://github.com/thinair-studios/aero/archive/refs/tags/v2.2.0.tar.gz
 ```
 
 ```css
@@ -26,7 +27,7 @@ npm i https://github.com/thinair-studios/aero/archive/refs/tags/v2.1.0.tar.gz
 <!-- or: import "aero-css/runtime" in a bundler -->
 ```
 
-The script is needed for in-view entrances, the scroll fallback and cursor effects. Hovers and page arrival are CSS only.
+The script is needed for in-view entrances, the scroll fallback, cursor effects, text split, counters and `Aero.leave`/`replay`/`swap`. Hovers, attention effects and dialogs are CSS only. Page transitions use their own small script, `aero-pages.js`, in `<head>` (see [Between pages](#between-pages)).
 
 ## Entrances
 
@@ -62,6 +63,56 @@ To pin something while it animates, give a tall wrapper `.aero-track`, make its 
 </section>
 ```
 
+## Exits
+
+```html
+<li class="aero-leave-right">…</li>
+<script>Aero.leave(item, { remove: true });  // plays the exit, then removes it</script>
+```
+
+`aero-leave-fade`, `aero-leave-up` / `-down` / `-left` / `-right`, `aero-leave-scale`, `aero-leave-wipe-right` / `-left`. `.aero-out` starts it (`Aero.leave` adds it for you and resolves when it ends). Settings: `--aero-leave-duration` (0.35s) `--aero-leave-easing` `--aero-distance`.
+
+## Dialogs, drawers and popovers
+
+```html
+<dialog class="aero-dialog">…</dialog>      <!-- showModal() / close() -->
+<dialog class="aero-drawer">…</dialog>      <!-- from the right; -left, -bottom -->
+<div popover class="aero-popover">…</div>
+```
+
+Pure CSS: they animate in when they open and out when they close, backdrop included. Aero only moves them; size and position stay yours. Opening animates everywhere; closing animates in Chrome and Edge, while Firefox and Safari close a modal at once for now. Settings: `--aero-duration` `--aero-easing` `--aero-backdrop`.
+
+## Attention
+
+```html
+<input class="aero-shake">                  <!-- once; Aero.replay(input) to shake again -->
+<span class="aero-spin">…</span>             <!-- loops -->
+```
+
+Once: `aero-shake`, `aero-pop`. Loops: `aero-spin`, `aero-pulse`, `aero-ping`, `aero-bounce`, `aero-float`. Settings: `--aero-attention-duration` `--aero-shake` `--aero-pop`.
+
+## Text
+
+```html
+<h2 class="aero-split aero-fade-up">Words, one after another</h2>
+<h2 class="aero-split aero-wipe-up" data-aero-split="letters">Letters</h2>
+<a class="aero-split aero-hover-wave" data-aero-split="letters">A wave on hover</a>
+```
+
+`aero.js` splits the text into words (or letters, kept inside their words) and each piece plays the parent's variant. Inline markup stays, and screen readers get letter-split text once, whole. Settings: `--aero-stagger` (45ms here) `--aero-wave`.
+
+## Numbers
+
+```html
+<span class="aero-count">€1,250+</span>
+```
+
+Counts up from zero to the number in its text when it comes into view, then ends on the exact original text. Duration from `--aero-duration` (1.4s).
+
+## Replay on scroll, and events
+
+Add `aero-repeat` to an `.aero-enter` (or `.aero-count`) and it plays again every time it comes back into view. Entrances send `aero:in` when they start and `aero:done` when they end; both bubble.
+
 ## Hover
 
 ```html
@@ -87,9 +138,27 @@ Keyboard focus triggers the same motion. On touch screens hover motion is cancel
 
 `aero.js` writes `--aero-cursor-x` `-y` (0 to 1), `-cx` `-cy` (-1 to 1) and `-active` on each `.aero-cursor`; effects read them from any parent.
 
-## Page arrival
+## Between pages
 
-For browsers without cross-document View Transitions (Firefox today). A small script in `<head>` adds `aero-arrive` plus `aero-from-right` or `aero-from-left` to `<html>`, and `<main>` slides in once. Where the browser has View Transitions, use those instead and skip this.
+```css
+@view-transition { navigation: auto; }
+```
+```html
+<html data-aero-page="sheet">                    <!-- on pages that sit on top of others -->
+<script src="node_modules/aero-css/dist/aero-pages.js"></script>   <!-- in <head>, not deferred -->
+```
+
+Going to a sheet page, it slides in from the right over the last one; leaving it for a page underneath, it slides away again; between two sheets there's a quick cross-fade. The back and forward buttons work the same way. Settings (on `:root`): `--aero-page-duration` `--aero-page-easing` `--aero-page-fade`.
+
+Browsers without cross-document View Transitions (Firefox today) get the same direction from page arrival: `aero-pages.js` adds `aero-arrive` plus `aero-from-right` or `aero-from-left` to `<html>`, and `<main>` slides in once.
+
+## Layout changes
+
+```js
+Aero.swap(() => list.prepend(item));   // .aero-morph elements move to their new places
+```
+
+A View Transition within the page; where there isn't one, it just updates. Settings (on `:root`): `--aero-morph-duration` `--aero-morph-easing`.
 
 ## Reduced motion
 
@@ -98,9 +167,12 @@ Motion plays by default, even when the visitor has turned on "Reduce motion": ma
 ## Runtime API
 
 ```js
-import Aero, { refresh, progress } from "aero-css/runtime";
-refresh();        // re-scan now; new elements are picked up automatically anyway
-progress(el);     // a scrubbed element's position in its range, 0 to 1
+import Aero, { refresh, progress, replay, leave, swap } from "aero-css/runtime";
+refresh();               // re-scan now; new elements are picked up automatically anyway
+progress(el);            // a scrubbed element's position in its range, 0 to 1
+replay(el);              // play the entrances and once-effects in el again
+await leave(el, { remove: true });   // play its exit, then remove it
+await swap(() => …);     // change the layout; .aero-morph elements move to their new places
 ```
 
 ## Upgrading from 1.x

@@ -1,0 +1,60 @@
+/* ============================================================================
+ * Aero — dialogs, drawers and popovers that open and close
+ *
+ *   <dialog class="aero-dialog">…</dialog>        showModal() / close()
+ *   <dialog class="aero-drawer">…</dialog>        slides in from the right
+ *   <div popover class="aero-popover">…</div>     popovertarget / showPopover()
+ *
+ * Pure CSS (@starting-style and allow-discrete transitions): the element animates
+ * in when it opens and out when it closes, backdrop included. Aero only moves it;
+ * size and position stay yours (a drawer still needs your position/inset).
+ * Opening animates everywhere. Closing animates in Chrome and Edge; Firefox and
+ * Safari can't keep a closing modal on top yet, so there it simply closes.
+ *
+ *   aero-dialog        fades in, growing slightly and rising
+ *   aero-drawer        from the right edge   (-left, -bottom for the others)
+ *   aero-popover       fades in, dropping a few pixels
+ *
+ *   --aero-duration    default 0.4s        --aero-easing   default an ease-out
+ *   --aero-backdrop    the open backdrop's colour (default rgb(0 0 0 / 0.32))
+ * ========================================================================= */
+
+.aero-dialog { --aero-overlay-opacity: 0; --aero-overlay-transform: translateY(12px) scale(var(--aero-scale-from, 0.96)); }
+.aero-drawer { --aero-overlay-opacity: 1; --aero-overlay-transform: translateX(104%); }
+.aero-drawer-left { --aero-overlay-opacity: 1; --aero-overlay-transform: translateX(-104%); }
+.aero-drawer-bottom { --aero-overlay-opacity: 1; --aero-overlay-transform: translateY(104%); }
+.aero-popover { --aero-overlay-opacity: 0; --aero-overlay-transform: translateY(-8px); }
+
+:is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover) {
+ opacity: var(--aero-overlay-opacity);
+ transform: var(--aero-overlay-transform);
+ transition-property: opacity, transform, overlay, display;
+ transition-duration: var(--aero-duration, 0.4s);
+ transition-timing-function: var(--aero-easing, cubic-bezier(0.22, 1, 0.36, 1));
+ transition-behavior: allow-discrete;
+}
+:is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover):is([open], :popover-open) {
+ opacity: 1;
+ transform: none;
+}
+@starting-style {
+ :is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover):is([open], :popover-open) {
+  opacity: var(--aero-overlay-opacity);
+  transform: var(--aero-overlay-transform);
+ }
+}
+
+:is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover)::backdrop {
+ background-color: rgb(0 0 0 / 0);
+ transition-property: background-color, overlay, display;
+ transition-duration: var(--aero-duration, 0.4s);
+ transition-behavior: allow-discrete;
+}
+:is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover):is([open], :popover-open)::backdrop {
+ background-color: var(--aero-backdrop, rgb(0 0 0 / 0.32));
+}
+@starting-style {
+ :is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover):is([open], :popover-open)::backdrop {
+  background-color: rgb(0 0 0 / 0);
+ }
+}

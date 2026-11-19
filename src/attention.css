@@ -1,0 +1,50 @@
+/* ============================================================================
+ * Aero — attention: effects that draw the eye
+ *
+ *   <input class="aero-shake">          once, e.g. on a form error
+ *   <span class="aero-spin">…</span>    loops
+ *
+ * Once:  aero-shake (an error)   aero-pop (something was added or changed)
+ * Loops: aero-spin (loading)  aero-pulse (waiting, a skeleton)  aero-ping (a
+ *        ring spreading out, for a live dot)  aero-bounce (look here)  aero-float
+ *
+ * To play a once-effect again, call Aero.replay(el).
+ *
+ *   --aero-attention-duration   each effect has its own default
+ *   --aero-shake                how far a shake goes (default 6px)
+ *   --aero-pop                  how big a pop gets (default 1.15)
+ * ========================================================================= */
+
+.aero-shake { animation: aero-shake var(--aero-attention-duration, 0.5s) cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
+.aero-pop { animation: aero-pop var(--aero-attention-duration, 0.4s) cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.aero-spin { animation: aero-spin var(--aero-attention-duration, 0.9s) linear infinite; }
+.aero-pulse { animation: aero-pulse var(--aero-attention-duration, 1.8s) ease-in-out infinite; }
+.aero-ping { animation: aero-ping var(--aero-attention-duration, 1.4s) cubic-bezier(0, 0, 0.2, 1) infinite; }
+.aero-bounce { animation: aero-bounce var(--aero-attention-duration, 1s) infinite; }
+.aero-float { animation: aero-float var(--aero-attention-duration, 3.2s) ease-in-out infinite; }
+
+@keyframes aero-shake {
+ 10%, 90% { transform: translateX(calc(var(--aero-shake, 6px) * -0.25)); }
+ 20%, 80% { transform: translateX(calc(var(--aero-shake, 6px) * 0.5)); }
+ 30%, 50%, 70% { transform: translateX(calc(var(--aero-shake, 6px) * -1)); }
+ 40%, 60% { transform: translateX(var(--aero-shake, 6px)); }
+}
+@keyframes aero-pop {
+ 50% { transform: scale(var(--aero-pop, 1.15)); }
+}
+@keyframes aero-spin {
+ to { transform: rotate(1turn); }
+}
+@keyframes aero-pulse {
+ 50% { opacity: 0.45; }
+}
+@keyframes aero-ping {
+ 75%, 100% { transform: scale(2); opacity: 0; }
+}
+@keyframes aero-bounce {
+ 0%, 100% { transform: translateY(0); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+ 50% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+}
+@keyframes aero-float {
+ 50% { transform: translateY(calc(var(--aero-distance, 8px) * -1)); }
+}

@@ -1,0 +1,53 @@
+/* ============================================================================
+ * Aero — moving between pages, and layout changes within one
+ *
+ * Between pages (cross-document View Transitions):
+ *   1. In your CSS:  @view-transition { navigation: auto; }
+ *   2. On every page, in <head> and not deferred:  <script src="aero-pages.js">
+ *   3. Mark pages that sit on top of others:  <html data-aero-page="sheet">
+ *
+ * aero-pages.js tags each navigation, and these rules animate it:
+ *   aero-sheet       to a sheet page: it slides in from the right over the last one
+ *   aero-sheet-back  from a sheet to a page under it: the sheet slides away
+ *   aero-fade        between two sheets: a quick cross-fade
+ * Browsers without them (Firefox) get the same direction from aero-arrive.
+ *
+ *   --aero-page-duration  default 0.6s      --aero-page-easing  default an ease-in-out
+ *   --aero-page-fade      the cross-fade (default 0.3s)
+ * (set them on :root: page transitions read them from <html>)
+ *
+ * Within a page: give elements .aero-morph and change the layout inside
+ * Aero.swap(() => …): each element moves and resizes to its new place.
+ * ========================================================================= */
+
+html:active-view-transition-type(aero-sheet)::view-transition-old(root) {
+ animation: none;
+}
+html:active-view-transition-type(aero-sheet)::view-transition-new(root) {
+ animation: aero-sheet-in var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
+}
+html:active-view-transition-type(aero-sheet-back)::view-transition-new(root) {
+ animation: none;
+}
+html:active-view-transition-type(aero-sheet-back)::view-transition-old(root) {
+ animation: aero-sheet-out var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
+ z-index: 1;
+}
+html:active-view-transition-type(aero-fade)::view-transition-group(root) {
+ animation-duration: var(--aero-page-fade, 0.3s);
+}
+@keyframes aero-sheet-in {
+ from { transform: translateX(100%); }
+}
+@keyframes aero-sheet-out {
+ to { transform: translateX(100%); }
+}
+
+.aero-morph {
+ view-transition-name: match-element;
+ view-transition-class: aero-morph;
+}
+::view-transition-group(.aero-morph) {
+ animation-duration: var(--aero-morph-duration, 0.5s);
+ animation-timing-function: var(--aero-morph-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}

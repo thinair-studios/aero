@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.2.0 — 2026-11-20
+
+Aero now covers things leaving as well as arriving.
+
+- **Exits.** `aero-leave-*` (fade, up, down, left, right, scale, wipe) started by `.aero-out` or `Aero.leave(el, { remove })`.
+- **Dialogs, drawers and popovers** that animate open and closed in pure CSS: `aero-dialog`, `aero-drawer` (`-left`, `-bottom`), `aero-popover`, backdrop included.
+- **Page transitions.** `aero-pages.js` in `<head>` plus `data-aero-page="sheet"`: sheets slide in and away, sheets cross-fade between each other, the back button included; Firefox gets the same direction through page arrival.
+- **Layout changes.** `Aero.swap(update)` with `.aero-morph`.
+- **Text split** into words or letters (`aero-split`), and `aero-hover-wave`.
+- **Attention** effects: `aero-shake`, `aero-pop`, `aero-spin`, `aero-pulse`, `aero-ping`, `aero-bounce`, `aero-float`.
+- **Wipes**: `aero-wipe-right` / `-left` / `-up` / `-down` entrances, scrubbable too.
+- **Numbers**: `aero-count` counts up to the number in its text.
+- **Replay on scroll** with `aero-repeat`, events `aero:in` and `aero:done`, and `Aero.replay(el)`.
+
 ## 2.1.0 — 2026-11-19
 
 - **Pinned scroll.** `.aero-track` on a tall wrapper and `.aero-scrub-track` on its (sticky) contents: they animate through the wrapper's progress, so they can stay pinned while they move. Ranges also accept `contain` now, in CSS and in the `aero.js` fallback.

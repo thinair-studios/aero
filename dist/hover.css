@@ -1,4 +1,4 @@
-/* Aero 2.1.0 — hover. https://github.com/thinair-studios/aero (MIT) */
+/* Aero 2.2.0 — hover. https://github.com/thinair-studios/aero (MIT) */
 @layer aero {
 .aero-hover-lift, .ae-hover-lift { --aero-hover-to: translateY(calc(var(--aero-hover-distance, 16px) * -1)); }
 .aero-hover-scale, .ae-hover-scale { --aero-hover-to: scale(var(--aero-hover-scale, 1.03)); }

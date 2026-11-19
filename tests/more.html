@@ -1,0 +1,36 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Aero test fixture: exits, overlays, attention, text, numbers, layout</title>
+<link rel="stylesheet" href="/dist/aero.css">
+<style>
+  body { margin: 0; font: 16px sans-serif; }
+  .gap { height: 150vh; }
+  .box { display: block; height: 120px; margin: 0 40px; background: #40826D; color: #fff; }
+  .drawer { position: fixed; inset: 0 0 0 auto; width: 300px; height: 100dvh; margin: 0; max-height: none; }
+  #list { display: flex; gap: 8px; }
+  #list li { list-style: none; width: 60px; height: 40px; background: #40826D; }
+</style>
+
+<div class="box aero-enter aero-wipe-right" id="wipe"></div>
+<div class="box aero-leave-right" id="leaver"></div>
+<div class="box aero-shake" id="shake"></div>
+<span class="aero-spin" id="spin">*</span>
+<h2 class="aero-split aero-fade-up" id="words">Motion out of <em>thin</em> air</h2>
+<h2 class="aero-split aero-fade-up" data-aero-split="letters" id="letters">Aero</h2>
+<p><span class="aero-count" id="count" style="--aero-duration: 0.3s">€1,250+</span></p>
+<ul id="list"><li class="aero-morph" id="m1"></li><li class="aero-morph" id="m2"></li><li class="aero-morph" id="m3"></li></ul>
+<dialog class="aero-dialog" id="dialog">dialog</dialog>
+<dialog class="aero-drawer drawer" id="drawer">drawer</dialog>
+<div popover class="aero-popover" id="pop">popover</div>
+<div class="gap"></div>
+<div class="box aero-enter aero-fade-up aero-repeat" id="repeat"></div>
+<div class="gap"></div>
+<script>
+  window.events = [];
+  for (const t of ["aero:in", "aero:done"]) document.addEventListener(t, (e) => events.push([t, e.target.id]));
+  // Every value the counter shows, in order.
+  window.counted = [];
+  new MutationObserver((list) => { for (const m of list) counted.push(m.target.data ?? m.target.textContent); })
+    .observe(document.getElementById("count"), { characterData: true, childList: true, subtree: true });
+</script>
+<script src="/dist/aero.js" defer></script>
