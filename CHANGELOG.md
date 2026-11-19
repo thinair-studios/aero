@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Tests in Chromium, Firefox and WebKit (`npm test`).
+- Tests in Chromium, Firefox and WebKit (`npm test`), run on every push and pull request by GitHub Actions.
 - A demo page for every module (`docs/index.html`).
 
 ## 2.0.0 — 2026-11-19
