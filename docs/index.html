@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aero, CSS animation library</title>
+<meta name="description" content="Aero is a small CSS animation library: entrances, scroll-linked animation, hover and cursor effects.">
+<link rel="stylesheet" href="../dist/aero.css">
+<script src="../dist/aero.js" defer></script>
+<style>
+:root {
+  --bg: #fbfbf9; --surface: #ffffff; --ink: #1b1f1d; --muted: #5b655f; --line: #e1e5e1;
+  --accent: #40826d; --accent-ink: #ffffff; --code-bg: #f1f4f1;
+  --aero-spotlight-color: rgb(64 130 109 / 0.22);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #101412; --surface: #171c19; --ink: #e8ece9; --muted: #98a39c; --line: #28302b;
+    --accent: #5fa98e; --accent-ink: #0b1210; --code-bg: #0c100e;
+    --aero-spotlight-color: rgb(95 169 142 / 0.25);
+  }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+section { padding: 72px 0; border-top: 1px solid var(--line); }
+h1, h2, h3 { line-height: 1.15; margin: 0 0 12px; }
+h1 { font-size: clamp(3rem, 9vw, 5.5rem); letter-spacing: -0.03em; }
+h2 { font-size: 1.9rem; letter-spacing: -0.01em; }
+h3 { font-size: 1rem; }
+p { margin: 0 0 16px; max-width: 68ch; }
+.lead { font-size: 1.25rem; color: var(--muted); max-width: 52ch; }
+.muted { color: var(--muted); }
+code, pre { font: 0.85rem/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+:not(pre) > code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+.snippet { position: relative; margin: 16px 0 0; }
+.snippet pre { margin: 0; background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 14px 70px 14px 16px; overflow-x: auto; }
+.copy { position: absolute; top: 8px; right: 8px; }
+.btn { font: inherit; font-size: 0.85rem; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 6px; padding: 5px 12px; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 20px 0; }
+a.btn { text-decoration: none; display: inline-block; }
+
+.top { position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 3px; background: var(--accent); transform-origin: left; }
+@keyframes docs-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+nav { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 92%, transparent); border-bottom: 1px solid var(--line); }
+nav .wrap { display: flex; gap: 18px; overflow-x: auto; padding-top: 12px; padding-bottom: 12px; font-size: 0.9rem; white-space: nowrap; }
+nav a { color: var(--muted); text-decoration: none; }
+nav a:hover { color: var(--accent); }
+
+.hero { padding: 96px 0 72px; border-top: 0; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+.grid .tile { min-height: 110px; display: flex; align-items: flex-end; }
+.grid .tile code { background: none; padding: 0; }
+.tile.solid { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.tile.solid code { color: inherit; }
+.cols { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.sub { margin-top: 40px; }
+
+.tall { padding: 72px 0 40vh; }
+.scrubs { display: grid; gap: 140px; margin-top: 60px; }
+.scrubs .tile { max-width: 520px; }
+.scrubs .tile.right { margin-left: auto; }
+
+.stage { padding: 40px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); }
+.stage .cols { perspective: none; }
+.parallax-box { position: relative; height: 200px; }
+.parallax-box > div { position: absolute; border-radius: 50%; }
+.p1 { width: 120px; height: 120px; left: 12%; top: 30px; background: var(--accent); opacity: .9; }
+.p2 { width: 70px; height: 70px; left: 50%; top: 90px; border: 2px solid var(--accent); }
+.p3 { width: 36px; height: 36px; left: 72%; top: 30px; background: var(--ink); opacity: .8; }
+
+.arrow-link { display: inline-flex; gap: 8px; align-items: center; text-decoration: none; font-weight: 600; }
+.arrow-link span { display: inline-block; }
+footer { border-top: 1px solid var(--line); padding: 40px 0 60px; color: var(--muted); font-size: 0.9rem; }
+footer a { margin-right: 16px; }
+</style>
+</head>
+<body>
+<div class="top aero-scrub aero-scrub-root" style="animation-name: docs-progress" aria-hidden="true"></div>
+
+<nav aria-label="Sections">
+  <div class="wrap">
+    <a href="#entrances">Entrances</a><a href="#scroll">Scroll-linked</a><a href="#hover">Hover</a>
+    <a href="#cursor">Cursor</a><a href="#prefixes">Prefixes</a><a href="#motion">Reduced motion</a>
+  </div>
+</nav>
+
+<main>
+<header class="hero">
+  <div class="wrap aero-in aero-stagger">
+    <h1 class="aero-enter aero-fade-up">Aero</h1>
+    <p class="lead aero-enter aero-fade-up">A small CSS animation library with an optional 6 KB script. Add a class, get the motion. It looks the same in every modern browser.</p>
+    <div class="aero-enter aero-fade-up">
+      <div class="snippet"><pre><code>npm i https://github.com/RijadRajkic/aero/archive/refs/tags/v2.0.0.tar.gz</code></pre></div>
+    </div>
+    <div class="row aero-enter aero-fade-up">
+      <a class="btn primary" href="https://github.com/RijadRajkic/aero">View on GitHub</a>
+      <a class="btn" href="#entrances">See the effects</a>
+    </div>
+  </div>
+</header>
+
+<section id="entrances">
+  <div class="wrap">
+    <h2>Entrances</h2>
+    <p>Add <code>aero-enter</code> plus a variant. The element stays hidden until it scrolls into view, then plays once. Give a parent <code>aero-in</code> yourself and its children play on load, as the hero above does.</p>
+    <div class="snippet"><pre><code>&lt;h2 class="aero-enter aero-fade-up"&gt;Rises in when it comes into view&lt;/h2&gt;</code></pre></div>
+    <div class="row"><button class="btn" id="replay" type="button">Replay</button><span class="muted">Scroll the grid into view, or replay it.</span></div>
+    <div class="grid" id="entrance-grid">
+      <div class="tile aero-enter aero-fade-up"><code>aero-fade-up</code></div>
+      <div class="tile aero-enter aero-fade-down"><code>aero-fade-down</code></div>
+      <div class="tile aero-enter aero-fade-left"><code>aero-fade-left</code></div>
+      <div class="tile aero-enter aero-fade-right"><code>aero-fade-right</code></div>
+      <div class="tile aero-enter aero-fade-in"><code>aero-fade-in</code></div>
+      <div class="tile aero-enter aero-scale-up"><code>aero-scale-up</code></div>
+      <div class="tile aero-enter aero-grow-up" style="transform-origin: 50% 100%"><code>aero-grow-up</code></div>
+      <div class="tile aero-enter aero-grow-right" style="transform-origin: 0 50%"><code>aero-grow-right</code></div>
+      <div class="tile aero-enter aero-fan-left"><code>aero-fan-left</code></div>
+      <div class="tile aero-enter aero-fan-right"><code>aero-fan-right</code></div>
+      <div class="tile aero-enter aero-lift"><code>aero-lift</code></div>
+    </div>
+    <div class="snippet"><pre><code>&lt;div class="aero-enter aero-grow-up" style="transform-origin: 50% 100%"&gt;...&lt;/div&gt;
+&lt;div class="aero-enter aero-fan-left"&gt;...&lt;/div&gt;</code></pre></div>
+
+    <h3 class="sub">Presets</h3>
+    <p>Speed and easing are classes. Each tile below uses the same fade-up with a different preset.</p>
+    <div class="grid" id="preset-grid">
+      <div class="tile aero-enter aero-fade-up aero-fast"><code>aero-fast</code></div>
+      <div class="tile aero-enter aero-fade-up aero-slow"><code>aero-slow</code></div>
+      <div class="tile aero-enter aero-fade-up aero-slower"><code>aero-slower</code></div>
+      <div class="tile aero-enter aero-fade-up aero-ease-expo"><code>aero-ease-expo</code></div>
+      <div class="tile aero-enter aero-fade-up aero-ease-back"><code>aero-ease-back</code></div>
+      <div class="tile aero-enter aero-fade-up aero-ease-spring"><code>aero-ease-spring</code></div>
+    </div>
+    <div class="snippet"><pre><code>&lt;div class="aero-enter aero-fade-up aero-slow aero-ease-back"&gt;...&lt;/div&gt;</code></pre></div>
+
+    <h3 class="sub">Stagger</h3>
+    <p>Children of <code>aero-stagger</code> start one after another, <code>--aero-stagger</code> apart (80ms by default).</p>
+    <div class="grid" id="stagger-grid">
+      <div class="aero-stagger" style="display: contents">
+        <div class="tile aero-enter aero-scale-up"><code>1</code></div>
+        <div class="tile aero-enter aero-scale-up"><code>2</code></div>
+        <div class="tile aero-enter aero-scale-up"><code>3</code></div>
+        <div class="tile aero-enter aero-scale-up"><code>4</code></div>
+      </div>
+    </div>
+    <div class="snippet"><pre><code>&lt;ul class="aero-stagger" style="--aero-stagger: 120ms"&gt;
+  &lt;li class="aero-enter aero-scale-up"&gt;...&lt;/li&gt;
+  &lt;li class="aero-enter aero-scale-up"&gt;...&lt;/li&gt;
+&lt;/ul&gt;</code></pre></div>
+  </div>
+</section>
+
+<section id="scroll" class="tall">
+  <div class="wrap">
+    <h2>Scroll-linked</h2>
+    <p>Add <code>aero-scrub</code> to any variant and the animation follows the scroll position instead of time. <code>--aero-scrub-range</code> reads like <code>animation-range</code>. The same markup works in every browser: where CSS scroll timelines exist they run it, and elsewhere <code>aero.js</code> drives the identical animation.</p>
+    <p>The bar at the top of this page is <code>aero-scrub aero-scrub-root</code> with its own <code>scaleX</code> keyframes.</p>
+    <div class="snippet"><pre><code>&lt;div class="aero-scrub aero-fade-up" style="--aero-scrub-range: entry 0% entry 80%"&gt;...&lt;/div&gt;
+&lt;div class="aero-scrub aero-pass" style="--aero-scrub-range: cover 0% cover 100%"&gt;...&lt;/div&gt;
+&lt;div class="aero-scrub aero-fan-left" style="--aero-scrub-range: entry 25% cover 50%"&gt;...&lt;/div&gt;
+
+&lt;!-- page progress bar --&gt;
+&lt;style&gt;
+  @keyframes progress { from { transform: scaleX(0) } to { transform: scaleX(1) } }
+&lt;/style&gt;
+&lt;div class="aero-scrub aero-scrub-root"
+     style="animation-name: progress"&gt; &lt;!-- no range: the whole page --&gt;&lt;/div&gt;</code></pre></div>
+    <div class="scrubs">
+      <div class="tile aero-scrub aero-fade-up" style="--aero-scrub-range: entry 0% entry 80%"><h3>aero-fade-up</h3><code>entry 0% entry 80%</code></div>
+      <div class="tile right aero-scrub aero-pass" style="--aero-scrub-range: cover 0% cover 100%"><h3>aero-pass</h3><code>cover 0% cover 100%</code></div>
+      <div class="tile aero-scrub aero-fan-left" style="--aero-scrub-range: entry 25% cover 50%"><h3>aero-fan-left</h3><code>entry 25% cover 50%</code></div>
+    </div>
+  </div>
+</section>
+
+<section id="hover">
+  <div class="wrap">
+    <h2>Hover</h2>
+    <p>Only <code>transform</code> animates. Keyboard focus triggers the same motion as hover, and on touch screens hover movement is cancelled so a tap does not leave anything stuck.</p>
+    <h3>Self-triggered</h3>
+    <p>The element you hover is the one that moves. Tab to a card to see focus do the same.</p>
+    <div class="cols">
+      <a class="tile aero-hover-lift" href="#hover" style="color: inherit; text-decoration: none"><h3>aero-hover-lift</h3><span class="muted">16px up</span></a>
+      <a class="tile aero-hover-lift aero-hover-lift-sm" href="#hover" style="color: inherit; text-decoration: none"><h3>aero-hover-lift-sm</h3><span class="muted">8px up</span></a>
+      <a class="tile aero-hover-lift aero-hover-lift-lg" href="#hover" style="color: inherit; text-decoration: none"><h3>aero-hover-lift-lg</h3><span class="muted">32px up</span></a>
+      <a class="tile aero-hover-scale" href="#hover" style="color: inherit; text-decoration: none"><h3>aero-hover-scale</h3><span class="muted">grows 3%</span></a>
+      <a class="tile aero-hover-rise" href="#hover" style="color: inherit; text-decoration: none"><h3>aero-hover-rise</h3><span class="muted">lifts and grows together</span></a>
+      <a class="tile aero-hover-shift" href="#hover" style="color: inherit; text-decoration: none; --aero-hover-x: 8px; --aero-hover-y: 8px; --aero-hover-scale: 1.02"><h3>aero-hover-shift</h3><span class="muted">any move plus scale</span></a>
+    </div>
+    <div class="snippet"><pre><code>&lt;a class="aero-hover-lift aero-hover-lift-lg"&gt;...&lt;/a&gt;
+&lt;a class="aero-hover-scale"&gt;...&lt;/a&gt;
+&lt;a class="aero-hover-rise"&gt;...&lt;/a&gt;
+&lt;a class="aero-hover-shift" style="--aero-hover-x: 8px; --aero-hover-y: 8px"&gt;...&lt;/a&gt;</code></pre></div>
+
+    <h3 class="sub">Group-triggered</h3>
+    <p>Hover or focus anywhere in an <code>aero-hover-group</code> and its <code>aero-hover-target</code> moves. The arrow nudges when the whole link is hovered.</p>
+    <div class="cols">
+      <a class="tile aero-hover-group" href="#hover" style="color: inherit; text-decoration: none">
+        <h3>Read the guide</h3>
+        <p class="muted">The card stays put, the arrow moves.</p>
+        <span class="arrow-link" style="color: var(--accent)">Continue <span class="aero-hover-target aero-hover-nudge" style="--aero-hover-nudge: 8px">&rarr;</span></span>
+      </a>
+      <a class="tile aero-hover-group" href="#hover" style="color: inherit; text-decoration: none">
+        <div class="aero-hover-target aero-hover-rise tile solid" style="min-height: 80px; margin-bottom: 12px"></div>
+        <h3>Image rises</h3>
+        <p class="muted" style="margin: 0">The block lifts and grows, the text stays.</p>
+      </a>
+    </div>
+    <div class="snippet"><pre><code>&lt;a class="aero-hover-group" href="/guide"&gt;
+  Continue
+  &lt;span class="aero-hover-target aero-hover-nudge"&gt;&amp;rarr;&lt;/span&gt;
+&lt;/a&gt;</code></pre></div>
+  </div>
+</section>
+
+<section id="cursor">
+  <div class="wrap">
+    <h2>Cursor</h2>
+    <p><code>aero.js</code> tracks the pointer over any <code>aero-cursor</code> element and writes <code>--aero-cursor-x</code>, <code>-y</code>, <code>-cx</code>, <code>-cy</code> and <code>-active</code>. Effects inside it read those. <code>data-aero-smoothing</code> sets how far the values lag behind the pointer. Move your mouse over the panel.</p>
+    <div class="stage aero-cursor" data-aero-smoothing="0.18">
+      <div class="cols">
+        <div class="tile aero-tilt"><h3>aero-tilt</h3><span class="muted">Tilts toward the pointer.</span></div>
+        <div class="tile aero-spotlight"><h3>aero-spotlight</h3><span class="muted">A soft light follows the pointer.</span></div>
+      </div>
+      <div class="parallax-box">
+        <div class="p1 aero-parallax aero-parallax-lg"></div>
+        <div class="p2 aero-parallax aero-parallax-md"></div>
+        <div class="p3 aero-parallax aero-parallax-xl"></div>
+      </div>
+    </div>
+    <div class="snippet"><pre><code>&lt;div class="aero-cursor" data-aero-smoothing="0.18"&gt;
+  &lt;div class="aero-tilt"&gt;Tilts toward the pointer&lt;/div&gt;
+  &lt;div class="aero-spotlight" style="--aero-spotlight-color: rgb(64 130 109 / 0.22)"&gt;A soft light&lt;/div&gt;
+  &lt;div class="aero-parallax aero-parallax-lg"&gt;Moves with the pointer&lt;/div&gt;
+  &lt;div class="aero-parallax aero-parallax-xl"&gt;Moves further&lt;/div&gt;
+&lt;/div&gt;</code></pre></div>
+  </div>
+</section>
+
+<section id="prefixes">
+  <div class="wrap">
+    <h2>Prefixes</h2>
+    <p>Every class works as <code>aero-...</code> or the short <code>ae-...</code>. This card uses only <code>ae-</code> classes.</p>
+    <div class="cols">
+      <div class="tile ae-enter ae-scale-up ae-hover-rise"><h3>ae-enter ae-scale-up ae-hover-rise</h3><span class="muted">Same effects, shorter names.</span></div>
+    </div>
+    <div class="snippet"><pre><code>&lt;div class="ae-enter ae-scale-up ae-hover-rise"&gt;...&lt;/div&gt;</code></pre></div>
+  </div>
+</section>
+
+<section id="motion">
+  <div class="wrap">
+    <h2>Reduced motion</h2>
+    <p>Motion plays by default, even when the visitor has turned on "Reduce motion", because many people use that setting to calm the operating system and not to switch off a site. To respect it, add <code>aero-reduce-motion</code> to <code>&lt;html&gt;</code>. Visitors who prefer reduced motion then see everything at once and still, and <code>aero.js</code> stops driving anything.</p>
+    <div class="row">
+      <button class="btn primary" id="rm" type="button" aria-pressed="false">Turn on aero-reduce-motion</button>
+      <span class="muted" id="rm-note">Off. Reduced motion has no effect on this page.</span>
+    </div>
+    <p class="muted">The class only has an effect if your operating system is set to prefer reduced motion. Otherwise toggling it changes nothing.</p>
+    <div class="snippet"><pre><code>&lt;html lang="en" class="aero-reduce-motion"&gt;</code></pre></div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Aero is MIT licensed.</p>
+    <a href="https://github.com/RijadRajkic/aero">GitHub</a>
+    <a href="https://github.com/RijadRajkic/aero/blob/master/CONTRIBUTING.md">CONTRIBUTING.md</a>
+    <a href="https://github.com/RijadRajkic/aero/blob/master/CHANGELOG.md">CHANGELOG.md</a>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll(".snippet").forEach(function (s) {
+  var b = document.createElement("button");
+  b.type = "button"; b.className = "btn copy"; b.textContent = "Copy";
+  b.addEventListener("click", function () {
+    try {
+      navigator.clipboard.writeText(s.querySelector("code").textContent).then(function () {
+        b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy"; }, 1500);
+      }, function () {});
+    } catch (e) {}
+  });
+  s.appendChild(b);
+});
+
+document.getElementById("replay").addEventListener("click", function () {
+  var els = document.querySelectorAll("#entrance-grid .aero-enter, #preset-grid .aero-enter, #stagger-grid .aero-enter");
+  els.forEach(function (e) { e.classList.remove("aero-in", "ae-in"); });
+  void document.body.offsetHeight;
+  requestAnimationFrame(function () {
+    els.forEach(function (e) { e.classList.add("aero-in", "ae-in"); });
+  });
+});
+
+var rm = document.getElementById("rm");
+rm.addEventListener("click", function () {
+  var on = document.documentElement.classList.toggle("aero-reduce-motion");
+  rm.setAttribute("aria-pressed", on);
+  rm.textContent = on ? "Turn off aero-reduce-motion" : "Turn on aero-reduce-motion";
+  document.getElementById("rm-note").textContent = on
+    ? "On. Takes effect only if your OS prefers reduced motion."
+    : "Off. Reduced motion has no effect on this page.";
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Aero test fixture</title>
+<link rel="stylesheet" id="aero-css" href="/dist/aero.css">
+<style>
+  body { margin: 0; font: 16px sans-serif; }
+  .gap { height: 120vh; }
+  .box { display: block; height: 200px; margin: 0 40px; background: #40826D; color: #fff; }
+</style>
+<script>
+  // ?nonative: behave like a browser without CSS scroll timelines (aero.js drives .aero-scrub).
+  // ?reduce:   the site opts in to respecting reduced motion.
+  const q = new URLSearchParams(location.search);
+  if (q.has("nonative")) {
+    document.getElementById("aero-css").href = "/tests/aero-nonative.css";
+    const supports = CSS.supports.bind(CSS);
+    CSS.supports = (...a) => (a.join(" ").includes("animation-timeline") ? false : supports(...a));
+  }
+  if (q.has("reduce")) document.documentElement.classList.add("aero-reduce-motion");
+</script>
+
+<div class="box aero-enter aero-fade-up" id="enter-aero"></div>
+<div class="box ae-enter ae-fade-left" id="enter-ae"></div>
+<div class="gap"></div>
+<div class="box aero-scrub aero-fade-up" id="scrub-entry"></div>
+<div class="gap"></div>
+<div class="box aero-scrub aero-pass" id="scrub-cover" style="--aero-scrub-range: cover 0% cover 100%"></div>
+<div class="gap"></div>
+<div class="box ae-scrub ae-fade-in" id="scrub-mixed" style="--aero-scrub-range: entry 25% cover 50%"></div>
+<div class="gap"></div>
+<div class="aero-hover-group" id="group">
+  <a href="#" id="group-link">group link</a>
+  <div class="box aero-hover-target aero-hover-rise" id="rise"></div>
+</div>
+<a href="#" class="box aero-hover-shift" id="shift" style="--aero-hover-x: -8px; --aero-hover-scale: 1.02">shift</a>
+<div class="aero-cursor" id="cursor" data-aero-smoothing="0" style="padding: 40px">
+  <div class="box aero-tilt" id="tilt"></div>
+</div>
+<main id="main">main</main>
+<div class="gap"></div>
+<script src="/dist/aero.js" defer></script>

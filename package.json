@@ -4,7 +4,7 @@
   "description": "Small CSS animation library: entrances, scroll-linked animation, hover and cursor effects, page arrival",
   "private": true,
   "license": "MIT",
-  "author": "Rijad Rajkić",
+  "author": "Rijad Rajki\u0107",
   "repository": "github:RijadRajkic/aero",
   "style": "dist/aero.css",
   "types": "dist/aero.d.ts",
@@ -22,11 +22,21 @@
     "./motion.css": "./dist/motion.css",
     "./legacy.css": "./dist/legacy.css",
     "./aero.js": "./dist/aero.js",
-    "./runtime": { "types": "./dist/aero.d.ts", "import": "./dist/aero.mjs", "default": "./dist/aero.js" }
+    "./runtime": {
+      "types": "./dist/aero.d.ts",
+      "import": "./dist/aero.mjs",
+      "default": "./dist/aero.js"
+    }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "node scripts/build.mjs",
-    "check": "node scripts/build.mjs --check"
+    "check": "node scripts/build.mjs --check",
+    "test": "node scripts/build.mjs --check && playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1"
   }
 }

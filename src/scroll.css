@@ -14,8 +14,8 @@
  *   --aero-scrub-range  like `animation-range`: "<name> <pct> <name> <pct>",
  *                       names cover | entry | exit (default entry 0% entry 80%)
  *   .aero-scrub-root    follow the page scroll instead of the element's own
- *                       view; the range is then two lengths (px or vh), and
- *                       defaults to the whole page
+ *                       view; the range is then two lengths in px or vh (not %),
+ *                       and leaving it out means the whole page
  * ========================================================================= */
 
 .aero-scrub {

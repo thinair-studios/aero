@@ -15,6 +15,8 @@ src/motion.css      the reduced-motion opt-in
 src/aero.js         the runtime (in view, scroll fallback, cursor)
 src/legacy.css      the 1.x stylesheet, frozen; don't add to it
 scripts/build.mjs   builds dist/ (no dependencies)
+tests/              Playwright tests + the page they run on
+docs/               the demo page (open docs/index.html via any static server at the repo root)
 dist/               built files; committed, because installs come straight from GitHub
 ```
 
@@ -27,7 +29,8 @@ dist/               built files; committed, because installs come straight from 
 5. A new entrance variant also gets a line in the variant list in `entrances.css`, so it works with both `.aero-enter` and `.aero-scrub`.
 6. Document it in the module's header comment and in README.md.
 7. Run `npm run build` and commit `dist/` with your change. `npm run check` fails if `dist/` is out of date.
-8. Note it under "Unreleased" in CHANGELOG.md.
+8. Add a test in `tests/aero.spec.mjs` (and an example in `tests/fixture.html`), and a live example in `docs/index.html`. `npm test` runs the check and the tests in Chromium, Firefox and WebKit; the first time, run `npx playwright install chromium firefox webkit`.
+9. Note it under "Unreleased" in CHANGELOG.md.
 
 ## Guidelines
 

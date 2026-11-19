@@ -95,6 +95,10 @@ progress(el);     // a scrubbed element's position in its range, 0 to 1
 
 2.0 renames everything to the `aero-` / `ae-` prefix (`.kf-enter` → `.aero-enter`, `.scrub` → `.aero-scrub`, `.hover-rise` → `.aero-hover-rise`, `--animate-distance` → `--aero-distance`, `kf-fade-up` → `aero-fade-up`, `.in-view` → `.aero-in`) and drops the transition-based `.animate` entrances in favour of `.aero-enter`. The 1.x stylesheet ships unchanged as `aero-css/legacy.css` for code you haven't moved yet. See [CHANGELOG.md](CHANGELOG.md).
 
+## Demo and tests
+
+`docs/index.html` shows every module live: serve the repo root with any static server and open `/docs/`. `npm test` checks that `dist/` is current and runs the test suite in Chromium, Firefox and WebKit.
+
 ## Contributing
 
 New effects are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
