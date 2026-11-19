@@ -1,6 +1,6 @@
 {
   "name": "aero-css",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Lightweight CSS animation library: scroll-triggered and keyframe entrances, hover interactions, page arrival, scroll-linked animation",
   "private": true,
   "license": "UNLICENSED",

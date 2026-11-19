@@ -1,6 +1,6 @@
 /* ============================================================================
  * Aero — lightweight CSS animation library (formerly Animate.css-lite)
- * Version: 1.2.0
+ * Version: 1.2.1
  *
  * A zero-dependency, GPU-accelerated animation library driven by
  * CSS classes and custom properties. Designed to be paired with an
@@ -826,4 +826,42 @@
 .hover-group:hover .hover-target.hover-nudge,
 .hover-group:focus-within .hover-target.hover-nudge {
  transform: translateX(var(--hover-nudge));
+}
+
+/* --- hover-shift: any move plus scale ---
+   For hovers that aren't a plain lift or nudge, e.g. a picture sliding left as it grows:
+   <li class="hover-group"><img class="hover-target hover-shift" style="--hover-x: -8px; --hover-scale: 1.02"></li> */
+
+.hover-shift {
+ --hover-duration: 0.45s;
+ --hover-easing: cubic-bezier(0.22, 1, 0.36, 1);
+ --hover-x: 0px;
+ --hover-y: 0px;
+ --hover-scale: 1;
+ transition: transform var(--hover-duration) var(--hover-easing);
+}
+
+.hover-shift:not(.hover-target):hover,
+.hover-group:hover .hover-target.hover-shift,
+.hover-group:focus-within .hover-target.hover-shift {
+ transform: translate(var(--hover-x), var(--hover-y)) scale(var(--hover-scale));
+}
+
+/* ---------------------------------------------------------------------------
+ * 15. No sticky hover on touch
+ *
+ *    On touch screens a tap leaves :hover stuck, so a card would stay lifted.
+ *    Where the device can't hover, hover movement is cancelled; keyboard focus
+ *    (:focus-within / :focus-visible) still moves things.
+ * ------------------------------------------------------------------------ */
+
+@media (hover: none) {
+ .hover-group:hover:not(:focus-within) .hover-target,
+ .hover-lift:hover:not(:focus-visible),
+ .hover-scale:hover:not(:focus-visible),
+ .hover-rise:hover:not(:focus-visible),
+ .hover-nudge:hover:not(:focus-visible),
+ .hover-shift:hover:not(:focus-visible) {
+  transform: none;
+ }
 }
