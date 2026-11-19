@@ -3,6 +3,7 @@
 ## 2.1.0 — 2026-11-19
 
 - **Pinned scroll.** `.aero-track` on a tall wrapper and `.aero-scrub-track` on its (sticky) contents: they animate through the wrapper's progress, so they can stay pinned while they move. Ranges also accept `contain` now, in CSS and in the `aero.js` fallback.
+- **Fix:** the `aero.js` scroll fallback now measures against the viewport minus the page's `scroll-padding`, like CSS view timelines do. Sites with a sticky header (and `scroll-padding-top`) were up to a few percent off in browsers without scroll timelines.
 
 - Tests in Chromium, Firefox and WebKit (`npm test`), run on every push and pull request by GitHub Actions.
 - A demo page for every module (`docs/index.html`).

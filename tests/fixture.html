@@ -17,6 +17,8 @@
     CSS.supports = (...a) => (a.join(" ").includes("animation-timeline") ? false : supports(...a));
   }
   if (q.has("reduce")) document.documentElement.classList.add("aero-reduce-motion");
+  // ?padding: a sticky-header site's scroll-padding, which CSS view timelines measure against.
+  if (q.has("padding")) document.documentElement.style.scrollPaddingTop = "90px";
 </script>
 
 <div class="box aero-enter aero-fade-up" id="enter-aero"></div>

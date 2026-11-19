@@ -44,15 +44,17 @@ test("entrances play when they come into view, with either prefix", async ({ pag
   await expect(page.locator("#enter-aero")).toHaveCSS("opacity", "1");
 });
 
-test("scrub: aero.js agrees with the browser's own scroll timeline", async ({ page }) => {
-  await page.goto("/tests/fixture.html");
-  test.skip(!(await page.evaluate(() => CSS.supports("animation-timeline: view()"))), "no native scroll timelines here; covered by the fallback test");
-  for (const id of ["scrub-entry", "scrub-cover", "scrub-mixed"]) {
-    for (const s of await sample(page, id)) {
-      if (s.native !== null && s.aero > 0.02 && s.aero < 0.98) expect(Math.abs(s.aero - s.native), `${id} ${JSON.stringify(s)}`).toBeLessThan(0.03);
+for (const q of ["", "?padding"]) {
+  test(`scrub: aero.js agrees with the browser's own scroll timeline ${q}`, async ({ page }) => {
+    await page.goto(`/tests/fixture.html${q}`);
+    test.skip(!(await page.evaluate(() => CSS.supports("animation-timeline: view()"))), "no native scroll timelines here; covered by the fallback test");
+    for (const id of ["scrub-entry", "scrub-cover", "scrub-mixed"]) {
+      for (const s of await sample(page, id)) {
+        if (s.native !== null && s.aero > 0.02 && s.aero < 0.98) expect(Math.abs(s.aero - s.native), `${id} ${JSON.stringify(s)}`).toBeLessThan(0.03);
+      }
     }
-  }
-});
+  });
+}
 
 test("scrub fallback: without scroll timelines, aero.js drives the same animation", async ({ page }) => {
   await page.goto("/tests/fixture.html?nonative");
@@ -86,6 +88,14 @@ test("track scrub: a pinned child follows its .aero-track wrapper", async ({ pag
   for (const s of await sampleTrack(page)) {
     expect(Math.abs(s.aero - s.f), JSON.stringify(s)).toBeLessThan(0.03);
     if (native) expect(Math.abs(s.native - s.f), JSON.stringify(s)).toBeLessThan(0.03);
+  }
+});
+
+test("track scrub: aero.js agrees with the browser under scroll-padding", async ({ page }) => {
+  await page.goto("/tests/fixture.html?padding");
+  test.skip(!(await page.evaluate(() => CSS.supports("animation-timeline: view()"))), "no native scroll timelines here");
+  for (const s of await sampleTrack(page)) {
+    if (s.aero > 0.02 && s.aero < 0.98) expect(Math.abs(s.aero - s.native), JSON.stringify(s)).toBeLessThan(0.03);
   }
 });
 

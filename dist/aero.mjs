@@ -65,7 +65,9 @@
       const track = has(el, "scrub-track") && el.closest(".aero-track, .ae-track");
       const box = track || el;
       const r = (raw || (track ? "contain 0% contain 100%" : "entry 0% entry 80%")).split(/\s+/);
-      const H = innerHeight, h = box.offsetHeight, t = top(box);
+      // Like CSS view timelines, measure against the viewport minus the page's scroll-padding.
+      const cs = getComputedStyle(root), pt = parseFloat(cs.scrollPaddingTop) || 0, pb = parseFloat(cs.scrollPaddingBottom) || 0;
+      const H = innerHeight - pt - pb, h = box.offsetHeight, t = top(box) - pt;
       const t0 = point(r[0], parseFloat(r[1]), H, h), t1 = point(r[2], parseFloat(r[3]), H, h);
       p = (t0 - t) / (t0 - t1 || 1);
     }
