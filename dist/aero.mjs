@@ -1,4 +1,4 @@
-/* Aero 2.0.0 — runtime, as an ES module. https://github.com/thinair-studios/aero (MIT) */
+/* Aero 2.1.0 — runtime, as an ES module. https://github.com/thinair-studios/aero (MIT) */
 /* Aero runtime (no dependencies). Load it once per page: <script src="aero.js" defer></script>
  *
  *  1. In view: adds .aero-in (and .ae-in) to .aero-enter elements the first time they come into
@@ -42,10 +42,11 @@
   let scrubs = [], queued = false;
   const len = (v) => (v.endsWith("vh") ? (parseFloat(v) * innerHeight) / 100 : parseFloat(v) || 0);
   // Where the element's top edge sits in the viewport when a range point is reached
-  // (the same meaning as CSS view timelines: cover, entry, exit).
+  // (the same meaning as CSS view timelines: cover, contain, entry, exit).
   const point = (name, pct, H, h) => {
     const f = pct / 100;
     if (name === "entry") return H - f * Math.min(h, H);
+    if (name === "contain") { const a = Math.max(H - h, 0), b = Math.min(H - h, 0); return a + f * (b - a); }
     if (name === "exit") { const start = Math.min(0, H - h); return start + f * (-h - start); }
     return H - f * (H + h); // cover
   };
@@ -60,8 +61,11 @@
       const a = raw ? len(r[0]) : 0, b = raw ? len(r[1] || "100vh") : end;
       p = (scrollY - a) / (b - a || 1);
     } else {
-      const r = (raw || "entry 0% entry 80%").split(/\s+/);
-      const H = innerHeight, h = el.offsetHeight, t = top(el);
+      // .aero-scrub-track measures its .aero-track wrapper, so pinned (sticky) children still move.
+      const track = has(el, "scrub-track") && el.closest(".aero-track, .ae-track");
+      const box = track || el;
+      const r = (raw || (track ? "contain 0% contain 100%" : "entry 0% entry 80%")).split(/\s+/);
+      const H = innerHeight, h = box.offsetHeight, t = top(box);
       const t0 = point(r[0], parseFloat(r[1]), H, h), t1 = point(r[2], parseFloat(r[3]), H, h);
       p = (t0 - t) / (t0 - t1 || 1);
     }
