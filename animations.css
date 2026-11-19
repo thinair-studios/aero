@@ -1,6 +1,6 @@
 /* ============================================================================
  * Aero — lightweight CSS animation library (formerly Animate.css-lite)
- * Version: 1.1.1
+ * Version: 1.2.0
  *
  * A zero-dependency, GPU-accelerated animation library driven by
  * CSS classes and custom properties. Designed to be paired with an
@@ -635,4 +635,195 @@
 
 .kf-arrive.kf-from-left main {
  animation-name: kf-fade-right;
+}
+
+/* ---------------------------------------------------------------------------
+ * 12. Grow, fan and lift entrances (keyframes, used by .kf-enter and .scrub)
+ *
+ *    kf-grow-up    — rises and stretches up from its base (set transform-origin
+ *                    to the bottom, e.g. `transform-origin: 50% 100%`)
+ *    kf-grow-right — slides and stretches out from its left edge
+ *                    (`transform-origin: 0 50%`)
+ *    kf-fan-left / kf-fan-right — a card fanning out of a stack, using the
+ *                    individual `translate` / `rotate` properties so it never
+ *                    fights a `transform` hover on the same element
+ *    kf-lift       — the card on top of the stack, rising into place
+ *    kf-pass       — arrives, holds, then steps back (for scrubbed lists)
+ *
+ *    Tune with --animate-distance, --animate-grow (start scale, default .7 / .85),
+ *    --animate-fan-x / --animate-fan-y / --animate-fan-rot.
+ * ------------------------------------------------------------------------ */
+
+.kf-enter.kf-grow-up.in-view,
+.in-view .kf-enter.kf-grow-up {
+ animation-name: kf-grow-up;
+ animation-duration: var(--animate-duration);
+ animation-timing-function: var(--animate-easing);
+ animation-delay: var(--animate-delay);
+ animation-fill-mode: both;
+}
+
+.kf-enter.kf-grow-right.in-view,
+.in-view .kf-enter.kf-grow-right {
+ animation-name: kf-grow-right;
+ animation-duration: var(--animate-duration);
+ animation-timing-function: var(--animate-easing);
+ animation-delay: var(--animate-delay);
+ animation-fill-mode: both;
+}
+
+.kf-enter.kf-fan-left.in-view,
+.in-view .kf-enter.kf-fan-left {
+ animation-name: kf-fan-left;
+ animation-duration: var(--animate-duration);
+ animation-timing-function: var(--animate-easing);
+ animation-delay: var(--animate-delay);
+ animation-fill-mode: both;
+}
+
+.kf-enter.kf-fan-right.in-view,
+.in-view .kf-enter.kf-fan-right {
+ animation-name: kf-fan-right;
+ animation-duration: var(--animate-duration);
+ animation-timing-function: var(--animate-easing);
+ animation-delay: var(--animate-delay);
+ animation-fill-mode: both;
+}
+
+.kf-enter.kf-lift.in-view,
+.in-view .kf-enter.kf-lift {
+ animation-name: kf-lift;
+ animation-duration: var(--animate-duration);
+ animation-timing-function: var(--animate-easing);
+ animation-delay: var(--animate-delay);
+ animation-fill-mode: both;
+}
+
+/* Fan and lift move the card, not its opacity: the stack is visible from the start. */
+.kf-enter.kf-fan-left,
+.kf-enter.kf-fan-right,
+.kf-enter.kf-lift {
+ opacity: 1;
+}
+
+@keyframes kf-grow-up {
+ from {
+  opacity: 0;
+  transform: translateY(var(--animate-distance, 26%)) scaleY(var(--animate-grow, 0.7));
+ }
+}
+
+@keyframes kf-grow-right {
+ from {
+  opacity: 0;
+  transform: translateX(calc(var(--animate-distance, 30%) * -1)) scaleX(var(--animate-grow, 0.85));
+ }
+}
+
+@keyframes kf-fan-left {
+ from {
+  translate: calc(var(--animate-fan-x, 4%) * -1) var(--animate-fan-y, 12%);
+  rotate: calc(var(--animate-fan-rot, 1deg) * -1);
+ }
+}
+
+@keyframes kf-fan-right {
+ from {
+  translate: var(--animate-fan-x, 4%) var(--animate-fan-y, 12%);
+  rotate: var(--animate-fan-rot, 1deg);
+ }
+}
+
+@keyframes kf-lift {
+ from {
+  translate: 0 var(--animate-fan-y, 10%);
+ }
+}
+
+@keyframes kf-pass {
+ 0% { opacity: 0; }
+ 28% { opacity: 1; }
+ 62% { opacity: 1; }
+ 100% { opacity: var(--animate-pass-to, 0.18); }
+}
+
+/* ---------------------------------------------------------------------------
+ * 13. Scroll-linked (scrub) — an animation follows the scroll instead of time
+ *
+ *    <h2 class="scrub scrub-fade-up" style="--scrub-range: entry 0% entry 80%">
+ *
+ *    Where CSS scroll-driven animations exist (Chrome, Edge, Safari 26+) this is
+ *    pure CSS: `animation-timeline: view()`. Elsewhere (Firefox, Zen) aero.js
+ *    pauses the same animation and sets its position from the scroll on every
+ *    frame, reading the same --scrub-range. One definition, same motion.
+ *
+ *    --scrub-range — like `animation-range`: "<name> <pct> <name> <pct>" with
+ *                    names cover | entry | exit (default: entry 0% entry 80%)
+ *    .scrub-root   — follow the page scroll instead of the element's own view;
+ *                    --scrub-range is then two lengths in px (e.g. "0px 600px")
+ *    Variants pick the keyframes; any other `animation-name` works too.
+ * ------------------------------------------------------------------------ */
+
+.scrub {
+ animation-duration: 1s;
+ animation-timing-function: linear;
+ animation-fill-mode: both;
+}
+
+@supports (animation-timeline: view()) {
+ .scrub {
+  animation-timeline: view();
+  animation-range: var(--scrub-range, entry 0% entry 80%);
+ }
+ .scrub.scrub-root {
+  animation-timeline: scroll(root);
+ }
+}
+
+/* Without CSS scroll timelines, aero.js marks <html> and drives these. Without
+   aero.js the animation simply plays once on load and ends in place, so
+   nothing is ever left hidden. */
+.aero-scrub-js .scrub {
+ animation-play-state: paused;
+ animation-delay: 0s;
+}
+
+.scrub.scrub-fade-up { animation-name: kf-fade-up; }
+.scrub.scrub-fade-in { animation-name: kf-fade-in; }
+.scrub.scrub-fade-left { animation-name: kf-fade-left; }
+.scrub.scrub-fade-right { animation-name: kf-fade-right; }
+.scrub.scrub-fan-left { animation-name: kf-fan-left; }
+.scrub.scrub-fan-right { animation-name: kf-fan-right; }
+.scrub.scrub-lift { animation-name: kf-lift; }
+.scrub.scrub-pass { animation-name: kf-pass; }
+
+/* ---------------------------------------------------------------------------
+ * 14. More hover interactions
+ *
+ *    hover-rise  — lift and scale together (a card or picture coming forward)
+ *    hover-nudge — a small slide along the x axis (arrows, "go" affordances);
+ *                  negative --hover-nudge nudges left
+ *    Both work self-triggered or as a `.hover-target` inside `.hover-group`.
+ * ------------------------------------------------------------------------ */
+
+.hover-rise,
+.hover-nudge {
+ --hover-duration: 0.45s;
+ --hover-easing: cubic-bezier(0.22, 1, 0.36, 1);
+ --hover-distance: 6px;
+ --hover-scale: 1.03;
+ --hover-nudge: 4px;
+ transition: transform var(--hover-duration) var(--hover-easing);
+}
+
+.hover-rise:not(.hover-target):hover,
+.hover-group:hover .hover-target.hover-rise,
+.hover-group:focus-within .hover-target.hover-rise {
+ transform: translateY(calc(var(--hover-distance) * -1)) scale(var(--hover-scale));
+}
+
+.hover-nudge:not(.hover-target):hover,
+.hover-group:hover .hover-target.hover-nudge,
+.hover-group:focus-within .hover-target.hover-nudge {
+ transform: translateX(var(--hover-nudge));
 }
