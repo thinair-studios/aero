@@ -1,0 +1,30 @@
+/* Aero 2.0.0 — hover. https://github.com/RijadRajkic/aero (MIT) */
+@layer aero {
+.aero-hover-lift, .ae-hover-lift { --aero-hover-to: translateY(calc(var(--aero-hover-distance, 16px) * -1)); }
+.aero-hover-scale, .ae-hover-scale { --aero-hover-to: scale(var(--aero-hover-scale, 1.03)); }
+.aero-hover-rise, .ae-hover-rise { --aero-hover-to: translateY(calc(var(--aero-hover-distance, 6px) * -1)) scale(var(--aero-hover-scale, 1.03)); }
+.aero-hover-nudge, .ae-hover-nudge { --aero-hover-to: translateX(var(--aero-hover-nudge, 4px)); }
+.aero-hover-shift, .ae-hover-shift { --aero-hover-to: translate(var(--aero-hover-x, 0px), var(--aero-hover-y, 0px)) scale(var(--aero-hover-scale, 1)); }
+:is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift), :is(.ae-hover-lift, .ae-hover-scale, .ae-hover-rise, .ae-hover-nudge, .ae-hover-shift) {
+ transition: transform var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+:is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift):not(.aero-hover-target):is(:hover, :focus-visible),
+.aero-hover-group:is(:hover, :focus-within) .aero-hover-target, :is(.ae-hover-lift, .ae-hover-scale, .ae-hover-rise, .ae-hover-nudge, .ae-hover-shift):not(.ae-hover-target):is(:hover, :focus-visible),
+.ae-hover-group:is(:hover, :focus-within) .ae-hover-target {
+ transform: var(--aero-hover-to);
+}
+.aero-hover-lift-sm, .ae-hover-lift-sm { --aero-hover-distance: 8px; }
+.aero-hover-lift-md, .ae-hover-lift-md { --aero-hover-distance: 16px; }
+.aero-hover-lift-lg, .ae-hover-lift-lg { --aero-hover-distance: 32px; }
+.aero-hover-lift-xl, .ae-hover-lift-xl { --aero-hover-distance: 48px; }
+.aero-hover-scale-sm, .ae-hover-scale-sm { --aero-hover-scale: 1.02; }
+.aero-hover-scale-md, .ae-hover-scale-md { --aero-hover-scale: 1.03; }
+.aero-hover-scale-lg, .ae-hover-scale-lg { --aero-hover-scale: 1.05; }
+@media (hover: none) {
+ :is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift):not(.aero-hover-target):hover:not(:focus-visible),
+ .aero-hover-group:hover:not(:focus-within) .aero-hover-target, :is(.ae-hover-lift, .ae-hover-scale, .ae-hover-rise, .ae-hover-nudge, .ae-hover-shift):not(.ae-hover-target):hover:not(:focus-visible),
+ .ae-hover-group:hover:not(:focus-within) .ae-hover-target {
+  transform: none;
+ }
+}
+}

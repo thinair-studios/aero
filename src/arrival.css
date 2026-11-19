@@ -1,0 +1,24 @@
+/* ============================================================================
+ * Aero — page arrival
+ *
+ * For browsers without cross-document View Transitions (Firefox and Zen today):
+ * a small script in <head> adds .aero-arrive plus .aero-from-right or
+ * .aero-from-left to <html> when the page was reached from another page of the
+ * site, and <main> slides in once. Only the content moves; the header stays.
+ *
+ * Fill mode is `backwards`: once played, the animation lets go of transform,
+ * so fixed and sticky children inside <main> keep working.
+ * Uses the aero-fade-left / aero-fade-right keyframes from entrances.css.
+ * ========================================================================= */
+
+.aero-arrive main {
+ animation-duration: var(--aero-duration, 0.6s);
+ animation-timing-function: var(--aero-easing, cubic-bezier(0.22, 1, 0.36, 1));
+ animation-fill-mode: backwards;
+}
+.aero-arrive.aero-from-right main {
+ animation-name: aero-fade-left;
+}
+.aero-arrive.aero-from-left main {
+ animation-name: aero-fade-right;
+}

@@ -1,0 +1,24 @@
+/* ============================================================================
+ * Aero — reduced motion (opt-in)
+ *
+ * By default Aero plays its motion even when the visitor has turned on
+ * "Reduce motion": many people turn it on to calm the operating system, not
+ * to switch off a site's motion. To respect the setting instead, add
+ * .aero-reduce-motion to <html>. Then, for visitors who prefer reduced motion,
+ * entrances show at once, scrubbed animations rest in their final state, hovers
+ * and cursor effects stay still, and aero.js stops driving anything.
+ * ========================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+ .aero-reduce-motion :is(.aero-enter, .aero-scrub),
+ .aero-reduce-motion.aero-arrive main {
+  animation: none !important;
+ }
+ .aero-reduce-motion .aero-enter {
+  opacity: 1 !important;
+ }
+ .aero-reduce-motion :is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift, .aero-tilt, .aero-parallax) {
+  transition: none !important;
+  transform: none !important;
+ }
+}

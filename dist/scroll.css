@@ -1,0 +1,22 @@
+/* Aero 2.0.0 — scroll. https://github.com/RijadRajkic/aero (MIT) */
+@layer aero {
+.aero-scrub, .ae-scrub {
+ animation-duration: 1s;
+ animation-timing-function: linear;
+ animation-fill-mode: both;
+}
+@supports (animation-timeline: view()) {
+ .aero-scrub, .ae-scrub {
+  animation-timeline: view();
+  animation-range: var(--aero-scrub-range, entry 0% entry 80%);
+ }
+ .aero-scrub.aero-scrub-root, .ae-scrub.ae-scrub-root {
+  animation-timeline: scroll(root);
+  animation-range: var(--aero-scrub-range, normal);
+ }
+}
+.aero-scrub-js .aero-scrub, .ae-scrub-js .ae-scrub {
+ animation-play-state: paused;
+ animation-delay: 0s;
+}
+}

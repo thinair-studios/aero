@@ -1,0 +1,210 @@
+/* Aero 2.0.0 — all modules. https://github.com/RijadRajkic/aero (MIT) */
+@layer aero {
+.aero-fast, .ae-fast { --aero-duration: 0.4s; --aero-hover-duration: 0.25s; }
+.aero-slow, .ae-slow { --aero-duration: 1s; --aero-hover-duration: 0.7s; }
+.aero-slower, .ae-slower { --aero-duration: 1.4s; --aero-hover-duration: 1s; }
+.aero-ease-expo, .ae-ease-expo { --aero-easing: cubic-bezier(0.16, 1, 0.3, 1); --aero-hover-easing: cubic-bezier(0.16, 1, 0.3, 1); }
+.aero-ease-quart, .ae-ease-quart { --aero-easing: cubic-bezier(0.25, 1, 0.5, 1); --aero-hover-easing: cubic-bezier(0.25, 1, 0.5, 1); }
+.aero-ease-back, .ae-ease-back { --aero-easing: cubic-bezier(0.34, 1.56, 0.64, 1); --aero-hover-easing: cubic-bezier(0.34, 1.56, 0.64, 1); }
+.aero-ease-spring, .ae-ease-spring { --aero-easing: cubic-bezier(0.22, 1, 0.36, 1); --aero-hover-easing: cubic-bezier(0.22, 1, 0.36, 1); }
+.aero-enter, .ae-enter {
+ opacity: 0;
+}
+.aero-enter.aero-in,
+.aero-in .aero-enter, .ae-enter.ae-in,
+.ae-in .ae-enter {
+ opacity: 1;
+ animation-name: aero-fade-up;
+ animation-duration: var(--aero-duration, 0.6s);
+ animation-timing-function: var(--aero-easing, cubic-bezier(0.22, 1, 0.36, 1));
+ animation-delay: calc(var(--aero-delay, 0s) + var(--aero-i, 0) * var(--aero-stagger, 80ms));
+ animation-fill-mode: both;
+}
+.aero-enter.aero-fan-left,
+.aero-enter.aero-fan-right,
+.aero-enter.aero-lift, .ae-enter.ae-fan-left,
+.ae-enter.ae-fan-right,
+.ae-enter.ae-lift {
+ opacity: 1;
+}
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-fade-up, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-fade-up { animation-name: aero-fade-up; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-fade-down, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-fade-down { animation-name: aero-fade-down; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-fade-left, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-fade-left { animation-name: aero-fade-left; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-fade-right, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-fade-right { animation-name: aero-fade-right; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-fade-in, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-fade-in { animation-name: aero-fade-in; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-scale-up, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-scale-up { animation-name: aero-scale-up; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-grow-up, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-grow-up { animation-name: aero-grow-up; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-grow-right, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-grow-right { animation-name: aero-grow-right; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-fan-left, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-fan-left { animation-name: aero-fan-left; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-fan-right, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-fan-right { animation-name: aero-fan-right; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-lift, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-lift { animation-name: aero-lift; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-pass, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-pass { animation-name: aero-pass; }
+.aero-stagger > :nth-child(2), .ae-stagger > :nth-child(2) { --aero-i: 1; }
+.aero-stagger > :nth-child(3), .ae-stagger > :nth-child(3) { --aero-i: 2; }
+.aero-stagger > :nth-child(4), .ae-stagger > :nth-child(4) { --aero-i: 3; }
+.aero-stagger > :nth-child(5), .ae-stagger > :nth-child(5) { --aero-i: 4; }
+.aero-stagger > :nth-child(6), .ae-stagger > :nth-child(6) { --aero-i: 5; }
+.aero-stagger > :nth-child(7), .ae-stagger > :nth-child(7) { --aero-i: 6; }
+.aero-stagger > :nth-child(8), .ae-stagger > :nth-child(8) { --aero-i: 7; }
+.aero-stagger > :nth-child(9), .ae-stagger > :nth-child(9) { --aero-i: 8; }
+.aero-stagger > :nth-child(10), .ae-stagger > :nth-child(10) { --aero-i: 9; }
+.aero-stagger > :nth-child(11), .ae-stagger > :nth-child(11) { --aero-i: 10; }
+.aero-stagger > :nth-child(12), .ae-stagger > :nth-child(12) { --aero-i: 11; }
+@supports (order: sibling-index()) {
+ .aero-stagger > *, .ae-stagger > * { --aero-i: calc(sibling-index() - 1); }
+}
+@keyframes aero-fade-up {
+ from { opacity: 0; transform: translateY(var(--aero-distance, 32px)); }
+}
+@keyframes aero-fade-down {
+ from { opacity: 0; transform: translateY(calc(var(--aero-distance, 32px) * -1)); }
+}
+@keyframes aero-fade-left {
+ from { opacity: 0; transform: translateX(var(--aero-distance, 32px)); }
+}
+@keyframes aero-fade-right {
+ from { opacity: 0; transform: translateX(calc(var(--aero-distance, 32px) * -1)); }
+}
+@keyframes aero-fade-in {
+ from { opacity: 0; }
+}
+@keyframes aero-scale-up {
+ from { opacity: 0; transform: scale(var(--aero-scale-from, 0.96)) translateY(calc(var(--aero-distance, 32px) * 0.5)); }
+}
+@keyframes aero-grow-up {
+ from { opacity: 0; transform: translateY(var(--aero-distance, 26%)) scaleY(var(--aero-grow, 0.7)); }
+}
+@keyframes aero-grow-right {
+ from { opacity: 0; transform: translateX(calc(var(--aero-distance, 30%) * -1)) scaleX(var(--aero-grow, 0.85)); }
+}
+@keyframes aero-fan-left {
+ from { translate: calc(var(--aero-fan-x, 4%) * -1) var(--aero-fan-y, 12%); rotate: calc(var(--aero-fan-rot, 1deg) * -1); }
+}
+@keyframes aero-fan-right {
+ from { translate: var(--aero-fan-x, 4%) var(--aero-fan-y, 12%); rotate: var(--aero-fan-rot, 1deg); }
+}
+@keyframes aero-lift {
+ from { translate: 0 var(--aero-fan-y, 10%); }
+}
+@keyframes aero-pass {
+ 0% { opacity: 0; }
+ 28% { opacity: 1; }
+ 62% { opacity: 1; }
+ 100% { opacity: var(--aero-pass-to, 0.18); }
+}
+.aero-scrub, .ae-scrub {
+ animation-duration: 1s;
+ animation-timing-function: linear;
+ animation-fill-mode: both;
+}
+@supports (animation-timeline: view()) {
+ .aero-scrub, .ae-scrub {
+  animation-timeline: view();
+  animation-range: var(--aero-scrub-range, entry 0% entry 80%);
+ }
+ .aero-scrub.aero-scrub-root, .ae-scrub.ae-scrub-root {
+  animation-timeline: scroll(root);
+  animation-range: var(--aero-scrub-range, normal);
+ }
+}
+.aero-scrub-js .aero-scrub, .ae-scrub-js .ae-scrub {
+ animation-play-state: paused;
+ animation-delay: 0s;
+}
+.aero-hover-lift, .ae-hover-lift { --aero-hover-to: translateY(calc(var(--aero-hover-distance, 16px) * -1)); }
+.aero-hover-scale, .ae-hover-scale { --aero-hover-to: scale(var(--aero-hover-scale, 1.03)); }
+.aero-hover-rise, .ae-hover-rise { --aero-hover-to: translateY(calc(var(--aero-hover-distance, 6px) * -1)) scale(var(--aero-hover-scale, 1.03)); }
+.aero-hover-nudge, .ae-hover-nudge { --aero-hover-to: translateX(var(--aero-hover-nudge, 4px)); }
+.aero-hover-shift, .ae-hover-shift { --aero-hover-to: translate(var(--aero-hover-x, 0px), var(--aero-hover-y, 0px)) scale(var(--aero-hover-scale, 1)); }
+:is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift), :is(.ae-hover-lift, .ae-hover-scale, .ae-hover-rise, .ae-hover-nudge, .ae-hover-shift) {
+ transition: transform var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+:is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift):not(.aero-hover-target):is(:hover, :focus-visible),
+.aero-hover-group:is(:hover, :focus-within) .aero-hover-target, :is(.ae-hover-lift, .ae-hover-scale, .ae-hover-rise, .ae-hover-nudge, .ae-hover-shift):not(.ae-hover-target):is(:hover, :focus-visible),
+.ae-hover-group:is(:hover, :focus-within) .ae-hover-target {
+ transform: var(--aero-hover-to);
+}
+.aero-hover-lift-sm, .ae-hover-lift-sm { --aero-hover-distance: 8px; }
+.aero-hover-lift-md, .ae-hover-lift-md { --aero-hover-distance: 16px; }
+.aero-hover-lift-lg, .ae-hover-lift-lg { --aero-hover-distance: 32px; }
+.aero-hover-lift-xl, .ae-hover-lift-xl { --aero-hover-distance: 48px; }
+.aero-hover-scale-sm, .ae-hover-scale-sm { --aero-hover-scale: 1.02; }
+.aero-hover-scale-md, .ae-hover-scale-md { --aero-hover-scale: 1.03; }
+.aero-hover-scale-lg, .ae-hover-scale-lg { --aero-hover-scale: 1.05; }
+@media (hover: none) {
+ :is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift):not(.aero-hover-target):hover:not(:focus-visible),
+ .aero-hover-group:hover:not(:focus-within) .aero-hover-target, :is(.ae-hover-lift, .ae-hover-scale, .ae-hover-rise, .ae-hover-nudge, .ae-hover-shift):not(.ae-hover-target):hover:not(:focus-visible),
+ .ae-hover-group:hover:not(:focus-within) .ae-hover-target {
+  transform: none;
+ }
+}
+.aero-tilt, .ae-tilt {
+ transform-style: preserve-3d;
+ transform:
+  perspective(900px)
+  rotateX(calc(var(--aero-cursor-cy, 0) * var(--aero-tilt, 8deg) * -1 * var(--aero-cursor-active, 0)))
+  rotateY(calc(var(--aero-cursor-cx, 0) * var(--aero-tilt, 8deg) * var(--aero-cursor-active, 0)));
+ transition: transform var(--aero-hover-duration, 0.35s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+.aero-tilt-sm, .ae-tilt-sm { --aero-tilt: 4deg; }
+.aero-tilt-lg, .ae-tilt-lg { --aero-tilt: 14deg; }
+.aero-spotlight, .ae-spotlight {
+ position: relative;
+ isolation: isolate;
+}
+.aero-spotlight::before, .ae-spotlight::before {
+ content: "";
+ position: absolute;
+ inset: 0;
+ z-index: 0;
+ pointer-events: none;
+ border-radius: inherit;
+ background: radial-gradient(
+  circle var(--aero-spotlight-size, 320px) at calc(var(--aero-cursor-x, 0.5) * 100%) calc(var(--aero-cursor-y, 0.5) * 100%),
+  var(--aero-spotlight-color, rgb(255 255 255 / 0.14)),
+  transparent 70%
+ );
+ opacity: var(--aero-cursor-active, 0);
+ transition: opacity 0.45s ease;
+}
+.aero-spotlight-sm, .ae-spotlight-sm { --aero-spotlight-size: 180px; }
+.aero-spotlight-lg, .ae-spotlight-lg { --aero-spotlight-size: 480px; }
+.aero-parallax, .ae-parallax {
+ transform: translate3d(
+  calc(var(--aero-cursor-cx, 0) * var(--aero-parallax-depth, 8px) * var(--aero-cursor-active, 0)),
+  calc(var(--aero-cursor-cy, 0) * var(--aero-parallax-depth, 8px) * var(--aero-cursor-active, 0)),
+  0
+ );
+ transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.aero-parallax-xs, .ae-parallax-xs { --aero-parallax-depth: 3px; }
+.aero-parallax-sm, .ae-parallax-sm { --aero-parallax-depth: 6px; }
+.aero-parallax-md, .ae-parallax-md { --aero-parallax-depth: 12px; }
+.aero-parallax-lg, .ae-parallax-lg { --aero-parallax-depth: 20px; }
+.aero-parallax-xl, .ae-parallax-xl { --aero-parallax-depth: 32px; }
+.aero-arrive main, .ae-arrive main {
+ animation-duration: var(--aero-duration, 0.6s);
+ animation-timing-function: var(--aero-easing, cubic-bezier(0.22, 1, 0.36, 1));
+ animation-fill-mode: backwards;
+}
+.aero-arrive.aero-from-right main, .ae-arrive.ae-from-right main {
+ animation-name: aero-fade-left;
+}
+.aero-arrive.aero-from-left main, .ae-arrive.ae-from-left main {
+ animation-name: aero-fade-right;
+}
+@media (prefers-reduced-motion: reduce) {
+ .aero-reduce-motion :is(.aero-enter, .aero-scrub),
+ .aero-reduce-motion.aero-arrive main, .ae-reduce-motion :is(.ae-enter, .ae-scrub),
+ .ae-reduce-motion.ae-arrive main {
+  animation: none !important;
+ }
+ .aero-reduce-motion .aero-enter, .ae-reduce-motion .ae-enter {
+  opacity: 1 !important;
+ }
+ .aero-reduce-motion :is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift, .aero-tilt, .aero-parallax), .ae-reduce-motion :is(.ae-hover-lift, .ae-hover-scale, .ae-hover-rise, .ae-hover-nudge, .ae-hover-shift, .ae-tilt, .ae-parallax) {
+  transition: none !important;
+  transform: none !important;
+ }
+}
+}

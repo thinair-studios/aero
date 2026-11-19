@@ -1,0 +1,33 @@
+/* ============================================================================
+ * Aero — core
+ *
+ * Everything Aero ships sits in one cascade layer, `aero`, so any CSS of your
+ * own (unlayered, or in a later layer) wins without specificity games.
+ * Every class works with either prefix: `aero-` or the short `ae-`. State
+ * classes that aero.js adds (aero-in, aero-scrub-js, ...) are added with both.
+ *
+ * Settings are custom properties with built-in defaults; set them on an
+ * element, a parent or :root.
+ *
+ *   Entrances  --aero-duration (.6s)  --aero-delay (0s)  --aero-easing
+ *              --aero-distance (32px)  --aero-scale-from (.96)  --aero-grow
+ *              --aero-fan-x (4%)  --aero-fan-y (12%)  --aero-fan-rot (1deg)
+ *              --aero-pass-to (.18)  --aero-stagger (80ms)  --aero-i (0)
+ *   Scroll     --aero-scrub-range (entry 0% entry 80%)
+ *   Hover      --aero-hover-duration (.45s)  --aero-hover-easing
+ *              --aero-hover-distance  --aero-hover-scale  --aero-hover-x
+ *              --aero-hover-y  --aero-hover-nudge (4px)
+ *   Cursor     --aero-cursor-x/-y (0..1)  --aero-cursor-cx/-cy (-1..1)
+ *              --aero-cursor-active (0..1), written by aero.js
+ * ========================================================================= */
+
+/* Duration presets */
+.aero-fast { --aero-duration: 0.4s; --aero-hover-duration: 0.25s; }
+.aero-slow { --aero-duration: 1s; --aero-hover-duration: 0.7s; }
+.aero-slower { --aero-duration: 1.4s; --aero-hover-duration: 1s; }
+
+/* Easing presets */
+.aero-ease-expo { --aero-easing: cubic-bezier(0.16, 1, 0.3, 1); --aero-hover-easing: cubic-bezier(0.16, 1, 0.3, 1); }
+.aero-ease-quart { --aero-easing: cubic-bezier(0.25, 1, 0.5, 1); --aero-hover-easing: cubic-bezier(0.25, 1, 0.5, 1); }
+.aero-ease-back { --aero-easing: cubic-bezier(0.34, 1.56, 0.64, 1); --aero-hover-easing: cubic-bezier(0.34, 1.56, 0.64, 1); }
+.aero-ease-spring { --aero-easing: cubic-bezier(0.22, 1, 0.36, 1); --aero-hover-easing: cubic-bezier(0.22, 1, 0.36, 1); }

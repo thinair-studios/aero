@@ -1,0 +1,50 @@
+/* ============================================================================
+ * Aero — hover
+ *
+ * Self-triggered: the hovered element moves.
+ *   <a class="aero-hover-lift">…</a>
+ * Group-triggered: hovering (or focusing inside) the group moves its target.
+ *   <li class="aero-hover-group"><img class="aero-hover-target aero-hover-rise"></li>
+ *
+ * Effects
+ *   aero-hover-lift   up by --aero-hover-distance (16px; -sm 8, -md 16, -lg 32, -xl 48)
+ *   aero-hover-scale  to --aero-hover-scale (1.03; -sm 1.02, -md 1.03, -lg 1.05)
+ *   aero-hover-rise   lift and scale together (6px, 1.03): a card coming forward
+ *   aero-hover-nudge  sideways by --aero-hover-nudge (4px; negative goes left)
+ *   aero-hover-shift  any move plus scale: --aero-hover-x / -y / -scale
+ *
+ * Only transform is animated. On touch screens hover movement is cancelled so
+ * a tap doesn't leave things stuck; keyboard focus still moves them.
+ * ========================================================================= */
+
+.aero-hover-lift { --aero-hover-to: translateY(calc(var(--aero-hover-distance, 16px) * -1)); }
+.aero-hover-scale { --aero-hover-to: scale(var(--aero-hover-scale, 1.03)); }
+.aero-hover-rise { --aero-hover-to: translateY(calc(var(--aero-hover-distance, 6px) * -1)) scale(var(--aero-hover-scale, 1.03)); }
+.aero-hover-nudge { --aero-hover-to: translateX(var(--aero-hover-nudge, 4px)); }
+.aero-hover-shift { --aero-hover-to: translate(var(--aero-hover-x, 0px), var(--aero-hover-y, 0px)) scale(var(--aero-hover-scale, 1)); }
+
+:is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift) {
+ transition: transform var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+:is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift):not(.aero-hover-target):is(:hover, :focus-visible),
+.aero-hover-group:is(:hover, :focus-within) .aero-hover-target {
+ transform: var(--aero-hover-to);
+}
+
+/* Presets */
+.aero-hover-lift-sm { --aero-hover-distance: 8px; }
+.aero-hover-lift-md { --aero-hover-distance: 16px; }
+.aero-hover-lift-lg { --aero-hover-distance: 32px; }
+.aero-hover-lift-xl { --aero-hover-distance: 48px; }
+.aero-hover-scale-sm { --aero-hover-scale: 1.02; }
+.aero-hover-scale-md { --aero-hover-scale: 1.03; }
+.aero-hover-scale-lg { --aero-hover-scale: 1.05; }
+
+/* No sticky hover on touch screens. */
+@media (hover: none) {
+ :is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift):not(.aero-hover-target):hover:not(:focus-visible),
+ .aero-hover-group:hover:not(:focus-within) .aero-hover-target {
+  transform: none;
+ }
+}

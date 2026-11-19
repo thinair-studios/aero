@@ -1,0 +1,10 @@
+/* Aero 2.0.0 — core. https://github.com/RijadRajkic/aero (MIT) */
+@layer aero {
+.aero-fast, .ae-fast { --aero-duration: 0.4s; --aero-hover-duration: 0.25s; }
+.aero-slow, .ae-slow { --aero-duration: 1s; --aero-hover-duration: 0.7s; }
+.aero-slower, .ae-slower { --aero-duration: 1.4s; --aero-hover-duration: 1s; }
+.aero-ease-expo, .ae-ease-expo { --aero-easing: cubic-bezier(0.16, 1, 0.3, 1); --aero-hover-easing: cubic-bezier(0.16, 1, 0.3, 1); }
+.aero-ease-quart, .ae-ease-quart { --aero-easing: cubic-bezier(0.25, 1, 0.5, 1); --aero-hover-easing: cubic-bezier(0.25, 1, 0.5, 1); }
+.aero-ease-back, .ae-ease-back { --aero-easing: cubic-bezier(0.34, 1.56, 0.64, 1); --aero-hover-easing: cubic-bezier(0.34, 1.56, 0.64, 1); }
+.aero-ease-spring, .ae-ease-spring { --aero-easing: cubic-bezier(0.22, 1, 0.36, 1); --aero-hover-easing: cubic-bezier(0.22, 1, 0.36, 1); }
+}

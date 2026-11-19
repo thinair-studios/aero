@@ -1,0 +1,14 @@
+/* Aero 2.0.0 — arrival. https://github.com/RijadRajkic/aero (MIT) */
+@layer aero {
+.aero-arrive main, .ae-arrive main {
+ animation-duration: var(--aero-duration, 0.6s);
+ animation-timing-function: var(--aero-easing, cubic-bezier(0.22, 1, 0.36, 1));
+ animation-fill-mode: backwards;
+}
+.aero-arrive.aero-from-right main, .ae-arrive.ae-from-right main {
+ animation-name: aero-fade-left;
+}
+.aero-arrive.aero-from-left main, .ae-arrive.ae-from-left main {
+ animation-name: aero-fade-right;
+}
+}

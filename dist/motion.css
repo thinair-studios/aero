@@ -1,0 +1,17 @@
+/* Aero 2.0.0 — motion. https://github.com/RijadRajkic/aero (MIT) */
+@layer aero {
+@media (prefers-reduced-motion: reduce) {
+ .aero-reduce-motion :is(.aero-enter, .aero-scrub),
+ .aero-reduce-motion.aero-arrive main, .ae-reduce-motion :is(.ae-enter, .ae-scrub),
+ .ae-reduce-motion.ae-arrive main {
+  animation: none !important;
+ }
+ .aero-reduce-motion .aero-enter, .ae-reduce-motion .ae-enter {
+  opacity: 1 !important;
+ }
+ .aero-reduce-motion :is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift, .aero-tilt, .aero-parallax), .ae-reduce-motion :is(.ae-hover-lift, .ae-hover-scale, .ae-hover-rise, .ae-hover-nudge, .ae-hover-shift, .ae-tilt, .ae-parallax) {
+  transition: none !important;
+  transform: none !important;
+ }
+}
+}

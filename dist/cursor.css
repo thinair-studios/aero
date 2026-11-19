@@ -1,0 +1,47 @@
+/* Aero 2.0.0 — cursor. https://github.com/RijadRajkic/aero (MIT) */
+@layer aero {
+.aero-tilt, .ae-tilt {
+ transform-style: preserve-3d;
+ transform:
+  perspective(900px)
+  rotateX(calc(var(--aero-cursor-cy, 0) * var(--aero-tilt, 8deg) * -1 * var(--aero-cursor-active, 0)))
+  rotateY(calc(var(--aero-cursor-cx, 0) * var(--aero-tilt, 8deg) * var(--aero-cursor-active, 0)));
+ transition: transform var(--aero-hover-duration, 0.35s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+.aero-tilt-sm, .ae-tilt-sm { --aero-tilt: 4deg; }
+.aero-tilt-lg, .ae-tilt-lg { --aero-tilt: 14deg; }
+.aero-spotlight, .ae-spotlight {
+ position: relative;
+ isolation: isolate;
+}
+.aero-spotlight::before, .ae-spotlight::before {
+ content: "";
+ position: absolute;
+ inset: 0;
+ z-index: 0;
+ pointer-events: none;
+ border-radius: inherit;
+ background: radial-gradient(
+  circle var(--aero-spotlight-size, 320px) at calc(var(--aero-cursor-x, 0.5) * 100%) calc(var(--aero-cursor-y, 0.5) * 100%),
+  var(--aero-spotlight-color, rgb(255 255 255 / 0.14)),
+  transparent 70%
+ );
+ opacity: var(--aero-cursor-active, 0);
+ transition: opacity 0.45s ease;
+}
+.aero-spotlight-sm, .ae-spotlight-sm { --aero-spotlight-size: 180px; }
+.aero-spotlight-lg, .ae-spotlight-lg { --aero-spotlight-size: 480px; }
+.aero-parallax, .ae-parallax {
+ transform: translate3d(
+  calc(var(--aero-cursor-cx, 0) * var(--aero-parallax-depth, 8px) * var(--aero-cursor-active, 0)),
+  calc(var(--aero-cursor-cy, 0) * var(--aero-parallax-depth, 8px) * var(--aero-cursor-active, 0)),
+  0
+ );
+ transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.aero-parallax-xs, .ae-parallax-xs { --aero-parallax-depth: 3px; }
+.aero-parallax-sm, .ae-parallax-sm { --aero-parallax-depth: 6px; }
+.aero-parallax-md, .ae-parallax-md { --aero-parallax-depth: 12px; }
+.aero-parallax-lg, .ae-parallax-lg { --aero-parallax-depth: 20px; }
+.aero-parallax-xl, .ae-parallax-xl { --aero-parallax-depth: 32px; }
+}

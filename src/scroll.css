@@ -1,0 +1,42 @@
+/* ============================================================================
+ * Aero — scroll-linked animation (scrub)
+ *
+ *   <h2 class="aero-scrub aero-fade-up" style="--aero-scrub-range: entry 0% entry 80%">
+ *
+ * The animation follows the scroll instead of time. Pair .aero-scrub with any
+ * variant from entrances.css, or your own `animation-name`.
+ *
+ * Where CSS scroll-driven animations exist (Chrome, Edge, Safari 26+, Firefox
+ * 160+) this is pure CSS. Elsewhere aero.js pauses the same animation and sets
+ * its position from the scroll each frame, reading the same range, so the
+ * motion is identical. Without aero.js there, it simply plays once on load.
+ *
+ *   --aero-scrub-range  like `animation-range`: "<name> <pct> <name> <pct>",
+ *                       names cover | entry | exit (default entry 0% entry 80%)
+ *   .aero-scrub-root    follow the page scroll instead of the element's own
+ *                       view; the range is then two lengths (px or vh), and
+ *                       defaults to the whole page
+ * ========================================================================= */
+
+.aero-scrub {
+ animation-duration: 1s;
+ animation-timing-function: linear;
+ animation-fill-mode: both;
+}
+
+@supports (animation-timeline: view()) {
+ .aero-scrub {
+  animation-timeline: view();
+  animation-range: var(--aero-scrub-range, entry 0% entry 80%);
+ }
+ .aero-scrub.aero-scrub-root {
+  animation-timeline: scroll(root);
+  animation-range: var(--aero-scrub-range, normal);
+ }
+}
+
+/* Set by aero.js where it drives the scrub itself. */
+.aero-scrub-js .aero-scrub {
+ animation-play-state: paused;
+ animation-delay: 0s;
+}

@@ -1,14 +1,32 @@
 {
   "name": "aero-css",
-  "version": "1.2.1",
-  "description": "Lightweight CSS animation library: scroll-triggered and keyframe entrances, hover interactions, page arrival, scroll-linked animation",
+  "version": "2.0.0",
+  "description": "Small CSS animation library: entrances, scroll-linked animation, hover and cursor effects, page arrival",
   "private": true,
-  "license": "UNLICENSED",
-  "style": "animations.css",
+  "license": "MIT",
+  "author": "Rijad Rajkić",
+  "repository": "github:RijadRajkic/aero",
+  "style": "dist/aero.css",
+  "types": "dist/aero.d.ts",
   "exports": {
-    ".": "./animations.css",
-    "./animations.css": "./animations.css",
-    "./aero.js": "./aero.js"
+    ".": "./dist/aero.css",
+    "./min": "./dist/aero.min.css",
+    "./aero.css": "./dist/aero.css",
+    "./aero.min.css": "./dist/aero.min.css",
+    "./core.css": "./dist/core.css",
+    "./entrances.css": "./dist/entrances.css",
+    "./scroll.css": "./dist/scroll.css",
+    "./hover.css": "./dist/hover.css",
+    "./cursor.css": "./dist/cursor.css",
+    "./arrival.css": "./dist/arrival.css",
+    "./motion.css": "./dist/motion.css",
+    "./legacy.css": "./dist/legacy.css",
+    "./aero.js": "./dist/aero.js",
+    "./runtime": { "types": "./dist/aero.d.ts", "import": "./dist/aero.mjs", "default": "./dist/aero.js" }
   },
-  "files": ["animations.css", "aero.js"]
+  "files": ["dist"],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check"
+  }
 }

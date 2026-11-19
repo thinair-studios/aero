@@ -1,0 +1,65 @@
+/* ============================================================================
+ * Aero — cursor
+ *
+ *   <div class="aero-cursor"> <div class="aero-tilt">…</div> </div>
+ *
+ * aero.js follows the pointer over every .aero-cursor element and writes
+ * --aero-cursor-x / -y (0..1), -cx / -cy (-1..1, from the centre) and
+ * -active (0 outside, 1 inside, eased). Effects read them from the element
+ * itself or any parent, so the tracked element can be a wrapper.
+ * data-aero-smoothing="0.18" on the .aero-cursor element sets how much the
+ * values lag behind the pointer (0 = none).
+ *
+ *   aero-tilt       3D tilt toward the pointer (--aero-tilt 8deg; -sm 4, -lg 14)
+ *   aero-spotlight  a soft light under the pointer (--aero-spotlight-size 320px,
+ *                   --aero-spotlight-color; -sm 180, -lg 480)
+ *   aero-parallax   moves with the pointer (--aero-parallax-depth 8px;
+ *                   -xs 3, -sm 6, -md 12, -lg 20, -xl 32)
+ * ========================================================================= */
+
+.aero-tilt {
+ transform-style: preserve-3d;
+ transform:
+  perspective(900px)
+  rotateX(calc(var(--aero-cursor-cy, 0) * var(--aero-tilt, 8deg) * -1 * var(--aero-cursor-active, 0)))
+  rotateY(calc(var(--aero-cursor-cx, 0) * var(--aero-tilt, 8deg) * var(--aero-cursor-active, 0)));
+ transition: transform var(--aero-hover-duration, 0.35s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+.aero-tilt-sm { --aero-tilt: 4deg; }
+.aero-tilt-lg { --aero-tilt: 14deg; }
+
+.aero-spotlight {
+ position: relative;
+ isolation: isolate;
+}
+.aero-spotlight::before {
+ content: "";
+ position: absolute;
+ inset: 0;
+ z-index: 0;
+ pointer-events: none;
+ border-radius: inherit;
+ background: radial-gradient(
+  circle var(--aero-spotlight-size, 320px) at calc(var(--aero-cursor-x, 0.5) * 100%) calc(var(--aero-cursor-y, 0.5) * 100%),
+  var(--aero-spotlight-color, rgb(255 255 255 / 0.14)),
+  transparent 70%
+ );
+ opacity: var(--aero-cursor-active, 0);
+ transition: opacity 0.45s ease;
+}
+.aero-spotlight-sm { --aero-spotlight-size: 180px; }
+.aero-spotlight-lg { --aero-spotlight-size: 480px; }
+
+.aero-parallax {
+ transform: translate3d(
+  calc(var(--aero-cursor-cx, 0) * var(--aero-parallax-depth, 8px) * var(--aero-cursor-active, 0)),
+  calc(var(--aero-cursor-cy, 0) * var(--aero-parallax-depth, 8px) * var(--aero-cursor-active, 0)),
+  0
+ );
+ transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.aero-parallax-xs { --aero-parallax-depth: 3px; }
+.aero-parallax-sm { --aero-parallax-depth: 6px; }
+.aero-parallax-md { --aero-parallax-depth: 12px; }
+.aero-parallax-lg { --aero-parallax-depth: 20px; }
+.aero-parallax-xl { --aero-parallax-depth: 32px; }
