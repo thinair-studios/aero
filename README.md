@@ -11,7 +11,7 @@ A small animation library in CSS, with an optional 6 KB script. Entrances, scrol
 Not on npm yet. Install it from GitHub, pinned to a release tag (a plain HTTPS download, so build machines need no git or SSH):
 
 ```sh
-npm i https://github.com/RijadRajkic/aero/archive/refs/tags/v2.0.0.tar.gz
+npm i https://github.com/thinair-studios/aero/archive/refs/tags/v2.0.0.tar.gz
 ```
 
 ```css
@@ -97,7 +97,7 @@ progress(el);     // a scrubbed element's position in its range, 0 to 1
 
 ## Demo and tests
 
-`docs/index.html` shows every module live: serve the repo root with any static server and open `/docs/`. `npm test` checks that `dist/` is current and runs the test suite in Chromium, Firefox and WebKit.
+See every module live at **https://aero.thinairstudios.dev** (`docs/index.html`; locally, serve the repo root with any static server and open `/docs/`). `npm test` checks that `dist/` is current and runs the test suite in Chromium, Firefox and WebKit.
 
 ## Contributing
 

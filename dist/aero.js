@@ -1,4 +1,4 @@
-/* Aero 2.0.0 — runtime. https://github.com/RijadRajkic/aero (MIT) */
+/* Aero 2.0.0 — runtime. https://github.com/thinair-studios/aero (MIT) */
 /* Aero runtime (no dependencies). Load it once per page: <script src="aero.js" defer></script>
  *
  *  1. In view: adds .aero-in (and .ae-in) to .aero-enter elements the first time they come into

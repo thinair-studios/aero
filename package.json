@@ -5,7 +5,7 @@
   "private": true,
   "license": "MIT",
   "author": "Rijad Rajki\u0107",
-  "repository": "github:RijadRajkic/aero",
+  "repository": "github:thinair-studios/aero",
   "style": "dist/aero.css",
   "types": "dist/aero.d.ts",
   "exports": {

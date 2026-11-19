@@ -36,7 +36,7 @@ function addShortPrefix(css) {
 
 const tidy = (css) => css.replace(/\n\s*\n+/g, "\n").trim();
 const layer = (css) => `@layer aero {\n${css}\n}\n`;
-const banner = (what) => `/* Aero ${pkg.version} — ${what}. https://github.com/RijadRajkic/aero (MIT) */\n`;
+const banner = (what) => `/* Aero ${pkg.version} — ${what}. https://github.com/thinair-studios/aero (MIT) */\n`;
 const minify = (css) => css
   .replace(/\s+/g, " ")
   .replace(/\s*([{};,>])\s*/g, "$1")
