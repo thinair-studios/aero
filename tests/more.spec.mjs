@@ -529,3 +529,20 @@ test("edge: the pointer at the left edge opens it and slides the page aside; awa
   await page.mouse.move(900, 300, { steps: 4 }); await page.waitForTimeout(900);
   expect(await page.evaluate(() => document.documentElement.classList.contains("aero-edge-on"))).toBe(false);
 });
+
+for (const q of ["", "?nonative"]) {
+  test(`glide: through its waypoints into place; a fade can start hidden ${q}`, async ({ page }) => {
+    await page.goto(P3 + q);
+    const at = async (id, f) => {
+      await page.evaluate(([id, f]) => { const el = document.getElementById(id); let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; scrollTo(0, y - innerHeight + f * (innerHeight + el.offsetHeight)); }, [id, f]);
+      await page.waitForTimeout(150);
+      return page.evaluate((id) => { const cs = getComputedStyle(document.getElementById(id)); return { m: new DOMMatrix(cs.transform), vis: cs.visibility }; }, id);
+    };
+    const start = await at("glide", 0.001), mid = await at("glide", 0.5), end = await at("glide", 0.999);
+    expect(start.m.e).toBeGreaterThan(280); expect(start.m.a).toBeGreaterThan(1.9);
+    expect(Math.abs(mid.m.e - 120)).toBeLessThan(15); expect(Math.abs(mid.m.a - 1.4)).toBeLessThan(0.05);
+    expect(end.m.isIdentity || Math.abs(end.m.e) < 2).toBe(true);
+    expect((await at("vis", 0.02)).vis).toBe("hidden");
+    expect((await at("vis", 0.4)).vis).toBe("visible");
+  });
+}

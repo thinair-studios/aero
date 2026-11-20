@@ -25,6 +25,7 @@ Aero now covers things leaving as well as arriving.
 - **Underline states**: `aero-underline` also draws while current (`.aero-on`, `aria-current`); `aero-underline-side` and `aero-underline-shown`; and `aero-hover-appear` for things that show on hover.
 - **Scroll**: `aero-slide-left` / `-right` and `aero-fade-out` for scrubbed motion; `--aero-opacity-from` for any fade.
 - **The edge**: `aero-edge`, `aero-edge-shift`, `-drift`, `-fade`: a panel at the left edge that opens as the mouse nears it.
+- **Glide**: `aero-glide` flies from a measured spot through a waypoint into place (a logo from a hero into a header); fades can start hidden with `--aero-visibility-from`.
 - **Collapse icon**: `aero-collapse-icon` turns when its details opens.
 - **Replay on scroll** with `aero-repeat`, events `aero:in` and `aero:done`, and `Aero.replay(el)`.
 
