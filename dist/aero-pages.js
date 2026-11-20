@@ -15,6 +15,8 @@
  * Transitions get a matching arrival instead (arrival.css).
  */
 (() => {
+  // Inside a frame (a page previewing another one) there's no navigation of ours to tag or record.
+  if (window.top !== window) return;
   const root = document.documentElement, KEY = "aero-page-from", OPENED = "aero-page-opened:";
   const kind = () => (root.dataset.aeroPage === "sheet" ? "sheet" : "base");
   const still = () => root.classList.contains("aero-reduce-motion") && matchMedia("(prefers-reduced-motion: reduce)").matches;

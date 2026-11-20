@@ -378,7 +378,13 @@
     el.addEventListener("pointermove", (e) => {
       const r = el.getBoundingClientRect();
       if (!r.width || !r.height) return;
-      target.x = (e.clientX - r.left) / r.width; target.y = (e.clientY - r.top) / r.height; target.a = 1; go();
+      // A magnetic element moves toward the pointer; measure from where it rests, or it chases itself and jitters.
+      let left = r.left, topY = r.top;
+      if (has(el, "magnetic")) {
+        const [tx, ty] = getComputedStyle(el).translate.split(" ").map(parseFloat);
+        left -= tx || 0; topY -= ty || 0;
+      }
+      target.x = (e.clientX - left) / r.width; target.y = (e.clientY - topY) / r.height; target.a = 1; go();
     });
     el.addEventListener("pointerenter", () => { target.a = 1; go(); });
     el.addEventListener("pointerleave", () => { target.x = 0.5; target.y = 0.5; target.a = 0; go(); });

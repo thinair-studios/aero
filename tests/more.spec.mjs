@@ -227,6 +227,19 @@ for (const q of ["", "?nonative"]) {
   });
 }
 
+test("magnetic: a button that is its own .aero-cursor settles instead of chasing itself", async ({ page }) => {
+  await page.goto(P2);
+  const b = page.locator("#mag-self");
+  await b.scrollIntoViewIfNeeded();
+  const box = await b.boundingBox();
+  await page.mouse.move(box.x + box.width * 0.85, box.y + box.height * 0.5, { steps: 4 });
+  await page.waitForTimeout(700);
+  const xs = [];
+  for (let i = 0; i < 6; i++) { xs.push(await b.evaluate((e) => parseFloat(getComputedStyle(e).translate))); await page.waitForTimeout(60); }
+  expect(xs[0]).toBeGreaterThan(10); // it leaned toward the pointer (0.7 of 24px)
+  expect(Math.max(...xs) - Math.min(...xs)).toBeLessThan(0.5); // and holds still
+});
+
 test("magnetic: the button leans toward the pointer inside its .aero-cursor area, and settles at rest", async ({ page }) => {
   await page.goto(P2);
   await pointOf(page, "#mag-area");
@@ -424,6 +437,17 @@ test.describe("page transitions", () => {
       expect(opened.cls).toMatch(/aero-from-point/);
       expect(back.cls).toMatch(/aero-from-left/);
     }
+  });
+  test("a page previewed in a frame doesn't change how the next navigation is tagged", async ({ page }) => {
+    await page.goto("/tests/pages/sheet.html");
+    await page.evaluate(async () => {
+      const f = Object.assign(document.createElement("iframe"), { src: "/tests/pages/base.html" });
+      document.body.append(f);
+      await new Promise((r) => f.addEventListener("load", r));
+    });
+    const back = await go(page, "to-base");
+    if (back.vt) expect(back.types).toEqual(["aero-sheet-back"]);
+    else expect(back.cls).toMatch(/aero-from-left/);
   });
   test("the back button runs the same way", async ({ page }) => {
     await page.goto("/tests/pages/base.html");

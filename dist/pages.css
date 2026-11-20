@@ -29,8 +29,11 @@ html:active-view-transition-type(aero-reveal-back)::view-transition-old(root) {
  animation: aero-reveal-out var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
  z-index: 1;
 }
+html:active-view-transition-type(aero-reveal, aero-reveal-back)::view-transition-image-pair(root) {
+ background: var(--aero-reveal-ground, #1b1d20);
+}
 @keyframes aero-recede {
- to { transform: scale(0.96); filter: brightness(0.86); }
+ to { transform: scale(0.95); opacity: 0.72; }
 }
 @keyframes aero-reveal-in {
  from { clip-path: circle(0 at var(--aero-reveal-x, 50%) var(--aero-reveal-y, 50%)); }
