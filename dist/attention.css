@@ -23,7 +23,7 @@
  to { transform: rotate(1turn); }
 }
 @keyframes aero-pulse {
- 50% { opacity: 0.45; }
+ 50% { opacity: var(--aero-pulse, 0.45); }
 }
 @keyframes aero-ping {
  75%, 100% { transform: scale(2); opacity: 0; }

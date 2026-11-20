@@ -29,6 +29,7 @@ Aero now covers things leaving as well as arriving.
 - **Collapse icon**: `aero-collapse-icon` turns when its details opens.
 - **Fix:** `aero-flip` turns its faces, not the card, so a pointer near its edge no longer makes it flicker.
 - **Fix:** line masks (`data-aero-split="lines"`) leave room for descenders (`--aero-line-bleed`, .25em above and below; the mask is now a clip-path, so a page reset can't undo it).
+- **Pulse depth**: `--aero-pulse` sets how far `aero-pulse` fades (0.45).
 - **Attention, letter by letter**: on split text the attention effects stagger like entrances; `Aero.settle(el)` stops a loop at the end of its turn.
 - **Hover, plus your own**: `--aero-hover-also` adds transitions next to the hover move instead of replacing it. The edge also stays shut while a popover is open.
 - **Replay on scroll** with `aero-repeat`, events `aero:in` and `aero:done`, and `Aero.replay(el)`.

@@ -109,7 +109,7 @@ Pure CSS: they animate in when they open and out when they close, backdrop inclu
 <span class="aero-spin">…</span>             <!-- loops -->
 ```
 
-Once: `aero-shake`, `aero-pop`. Loops: `aero-spin`, `aero-pulse`, `aero-ping`, `aero-bounce`, `aero-float`, `aero-shimmer`. Settings: `--aero-attention-duration` `--aero-shake` `--aero-pop`. On split text (`.aero-split`) they go one letter after another, `--aero-stagger` apart. To stop a loop that runs while something is hovered, `Aero.settle(el)` lets it finish the turn it's on and takes its class off, so it comes to rest instead of jumping back.
+Once: `aero-shake`, `aero-pop`. Loops: `aero-spin`, `aero-pulse`, `aero-ping`, `aero-bounce`, `aero-float`, `aero-shimmer`. Settings: `--aero-attention-duration` `--aero-shake` `--aero-pop` `--aero-pulse`. On split text (`.aero-split`) they go one letter after another, `--aero-stagger` apart. To stop a loop that runs while something is hovered, `Aero.settle(el)` lets it finish the turn it's on and takes its class off, so it comes to rest instead of jumping back.
 
 `aero-shimmer` sweeps a light band across a loading skeleton (a `::after` that moves with `translateX`, clipped by the element). Settings: `--aero-shimmer-color` (`rgb(255 255 255 / .35)`) and `--aero-attention-duration` (1.6s here).
 
