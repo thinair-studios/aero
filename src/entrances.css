@@ -139,7 +139,9 @@
  100% { opacity: var(--aero-pass-to, 0.18); }
 }
 /* The dash settings are inherited, so animating them on an <svg> draws every shape inside it. */
+/* One dash as long as the path, and a gap longer than it, so no empty dash sits at either end; the dash
+   starts just before the path, so round line caps don't leave dots before it has begun. */
 @keyframes aero-draw {
- from { stroke-dasharray: 1; stroke-dashoffset: 1; }
- to { stroke-dasharray: 1; stroke-dashoffset: 0; }
+ from { stroke-dasharray: 1 2; stroke-dashoffset: 1.02; }
+ to { stroke-dasharray: 1 2; stroke-dashoffset: 0; }
 }

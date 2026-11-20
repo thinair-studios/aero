@@ -117,8 +117,8 @@
  100% { opacity: var(--aero-pass-to, 0.18); }
 }
 @keyframes aero-draw {
- from { stroke-dasharray: 1; stroke-dashoffset: 1; }
- to { stroke-dasharray: 1; stroke-dashoffset: 0; }
+ from { stroke-dasharray: 1 2; stroke-dashoffset: 1.02; }
+ to { stroke-dasharray: 1 2; stroke-dashoffset: 0; }
 }
 .aero-out.aero-out:is(.aero-leave-fade, .aero-leave-up, .aero-leave-down, .aero-leave-left, .aero-leave-right, .aero-leave-scale, .aero-leave-wipe-right, .aero-leave-wipe-left), .ae-out.ae-out:is(.ae-leave-fade, .ae-leave-up, .ae-leave-down, .ae-leave-left, .ae-leave-right, .ae-leave-scale, .ae-leave-wipe-right, .ae-leave-wipe-left) {
  animation-duration: var(--aero-leave-duration, 0.35s);

@@ -103,7 +103,7 @@
  100% { opacity: var(--aero-pass-to, 0.18); }
 }
 @keyframes aero-draw {
- from { stroke-dasharray: 1; stroke-dashoffset: 1; }
- to { stroke-dasharray: 1; stroke-dashoffset: 0; }
+ from { stroke-dasharray: 1 2; stroke-dashoffset: 1.02; }
+ to { stroke-dasharray: 1 2; stroke-dashoffset: 0; }
 }
 }
