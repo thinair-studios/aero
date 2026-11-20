@@ -7,7 +7,8 @@ Thanks for wanting to add to Aero. New effects, fixes and better docs are all we
 ```
 src/core.css        presets shared by every module
 src/entrances.css   .aero-enter and the variants + keyframes
-src/scroll.css      .aero-scrub (scroll-linked)
+src/scroll.css      .aero-scrub (scroll-linked), aero-depth
+src/disclosure.css  aero-collapse and aero-flip
 src/hover.css       hover effects
 src/cursor.css      pointer-driven effects
 src/arrival.css     page arrival

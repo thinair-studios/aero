@@ -1,0 +1,40 @@
+/* Aero 2.2.0 — overlays. https://github.com/thinair-studios/aero (MIT) */
+@layer aero {
+.aero-dialog, .ae-dialog { --aero-overlay-opacity: 0; --aero-overlay-transform: translateY(12px) scale(var(--aero-scale-from, 0.96)); }
+.aero-drawer, .ae-drawer { --aero-overlay-opacity: 1; --aero-overlay-transform: translateX(104%); }
+.aero-drawer-left, .ae-drawer-left { --aero-overlay-opacity: 1; --aero-overlay-transform: translateX(-104%); }
+.aero-drawer-bottom, .ae-drawer-bottom { --aero-overlay-opacity: 1; --aero-overlay-transform: translateY(104%); }
+.aero-popover, .ae-popover { --aero-overlay-opacity: 0; --aero-overlay-transform: translateY(-8px); }
+:is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover), :is(.ae-dialog, .ae-drawer, .ae-drawer-left, .ae-drawer-bottom, .ae-popover) {
+ opacity: var(--aero-overlay-opacity);
+ transform: var(--aero-overlay-transform);
+ transition-property: opacity, transform, overlay, display;
+ transition-duration: var(--aero-duration, 0.4s);
+ transition-timing-function: var(--aero-easing, cubic-bezier(0.22, 1, 0.36, 1));
+ transition-behavior: allow-discrete;
+}
+:is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover):is([open], :popover-open), :is(.ae-dialog, .ae-drawer, .ae-drawer-left, .ae-drawer-bottom, .ae-popover):is([open], :popover-open) {
+ opacity: 1;
+ transform: none;
+}
+@starting-style {
+ :is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover):is([open], :popover-open), :is(.ae-dialog, .ae-drawer, .ae-drawer-left, .ae-drawer-bottom, .ae-popover):is([open], :popover-open) {
+  opacity: var(--aero-overlay-opacity);
+  transform: var(--aero-overlay-transform);
+ }
+}
+:is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover)::backdrop, :is(.ae-dialog, .ae-drawer, .ae-drawer-left, .ae-drawer-bottom, .ae-popover)::backdrop {
+ background-color: rgb(0 0 0 / 0);
+ transition-property: background-color, overlay, display;
+ transition-duration: var(--aero-duration, 0.4s);
+ transition-behavior: allow-discrete;
+}
+:is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover):is([open], :popover-open)::backdrop, :is(.ae-dialog, .ae-drawer, .ae-drawer-left, .ae-drawer-bottom, .ae-popover):is([open], :popover-open)::backdrop {
+ background-color: var(--aero-backdrop, rgb(0 0 0 / 0.32));
+}
+@starting-style {
+ :is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover):is([open], :popover-open)::backdrop, :is(.ae-dialog, .ae-drawer, .ae-drawer-left, .ae-drawer-bottom, .ae-popover):is([open], :popover-open)::backdrop {
+  background-color: rgb(0 0 0 / 0);
+ }
+}
+}

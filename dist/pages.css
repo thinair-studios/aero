@@ -1,0 +1,82 @@
+/* Aero 2.2.0 — pages. https://github.com/thinair-studios/aero (MIT) */
+@layer aero {
+html:active-view-transition-type(aero-sheet)::view-transition-old(root) {
+ animation: none;
+}
+html:active-view-transition-type(aero-sheet)::view-transition-new(root) {
+ animation: aero-sheet-in var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
+}
+html:active-view-transition-type(aero-sheet-back)::view-transition-new(root) {
+ animation: none;
+}
+html:active-view-transition-type(aero-sheet-back)::view-transition-old(root) {
+ animation: aero-sheet-out var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
+ z-index: 1;
+}
+html:active-view-transition-type(aero-fade)::view-transition-group(root) {
+ animation-duration: var(--aero-page-fade, 0.3s);
+}
+html:active-view-transition-type(aero-reveal)::view-transition-old(root) {
+ animation: aero-recede var(--aero-page-duration, 0.7s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
+}
+html:active-view-transition-type(aero-reveal)::view-transition-new(root) {
+ animation: aero-reveal-in var(--aero-page-duration, 0.7s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
+}
+html:active-view-transition-type(aero-reveal-back)::view-transition-new(root) {
+ animation: aero-recede var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) reverse both;
+}
+html:active-view-transition-type(aero-reveal-back)::view-transition-old(root) {
+ animation: aero-reveal-out var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
+ z-index: 1;
+}
+html:active-view-transition-type(aero-reveal, aero-reveal-back)::view-transition-image-pair(root) {
+ background: var(--aero-reveal-ground, #1b1d20);
+}
+@keyframes aero-recede {
+ to { transform: scale(0.95); opacity: 0.72; }
+}
+@keyframes aero-reveal-in {
+ from { clip-path: circle(0 at var(--aero-reveal-x, 50%) var(--aero-reveal-y, 50%)); }
+ to { clip-path: circle(var(--aero-reveal-r, 150vmax) at var(--aero-reveal-x, 50%) var(--aero-reveal-y, 50%)); }
+}
+@keyframes aero-reveal-out {
+ from { clip-path: circle(var(--aero-reveal-r, 150vmax) at var(--aero-reveal-x, 50%) var(--aero-reveal-y, 50%)); }
+ to { clip-path: circle(0 at var(--aero-reveal-x, 50%) var(--aero-reveal-y, 50%)); }
+}
+@keyframes aero-sheet-in {
+ from { transform: translateX(100%); }
+}
+:is(.aero-carrying, .ae-carrying) *, :is(.ae-carrying, .ae-carrying) * { view-transition-name: none !important; }
+@keyframes aero-sheet-out {
+ from { transform: translateX(var(--aero-sheet-from, 0px)); } 
+ to { transform: translateX(100%); }
+}
+.aero-morph, .ae-morph {
+ view-transition-name: match-element;
+ view-transition-class: aero-morph;
+}
+::view-transition-group(.aero-morph), ::view-transition-group(.ae-morph) {
+ animation-duration: var(--aero-morph-duration, 0.5s);
+ animation-timing-function: var(--aero-morph-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+:is(.aero-edge, .aero-edge-drift, .aero-edge-pin), :is(.ae-edge, .ae-edge-drift, .ae-edge-pin) { will-change: translate; }
+.aero-edge-on .aero-edge-shift, .ae-edge-on .ae-edge-shift { will-change: translate; }
+.aero-edge, .ae-edge {
+ position: fixed;
+ z-index: 40;
+ inset: 0 auto 0 0;
+ width: calc(var(--aero-edge-reach, 24vw) + var(--aero-edge-strip, 10px));
+ translate: calc((var(--aero-edge, 0) - 1) * var(--aero-edge-reach, 24vw)) 0;
+ overflow: clip;
+ opacity: min(1, calc(var(--aero-edge, 0) * 8));
+ pointer-events: none;
+}
+.aero-edge.aero-edge-live, .ae-edge.ae-edge-live { pointer-events: auto; }
+.aero-edge-on, .aero-edge-on body, .ae-edge-on, .ae-edge-on body { overflow-x: clip; }
+.aero-edge-drift, .ae-edge-drift { translate: calc((1 - var(--aero-edge, 0)) * (var(--aero-edge-reach, 24vw) - 6vw)) 0; }
+.aero-edge-pin, .ae-edge-pin { translate: calc((1 - var(--aero-edge, 0)) * var(--aero-edge-reach, 24vw)) 0; }
+.aero-edge-fade, .ae-edge-fade { opacity: max(0, calc(var(--aero-edge, 0) * 1.6 - 0.35)); }
+.aero-edge-full-fade, .ae-edge-full-fade { opacity: var(--aero-edge-full, 0); } 
+::view-transition-old(aero-edge) { animation: aero-edge-out var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both; }
+@keyframes aero-edge-out { to { opacity: 0; } }
+}

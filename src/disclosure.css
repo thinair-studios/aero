@@ -1,0 +1,58 @@
+/* ============================================================================
+ * Aero — disclosure: things that open and turn over
+ *
+ *   <details class="aero-collapse"><summary>Question</summary>Answer…</details>
+ *   <div class="aero-flip">
+ *     <div class="aero-front">…</div>
+ *     <div class="aero-back">…</div>
+ *   </div>
+ *
+ * aero-collapse  a <details> whose content slides open and closed (block-size
+ *                 transition on ::details-content, with interpolate-size set
+ *                 on the element itself, never on :root). Where the browser
+ *                 lacks ::details-content or interpolate-size it just opens at
+ *                 once. Settings: --aero-duration (.35s) --aero-easing.
+ *
+ * aero-flip      a card with two faces. .aero-front sets the size, .aero-back is
+ *                 laid over it. Hover, focus inside, or .aero-flipped (add it to
+ *                 flip on click) turns it 180deg around the vertical axis.
+ *                 --aero-flip-duration (.6s)  --aero-flip-perspective (900px)
+ *                 --aero-hover-easing. On touch screens hover alone doesn't flip.
+ * ========================================================================= */
+
+.aero-collapse { interpolate-size: allow-keywords; }
+details.aero-collapse::details-content {
+ block-size: 0;
+ overflow: clip;
+ transition:
+  block-size var(--aero-duration, 0.35s) var(--aero-easing, cubic-bezier(0.22, 1, 0.36, 1)),
+  content-visibility var(--aero-duration, 0.35s) allow-discrete;
+}
+details.aero-collapse[open]::details-content { block-size: auto; }
+
+/* The card itself never moves, only its faces turn: a turning card narrows to a sliver halfway, and the
+   pointer would fall off it, turn it back, land on it again, and flicker. */
+/* --aero-flip-on is 0 or 1 on each card (set on every card, so a flip inside another starts fresh). */
+.aero-flip { position: relative; --aero-flip-on: 0; }
+.aero-flip:is(:hover, :focus-within, .aero-flipped) { --aero-flip-on: 1; }
+@media (hover: none) { .aero-flip:hover:not(:focus-within, .aero-flipped) { --aero-flip-on: 0; } }
+.aero-flip > :is(.aero-front, .aero-back) {
+ backface-visibility: hidden;
+ transition: transform var(--aero-flip-duration, 0.6s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+.aero-flip > .aero-front { transform: perspective(var(--aero-flip-perspective, 900px)) rotateY(calc(var(--aero-flip-on) * -180deg)); }
+.aero-flip > .aero-back {
+ position: absolute;
+ inset: 0;
+ transform: perspective(var(--aero-flip-perspective, 900px)) rotateY(calc((1 - var(--aero-flip-on)) * 180deg));
+}
+
+/* The accordion's own marker: an .aero-collapse-icon inside the summary turns by --aero-collapse-turn (45deg)
+   when it opens, so a "+" becomes a "×". */
+.aero-collapse-icon {
+ display: inline-block;
+ transition: rotate var(--aero-duration, 0.35s) var(--aero-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+details.aero-collapse[open] > summary .aero-collapse-icon {
+ rotate: var(--aero-collapse-turn, 45deg);
+}

@@ -13,7 +13,7 @@ const read = (p) => readFileSync(root + p, "utf8");
 const pkg = JSON.parse(read("package.json"));
 
 // Order matters only for readability: rules don't depend on each other's position.
-const MODULES = ["core", "entrances", "scroll", "hover", "cursor", "arrival", "motion"];
+const MODULES = ["core", "entrances", "exits", "overlays", "attention", "disclosure", "text", "scroll", "hover", "cursor", "arrival", "pages", "motion"];
 
 const stripComments = (css) => css.replace(/\/\*[\s\S]*?\*\//g, "");
 
@@ -56,19 +56,32 @@ files["dist/legacy.css"] = banner("1.x class names, for code written before 2.0;
 const js = read("src/aero.js");
 files["dist/aero.js"] = banner("runtime") + js;
 files["dist/aero.mjs"] = banner("runtime, as an ES module") + js +
-  `\nconst Aero = typeof window !== "undefined" ? window.Aero : { refresh() {}, progress() { return 0; } };\n` +
-  `export const { refresh, progress } = Aero;\nexport default Aero;\n`;
+  `\nconst Aero = typeof window !== "undefined" ? window.Aero : { refresh() {}, progress() { return 0; }, replay() {}, settle() { return Promise.resolve([]); }, leave(el) { return Promise.resolve(el); }, swap(update) { update(); return Promise.resolve(); } };\n` +
+  `export const { refresh, progress, replay, settle, leave, swap } = Aero;\nexport default Aero;\n`;
+files["dist/aero-pages.js"] = banner("page transitions, for <head>") + read("src/pages.js");
 files["dist/aero.d.ts"] = `export interface AeroRuntime {
   /** Re-scan the page now. Normally not needed: new elements are picked up automatically. */
   refresh(): void;
   /** A scrubbed element's position in its range, 0 to 1. */
   progress(el: Element): number;
+  /** Play the entrances and once-effects in el (and inside it) again, from the start. */
+  replay(el: Element): void;
+  /** Let the loops in el finish the turn they are on, then stop them (their class comes off). */
+  settle(el: Element): Promise<unknown>;
+  /** Play el's .aero-leave-* exit. Resolves with el when it ends; { remove: true } removes it then. */
+  leave<T extends Element>(el: T, options?: { remove?: boolean }): Promise<T>;
+  /** Change the layout inside update(); .aero-morph elements move to their new places. */
+  swap(update: () => void | Promise<void>, types?: string[]): Promise<void>;
 }
 declare global {
   interface Window { Aero: AeroRuntime }
 }
 export declare const refresh: AeroRuntime["refresh"];
 export declare const progress: AeroRuntime["progress"];
+export declare const replay: AeroRuntime["replay"];
+export declare const settle: AeroRuntime["settle"];
+export declare const leave: AeroRuntime["leave"];
+export declare const swap: AeroRuntime["swap"];
 declare const Aero: AeroRuntime;
 export default Aero;
 `;

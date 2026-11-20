@@ -6,13 +6,33 @@
  * to switch off a site's motion. To respect the setting instead, add
  * .aero-reduce-motion to <html>. Then, for visitors who prefer reduced motion,
  * entrances show at once, scrubbed animations rest in their final state, hovers
- * and cursor effects stay still, and aero.js stops driving anything.
+ * and cursor effects stay still (collapse and flip happen at once, the marquee and
+ * shimmer stop, draw shows the finished stroke), and aero.js stops driving anything.
  * ========================================================================= */
 
 @media (prefers-reduced-motion: reduce) {
- .aero-reduce-motion :is(.aero-enter, .aero-scrub),
+ .aero-reduce-motion :is(.aero-enter, .aero-scrub, .aero-shake, .aero-pop, .aero-spin, .aero-pulse, .aero-ping, .aero-bounce, .aero-float, .aero-marquee > :first-child),
+ .aero-reduce-motion .aero-shimmer::after,
  .aero-reduce-motion.aero-arrive main {
   animation: none !important;
+ }
+ .aero-reduce-motion :is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover),
+ .aero-reduce-motion :is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover)::backdrop {
+  transition-duration: 0s !important;
+ }
+ .aero-reduce-motion .aero-hover-reveal {
+  transition: none !important;
+ }
+ .aero-reduce-motion .aero-hover-wave .aero-piece {
+  animation: none !important;
+ }
+ .aero-reduce-motion .aero-hover-appear,
+ .aero-reduce-motion .aero-collapse-icon {
+  transition-duration: 0s !important;
+ }
+ /* Exits still end hidden, just at once. */
+ .aero-reduce-motion .aero-out {
+  animation-duration: 0.01ms !important;
  }
  .aero-reduce-motion .aero-enter {
   opacity: 1 !important;
@@ -20,5 +40,17 @@
  .aero-reduce-motion :is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift, .aero-tilt, .aero-parallax) {
   transition: none !important;
   transform: none !important;
+ }
+ .aero-reduce-motion .aero-flip > *,
+ .aero-reduce-motion .aero-underline::after {
+  transition: none !important;
+ }
+ .aero-reduce-motion .aero-magnetic {
+  transition: none !important;
+  translate: none !important;
+ }
+ /* ::details-content on its own: a browser without it would drop a whole selector list. */
+ .aero-reduce-motion details.aero-collapse::details-content {
+  transition: none !important;
  }
 }

@@ -1,4 +1,4 @@
-/* Aero 2.1.0 — entrances. https://github.com/thinair-studios/aero (MIT) */
+/* Aero 2.2.0 — entrances. https://github.com/thinair-studios/aero (MIT) */
 @layer aero {
 .aero-enter, .ae-enter {
  opacity: 0;
@@ -31,7 +31,13 @@
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-fan-left, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-fan-left { animation-name: aero-fan-left; }
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-fan-right, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-fan-right { animation-name: aero-fan-right; }
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-lift, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-lift { animation-name: aero-lift; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-wipe-right, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-wipe-right { animation-name: aero-wipe-right; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-glide, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-glide { animation-name: aero-glide; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-wipe-left, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-wipe-left { animation-name: aero-wipe-left; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-wipe-up, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-wipe-up { animation-name: aero-wipe-up; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-wipe-down, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-wipe-down { animation-name: aero-wipe-down; }
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-pass, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-pass { animation-name: aero-pass; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-draw, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-draw { animation-name: aero-draw; }
 .aero-stagger > :nth-child(2), .ae-stagger > :nth-child(2) { --aero-i: 1; }
 .aero-stagger > :nth-child(3), .ae-stagger > :nth-child(3) { --aero-i: 2; }
 .aero-stagger > :nth-child(4), .ae-stagger > :nth-child(4) { --aero-i: 3; }
@@ -59,7 +65,12 @@
  from { opacity: 0; transform: translateX(calc(var(--aero-distance, 32px) * -1)); }
 }
 @keyframes aero-fade-in {
- from { opacity: 0; }
+ from { opacity: var(--aero-opacity-from, 0); visibility: var(--aero-visibility-from, visible); }
+}
+@keyframes aero-glide {
+ from { transform: translate(var(--aero-glide-x, 0px), var(--aero-glide-y, 0px)) scale(var(--aero-glide-scale, 1)); }
+ 50% { transform: translate(var(--aero-glide-mid-x, 0px), var(--aero-glide-mid-y, 0px)) scale(var(--aero-glide-mid-scale, 1)); }
+ 75% { transform: translate(var(--aero-glide-end-x, 0px), var(--aero-glide-end-y, 0px)) scale(var(--aero-glide-end-scale, 1)); }
 }
 @keyframes aero-scale-up {
  from { opacity: 0; transform: scale(var(--aero-scale-from, 0.96)) translateY(calc(var(--aero-distance, 32px) * 0.5)); }
@@ -76,6 +87,18 @@
 @keyframes aero-fan-right {
  from { translate: var(--aero-fan-x, 4%) var(--aero-fan-y, 12%); rotate: var(--aero-fan-rot, 1deg); }
 }
+@keyframes aero-wipe-right {
+ from { clip-path: inset(0 100% 0 0); }
+}
+@keyframes aero-wipe-left {
+ from { clip-path: inset(0 0 0 100%); }
+}
+@keyframes aero-wipe-up {
+ from { clip-path: inset(100% 0 0 0); }
+}
+@keyframes aero-wipe-down {
+ from { clip-path: inset(0 0 100% 0); }
+}
 @keyframes aero-lift {
  from { translate: 0 var(--aero-fan-y, 10%); }
 }
@@ -84,5 +107,9 @@
  28% { opacity: 1; }
  62% { opacity: 1; }
  100% { opacity: var(--aero-pass-to, 0.18); }
+}
+@keyframes aero-draw {
+ from { stroke-dasharray: 1 2; stroke-dashoffset: 1.02; }
+ to { stroke-dasharray: 1 2; stroke-dashoffset: 0; }
 }
 }

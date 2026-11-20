@@ -1,10 +1,31 @@
-/* Aero 2.1.0 — motion. https://github.com/thinair-studios/aero (MIT) */
+/* Aero 2.2.0 — motion. https://github.com/thinair-studios/aero (MIT) */
 @layer aero {
 @media (prefers-reduced-motion: reduce) {
- .aero-reduce-motion :is(.aero-enter, .aero-scrub),
- .aero-reduce-motion.aero-arrive main, .ae-reduce-motion :is(.ae-enter, .ae-scrub),
+ .aero-reduce-motion :is(.aero-enter, .aero-scrub, .aero-shake, .aero-pop, .aero-spin, .aero-pulse, .aero-ping, .aero-bounce, .aero-float, .aero-marquee > :first-child),
+ .aero-reduce-motion .aero-shimmer::after,
+ .aero-reduce-motion.aero-arrive main, .ae-reduce-motion :is(.ae-enter, .ae-scrub, .ae-shake, .ae-pop, .ae-spin, .ae-pulse, .ae-ping, .ae-bounce, .ae-float, .ae-marquee > :first-child),
+ .ae-reduce-motion .ae-shimmer::after,
  .ae-reduce-motion.ae-arrive main {
   animation: none !important;
+ }
+ .aero-reduce-motion :is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover),
+ .aero-reduce-motion :is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover)::backdrop, .ae-reduce-motion :is(.ae-dialog, .ae-drawer, .ae-drawer-left, .ae-drawer-bottom, .ae-popover),
+ .ae-reduce-motion :is(.ae-dialog, .ae-drawer, .ae-drawer-left, .ae-drawer-bottom, .ae-popover)::backdrop {
+  transition-duration: 0s !important;
+ }
+ .aero-reduce-motion .aero-hover-reveal, .ae-reduce-motion .ae-hover-reveal {
+  transition: none !important;
+ }
+ .aero-reduce-motion .aero-hover-wave .aero-piece, .ae-reduce-motion .ae-hover-wave .ae-piece {
+  animation: none !important;
+ }
+ .aero-reduce-motion .aero-hover-appear,
+ .aero-reduce-motion .aero-collapse-icon, .ae-reduce-motion .ae-hover-appear,
+ .ae-reduce-motion .ae-collapse-icon {
+  transition-duration: 0s !important;
+ }
+ .aero-reduce-motion .aero-out, .ae-reduce-motion .ae-out {
+  animation-duration: 0.01ms !important;
  }
  .aero-reduce-motion .aero-enter, .ae-reduce-motion .ae-enter {
   opacity: 1 !important;
@@ -12,6 +33,18 @@
  .aero-reduce-motion :is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift, .aero-tilt, .aero-parallax), .ae-reduce-motion :is(.ae-hover-lift, .ae-hover-scale, .ae-hover-rise, .ae-hover-nudge, .ae-hover-shift, .ae-tilt, .ae-parallax) {
   transition: none !important;
   transform: none !important;
+ }
+ .aero-reduce-motion .aero-flip > *,
+ .aero-reduce-motion .aero-underline::after, .ae-reduce-motion .ae-flip > *,
+ .ae-reduce-motion .ae-underline::after {
+  transition: none !important;
+ }
+ .aero-reduce-motion .aero-magnetic, .ae-reduce-motion .ae-magnetic {
+  transition: none !important;
+  translate: none !important;
+ }
+ .aero-reduce-motion details.aero-collapse::details-content, .ae-reduce-motion details.ae-collapse::details-content {
+  transition: none !important;
  }
 }
 }

@@ -16,6 +16,18 @@
  *                   translate / rotate, so a transform hover never fights it)
  *   aero-lift       the top card of a stack rising into place
  *   aero-pass       arrives, holds, steps back (best scrubbed)
+ *   aero-glide      flies in from a measured spot through a waypoint
+ *                   (--aero-glide-x/-y/-scale, -mid-*, -end-*), best scrubbed
+ *   aero-wipe-right / -left / -up / -down  revealed by a moving edge
+ *                   (clip-path), e.g. wipe-right uncovers left to right
+ *
+ *   aero-draw       an SVG stroke drawing itself in: on a shape (path, line,
+ *                   polyline, polygon, circle, ellipse, rect) or on the <svg>,
+ *                   which draws every shape inside. aero.js sets pathLength="1"
+ *                   on those shapes if missing (without it, add it yourself).
+ *                   Animates stroke-dasharray / -dashoffset, an exception to
+ *                   the transform/opacity rule. Needs a stroke; works with
+ *                   .aero-enter and .aero-scrub, duration from --aero-duration.
  *
  * Fade-left comes in from the right, moving left; fade-right the reverse.
  * Keyframes only state the start, so each element ends on its own styles.
@@ -54,7 +66,13 @@
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-fan-left { animation-name: aero-fan-left; }
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-fan-right { animation-name: aero-fan-right; }
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-lift { animation-name: aero-lift; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-wipe-right { animation-name: aero-wipe-right; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-glide { animation-name: aero-glide; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-wipe-left { animation-name: aero-wipe-left; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-wipe-up { animation-name: aero-wipe-up; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-wipe-down { animation-name: aero-wipe-down; }
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-pass { animation-name: aero-pass; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-draw { animation-name: aero-draw; }
 
 /* Stagger: children of .aero-stagger start one after another (--aero-stagger apart). */
 .aero-stagger > :nth-child(2) { --aero-i: 1; }
@@ -85,7 +103,15 @@
  from { opacity: 0; transform: translateX(calc(var(--aero-distance, 32px) * -1)); }
 }
 @keyframes aero-fade-in {
- from { opacity: 0; }
+ from { opacity: var(--aero-opacity-from, 0); visibility: var(--aero-visibility-from, visible); }
+}
+/* Glide: from a spot (--aero-glide-x / -y / -scale), through a waypoint at the middle (--aero-glide-mid-*), to
+   a last stop at three quarters (--aero-glide-end-*), then into place. Measure the spots with a script and set
+   them as custom properties; a logo flying from a hero into a header, scrubbed, is the use it was made for. */
+@keyframes aero-glide {
+ from { transform: translate(var(--aero-glide-x, 0px), var(--aero-glide-y, 0px)) scale(var(--aero-glide-scale, 1)); }
+ 50% { transform: translate(var(--aero-glide-mid-x, 0px), var(--aero-glide-mid-y, 0px)) scale(var(--aero-glide-mid-scale, 1)); }
+ 75% { transform: translate(var(--aero-glide-end-x, 0px), var(--aero-glide-end-y, 0px)) scale(var(--aero-glide-end-scale, 1)); }
 }
 @keyframes aero-scale-up {
  from { opacity: 0; transform: scale(var(--aero-scale-from, 0.96)) translateY(calc(var(--aero-distance, 32px) * 0.5)); }
@@ -102,6 +128,18 @@
 @keyframes aero-fan-right {
  from { translate: var(--aero-fan-x, 4%) var(--aero-fan-y, 12%); rotate: var(--aero-fan-rot, 1deg); }
 }
+@keyframes aero-wipe-right {
+ from { clip-path: inset(0 100% 0 0); }
+}
+@keyframes aero-wipe-left {
+ from { clip-path: inset(0 0 0 100%); }
+}
+@keyframes aero-wipe-up {
+ from { clip-path: inset(100% 0 0 0); }
+}
+@keyframes aero-wipe-down {
+ from { clip-path: inset(0 0 100% 0); }
+}
 @keyframes aero-lift {
  from { translate: 0 var(--aero-fan-y, 10%); }
 }
@@ -110,4 +148,11 @@
  28% { opacity: 1; }
  62% { opacity: 1; }
  100% { opacity: var(--aero-pass-to, 0.18); }
+}
+/* The dash settings are inherited, so animating them on an <svg> draws every shape inside it. */
+/* One dash as long as the path, and a gap longer than it, so no empty dash sits at either end; the dash
+   starts just before the path, so round line caps don't leave dots before it has begun. */
+@keyframes aero-draw {
+ from { stroke-dasharray: 1 2; stroke-dashoffset: 1.02; }
+ to { stroke-dasharray: 1 2; stroke-dashoffset: 0; }
 }

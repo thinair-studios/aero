@@ -1,4 +1,4 @@
-/* Aero 2.1.0 — hover. https://github.com/thinair-studios/aero (MIT) */
+/* Aero 2.2.0 — hover. https://github.com/thinair-studios/aero (MIT) */
 @layer aero {
 .aero-hover-lift, .ae-hover-lift { --aero-hover-to: translateY(calc(var(--aero-hover-distance, 16px) * -1)); }
 .aero-hover-scale, .ae-hover-scale { --aero-hover-to: scale(var(--aero-hover-scale, 1.03)); }
@@ -6,7 +6,7 @@
 .aero-hover-nudge, .ae-hover-nudge { --aero-hover-to: translateX(var(--aero-hover-nudge, 4px)); }
 .aero-hover-shift, .ae-hover-shift { --aero-hover-to: translate(var(--aero-hover-x, 0px), var(--aero-hover-y, 0px)) scale(var(--aero-hover-scale, 1)); }
 :is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift), :is(.ae-hover-lift, .ae-hover-scale, .ae-hover-rise, .ae-hover-nudge, .ae-hover-shift) {
- transition: transform var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+ transition: transform var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1)), var(--aero-hover-also, --aero-hover-none 0s);
 }
 :is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift):not(.aero-hover-target):is(:hover, :focus-visible),
 .aero-hover-group:is(:hover, :focus-within) .aero-hover-target, :is(.ae-hover-lift, .ae-hover-scale, .ae-hover-rise, .ae-hover-nudge, .ae-hover-shift):not(.ae-hover-target):is(:hover, :focus-visible),
@@ -27,4 +27,91 @@
   transform: none;
  }
 }
+.aero-underline, .ae-underline {
+ position: relative;
+ text-decoration: none;
+}
+.aero-underline::after, .ae-underline::after {
+ content: "";
+ position: absolute;
+ left: 0;
+ right: 0;
+ bottom: calc(var(--aero-underline-offset, 0.15em) * -1);
+ height: var(--aero-underline-thickness, 2px);
+ background: var(--aero-underline-color, currentColor);
+ transform: scaleX(0);
+ transform-origin: right;
+ transition: transform var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+.aero-underline:where(:hover, :focus-visible, .aero-on, [aria-current]:not([aria-current="false"]))::after, .ae-underline:where(:hover, :focus-visible, .ae-on, [aria-current]:not([aria-current="false"]))::after {
+ transform: scaleX(1);
+ transform-origin: left;
+}
+@media (hover: none) {
+ .aero-underline:hover:not(:focus-visible, .aero-on, [aria-current]:not([aria-current="false"]))::after, .ae-underline:hover:not(:focus-visible, .ae-on, [aria-current]:not([aria-current="false"]))::after {
+  transform: scaleX(0);
+  transform-origin: right;
+ }
+}
+.aero-underline-side::after, .ae-underline-side::after {
+ left: calc(var(--aero-underline-offset, 0px) * -1);
+ right: auto;
+ top: 0;
+ bottom: 0;
+ width: var(--aero-underline-thickness, 2px);
+ height: auto;
+ transform: scaleY(0);
+ transform-origin: bottom;
+}
+.aero-underline-side:where(:hover, :focus-visible, .aero-on, [aria-current]:not([aria-current="false"]))::after, .ae-underline-side:where(:hover, :focus-visible, .ae-on, [aria-current]:not([aria-current="false"]))::after {
+ transform: scaleY(1);
+ transform-origin: top;
+}
+.aero-underline-shown::after, .ae-underline-shown::after {
+ transform: scaleX(1);
+ transform-origin: left;
+}
+.aero-underline-shown:is(:hover, :focus-visible)::after, .ae-underline-shown:is(:hover, :focus-visible)::after {
+ transform: scaleX(0);
+ transform-origin: right;
+}
+@media (hover: none) {
+ .aero-underline-shown:hover:not(:focus-visible)::after, .ae-underline-shown:hover:not(:focus-visible)::after {
+  transform: scaleX(1);
+ }
+}
+.aero-hover-appear, .ae-hover-appear {
+ opacity: 0;
+ translate: var(--aero-hover-from, -0.35em) 0;
+ transition:
+  opacity var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1)),
+  translate var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+.aero-hover-group:is(:hover, :focus-within) .aero-hover-appear, .ae-hover-group:is(:hover, :focus-within) .ae-hover-appear {
+ opacity: 1;
+ translate: 0 0;
+ transition-delay: var(--aero-hover-delay, 0s);
+}
+@media (hover: none) {
+ .aero-hover-group:hover:not(:focus-within) .aero-hover-appear, .ae-hover-group:hover:not(:focus-within) .ae-hover-appear {
+  opacity: 0;
+  translate: var(--aero-hover-from, -0.35em) 0;
+ }
+}
+.aero-hover-reveal, .ae-hover-reveal {
+ position: absolute;
+ z-index: -1;
+ left: calc(var(--aero-cursor-x, 0.5) * 100%);
+ top: calc(var(--aero-cursor-y, 0.5) * 100%);
+ width: var(--aero-hover-reveal-size, 250%);
+ aspect-ratio: 1;
+ border-radius: 50%;
+ translate: -50% -50%;
+ scale: 0;
+ background: var(--aero-hover-reveal-color, currentColor);
+ pointer-events: none;
+ transition: scale var(--aero-hover-duration, 0.6s) var(--aero-hover-easing, cubic-bezier(0.65, 0, 0.35, 1));
+}
+.aero-hover-group:is(:hover, :focus-visible) .aero-hover-reveal, .ae-hover-group:is(:hover, :focus-visible) .ae-hover-reveal { scale: 1; }
+@media (hover: none) { .aero-hover-group:hover:not(:focus-visible) .aero-hover-reveal, .ae-hover-group:hover:not(:focus-visible) .ae-hover-reveal { scale: 0; } }
 }

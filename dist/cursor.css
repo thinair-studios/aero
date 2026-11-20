@@ -1,4 +1,4 @@
-/* Aero 2.1.0 — cursor. https://github.com/thinair-studios/aero (MIT) */
+/* Aero 2.2.0 — cursor. https://github.com/thinair-studios/aero (MIT) */
 @layer aero {
 .aero-tilt, .ae-tilt {
  transform-style: preserve-3d;
@@ -44,4 +44,10 @@
 .aero-parallax-md, .ae-parallax-md { --aero-parallax-depth: 12px; }
 .aero-parallax-lg, .ae-parallax-lg { --aero-parallax-depth: 20px; }
 .aero-parallax-xl, .ae-parallax-xl { --aero-parallax-depth: 32px; }
+.aero-magnetic, .ae-magnetic {
+ translate:
+  calc(var(--aero-cursor-cx, 0) * var(--aero-magnetic, 10px) * var(--aero-cursor-active, 0))
+  calc(var(--aero-cursor-cy, 0) * var(--aero-magnetic, 10px) * var(--aero-cursor-active, 0));
+ transition: translate var(--aero-hover-duration, 0.35s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
 }
