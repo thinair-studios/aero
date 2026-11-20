@@ -10,6 +10,9 @@
  *   aero-sheet       to a sheet page: it slides in from the right over the last one
  *   aero-sheet-back  from a sheet to a page under it: the sheet slides away
  *   aero-fade        between two sheets: a quick cross-fade
+ *   aero-reveal      from a link with data-aero-transition="reveal": the new page opens
+ *                    as a circle growing out of the point you clicked
+ *   aero-reveal-back going back: the page closes into that same point
  * Browsers without them (Firefox) get the same direction from aero-arrive.
  *
  *   --aero-page-duration  default 0.6s      --aero-page-easing  default an ease-in-out
@@ -35,6 +38,27 @@ html:active-view-transition-type(aero-sheet-back)::view-transition-old(root) {
 }
 html:active-view-transition-type(aero-fade)::view-transition-group(root) {
  animation-duration: var(--aero-page-fade, 0.3s);
+}
+html:active-view-transition-type(aero-reveal)::view-transition-old(root) {
+ animation: none;
+}
+html:active-view-transition-type(aero-reveal)::view-transition-new(root) {
+ animation: aero-reveal-in var(--aero-page-duration, 0.7s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
+}
+html:active-view-transition-type(aero-reveal-back)::view-transition-new(root) {
+ animation: none;
+}
+html:active-view-transition-type(aero-reveal-back)::view-transition-old(root) {
+ animation: aero-reveal-out var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
+ z-index: 1;
+}
+@keyframes aero-reveal-in {
+ from { clip-path: circle(0 at var(--aero-reveal-x, 50%) var(--aero-reveal-y, 50%)); }
+ to { clip-path: circle(var(--aero-reveal-r, 150vmax) at var(--aero-reveal-x, 50%) var(--aero-reveal-y, 50%)); }
+}
+@keyframes aero-reveal-out {
+ from { clip-path: circle(var(--aero-reveal-r, 150vmax) at var(--aero-reveal-x, 50%) var(--aero-reveal-y, 50%)); }
+ to { clip-path: circle(0 at var(--aero-reveal-x, 50%) var(--aero-reveal-y, 50%)); }
 }
 @keyframes aero-sheet-in {
  from { transform: translateX(100%); }

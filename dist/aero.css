@@ -351,6 +351,10 @@
 .aero-arrive.aero-from-left main, .ae-arrive.ae-from-left main {
  animation-name: aero-fade-right;
 }
+.aero-arrive.aero-from-point main, .ae-arrive.ae-from-point main {
+ animation-name: aero-reveal-in;
+ animation-duration: var(--aero-page-duration, 0.7s);
+}
 html:active-view-transition-type(aero-sheet)::view-transition-old(root) {
  animation: none;
 }
@@ -366,6 +370,27 @@ html:active-view-transition-type(aero-sheet-back)::view-transition-old(root) {
 }
 html:active-view-transition-type(aero-fade)::view-transition-group(root) {
  animation-duration: var(--aero-page-fade, 0.3s);
+}
+html:active-view-transition-type(aero-reveal)::view-transition-old(root) {
+ animation: none;
+}
+html:active-view-transition-type(aero-reveal)::view-transition-new(root) {
+ animation: aero-reveal-in var(--aero-page-duration, 0.7s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
+}
+html:active-view-transition-type(aero-reveal-back)::view-transition-new(root) {
+ animation: none;
+}
+html:active-view-transition-type(aero-reveal-back)::view-transition-old(root) {
+ animation: aero-reveal-out var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
+ z-index: 1;
+}
+@keyframes aero-reveal-in {
+ from { clip-path: circle(0 at var(--aero-reveal-x, 50%) var(--aero-reveal-y, 50%)); }
+ to { clip-path: circle(var(--aero-reveal-r, 150vmax) at var(--aero-reveal-x, 50%) var(--aero-reveal-y, 50%)); }
+}
+@keyframes aero-reveal-out {
+ from { clip-path: circle(var(--aero-reveal-r, 150vmax) at var(--aero-reveal-x, 50%) var(--aero-reveal-y, 50%)); }
+ to { clip-path: circle(0 at var(--aero-reveal-x, 50%) var(--aero-reveal-y, 50%)); }
 }
 @keyframes aero-sheet-in {
  from { transform: translateX(100%); }

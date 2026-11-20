@@ -11,4 +11,8 @@
 .aero-arrive.aero-from-left main, .ae-arrive.ae-from-left main {
  animation-name: aero-fade-right;
 }
+.aero-arrive.aero-from-point main, .ae-arrive.ae-from-point main {
+ animation-name: aero-reveal-in;
+ animation-duration: var(--aero-page-duration, 0.7s);
+}
 }

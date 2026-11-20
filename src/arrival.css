@@ -22,3 +22,8 @@
 .aero-arrive.aero-from-left main {
  animation-name: aero-fade-right;
 }
+/* Opened by a reveal link (aero-pages.js): the content grows out of the point that was clicked. */
+.aero-arrive.aero-from-point main {
+ animation-name: aero-reveal-in;
+ animation-duration: var(--aero-page-duration, 0.7s);
+}

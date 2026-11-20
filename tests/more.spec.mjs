@@ -161,6 +161,20 @@ test.describe("page transitions", () => {
       expect(toBase.cls).toMatch(/aero-arrive.*aero-from-left/);
     }
   });
+  test("reveal: a link opens the next page out of the point you clicked, and back closes it there", async ({ page }) => {
+    await page.goto("/tests/pages/base.html");
+    const opened = await go(page, "reveal-sheet");
+    const x = await page.evaluate(() => document.documentElement.style.getPropertyValue("--aero-reveal-x"));
+    const back = await go(page, "to-base");
+    if (opened.vt) {
+      expect(opened.types).toEqual(["aero-reveal"]);
+      expect(parseInt(x)).toBeGreaterThan(280);
+      expect(back.types).toEqual(["aero-reveal-back"]);
+    } else {
+      expect(opened.cls).toMatch(/aero-from-point/);
+      expect(back.cls).toMatch(/aero-from-left/);
+    }
+  });
   test("the back button runs the same way", async ({ page }) => {
     await page.goto("/tests/pages/base.html");
     await go(page, "to-sheet");

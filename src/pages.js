@@ -7,35 +7,67 @@
  *   base -> sheet   aero-sheet       the sheet slides in from the right
  *   sheet -> base   aero-sheet-back  the sheet slides away to the right
  *   sheet -> sheet  aero-fade        a quick cross-fade
+ * A link can ask for its own: <a data-aero-transition="reveal"> opens the next page as a circle
+ * growing out of the point you clicked (aero-reveal), and going back to where you came from
+ * closes it into that same point (aero-reveal-back).
  * The back and forward buttons work the same way. Browsers without cross-document View
- * Transitions get the same direction from aero-arrive instead (arrival.css).
+ * Transitions get a matching arrival instead (arrival.css).
  */
 (() => {
-  const root = document.documentElement, KEY = "aero-page-from";
+  const root = document.documentElement, KEY = "aero-page-from", OPENED = "aero-page-opened:";
   const kind = () => (root.dataset.aeroPage === "sheet" ? "sheet" : "base");
   const still = () => root.classList.contains("aero-reduce-motion") && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const page = (url) => String(url).split("#")[0];
+  const load = (k) => { try { return JSON.parse(sessionStorage.getItem(k) || "null"); } catch { return null; } };
+  const save = (k, v) => { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch {} };
 
-  // Leaving: remember what kind of page this was. pageswap runs before the next page starts;
-  // pagehide covers browsers without it.
-  const leaving = () => {
-    try { sessionStorage.setItem(KEY, JSON.stringify({ kind: kind(), url: location.href, t: Date.now() })); } catch {}
-  };
+  // A click on a link with data-aero-transition: remember the transition and where it happened
+  // (the link's centre when it was opened from the keyboard).
+  let via = null;
+  addEventListener("click", (e) => {
+    const a = e.target.closest && e.target.closest("a[data-aero-transition]");
+    if (!a) { via = null; return; }
+    const r = a.getBoundingClientRect(), key = e.detail === 0;
+    via = { name: a.dataset.aeroTransition, href: page(a.href), from: page(location.href),
+      x: key ? r.left + r.width / 2 : e.clientX, y: key ? r.top + r.height / 2 : e.clientY, w: innerWidth, h: innerHeight };
+  }, true);
+
+  // Leaving: remember what kind of page this was, how it was opened, and the link that was used.
+  // pageswap runs before the next page starts; pagehide covers browsers without it.
+  const leaving = () => save(KEY, { kind: kind(), url: page(location.href), t: Date.now(), via, opened: load(OPENED + location.pathname) });
   addEventListener("pageswap", leaving);
   addEventListener("pagehide", leaving);
 
-  // Arriving: the previous page's kind (if it was ours, just now) and this one's give the type.
-  const type = () => {
-    let from = null;
-    try {
-      const s = JSON.parse(sessionStorage.getItem(KEY) || "null");
-      sessionStorage.removeItem(KEY);
-      if (s && Date.now() - s.t < 10000 && s.url !== location.href) from = s.kind;
-    } catch {}
-    const to = kind();
-    if (!from || (from === "base" && to === "base")) return null;
-    return from === to ? "aero-fade" : to === "sheet" ? "aero-sheet" : "aero-sheet-back";
+  // The reveal's circle: centre and radius (to the farthest corner), scaled to this window.
+  const circle = (p) => {
+    const x = (p.x / p.w) * innerWidth, y = (p.y / p.h) * innerHeight;
+    const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    root.style.setProperty("--aero-reveal-x", `${Math.round(x)}px`);
+    root.style.setProperty("--aero-reveal-y", `${Math.round(y)}px`);
+    root.style.setProperty("--aero-reveal-r", `${Math.ceil(r)}px`);
   };
 
+  // Arriving: what the previous page was (if it was ours, just now), and how we got here.
+  const type = () => {
+    const s = load(KEY);
+    try { sessionStorage.removeItem(KEY); } catch {}
+    if (!s || Date.now() - s.t > 10000 || s.url === page(location.href)) return null;
+    const here = page(location.href);
+    if (s.via && s.via.name === "reveal" && s.via.href === here) {
+      save(OPENED + location.pathname, s.via); // so going back can close into the same point
+      circle(s.via);
+      return "aero-reveal";
+    }
+    if (s.opened && s.opened.name === "reveal" && s.opened.from === here) {
+      circle(s.opened);
+      return "aero-reveal-back";
+    }
+    const to = kind();
+    if (s.kind === "base" && to === "base") return null;
+    return s.kind === to ? "aero-fade" : to === "sheet" ? "aero-sheet" : "aero-sheet-back";
+  };
+
+  const ARRIVE = { "aero-sheet": "right", "aero-sheet-back": "left", "aero-reveal": "point", "aero-reveal-back": "left" };
   if ("onpagereveal" in window) {
     addEventListener("pagereveal", (e) => {
       const vt = e.viewTransition;
@@ -45,8 +77,7 @@
       if (t && vt.types) vt.types.add(t);
     });
   } else if (!still()) {
-    const t = type();
-    if (t === "aero-sheet") root.classList.add("aero-arrive", "ae-arrive", "aero-from-right", "ae-from-right");
-    if (t === "aero-sheet-back") root.classList.add("aero-arrive", "ae-arrive", "aero-from-left", "ae-from-left");
+    const side = ARRIVE[type()];
+    if (side) root.classList.add("aero-arrive", "ae-arrive", `aero-from-${side}`, `ae-from-${side}`);
   }
 })();
