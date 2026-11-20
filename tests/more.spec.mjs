@@ -268,6 +268,19 @@ test("stagger order: end, center and random set --aero-i, and again when childre
   expect(r.end5).toEqual([4, 3, 2, 1, 0]);
 });
 
+test("stagger order: removing the attribute restores the default, and setting it again applies again", async ({ page }) => {
+  await page.goto(P2);
+  const r = await page.evaluate(() => {
+    const el = document.getElementById("st-end"), vals = () => [...el.children].map((c) => c.style.getPropertyValue("--aero-i"));
+    delete el.dataset.aeroStaggerFrom; Aero.refresh();
+    const cleared = vals();
+    el.dataset.aeroStaggerFrom = "end"; Aero.refresh();
+    return { cleared, back: vals().map(Number) };
+  });
+  expect(r.cleared.every((x) => x === "")).toBe(true);
+  expect(r.back).toEqual([3, 2, 1, 0]);
+});
+
 test("lines: each rendered line gets its mask and rises; tags are kept; screen readers get the text once", async ({ page }) => {
   await page.goto(P2);
   await expect(page.locator("#lines .aero-piece").first()).toHaveClass(/\baero-in\b/);

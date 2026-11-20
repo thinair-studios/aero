@@ -220,7 +220,11 @@
   const ordered = new WeakMap(), looped = new WeakSet(); // stagger -> what it was ordered for
   const order = (el) => {
     const from = el.dataset.aeroStaggerFrom, kids = [...el.children], n = kids.length;
-    if (!from || ordered.get(el) === from + n) return; // the same children: keep the order (random stays put)
+    if (!from) { // the attribute was removed: back to the default order
+      if (ordered.has(el)) { ordered.delete(el); kids.forEach((k) => k.style.removeProperty("--aero-i")); }
+      return;
+    }
+    if (ordered.get(el) === from + n) return; // the same children: keep the order (random stays put)
     ordered.set(el, from + n);
     const pos = kids.map((_, i) => i);
     if (from === "random") for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pos[i], pos[j]] = [pos[j], pos[i]]; }
