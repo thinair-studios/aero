@@ -16,6 +16,12 @@
  *                     focus, and out to the right on leave (replaces the
  *                     link's own underline). --aero-underline-color (currentColor)
  *                     --aero-underline-thickness (2px) --aero-underline-offset (0.15em)
+ *                     Also drawn while the link is current: .aero-on or aria-current.
+ *   aero-underline-side   the same as a bar on the link's left (a table of contents)
+ *   aero-underline-shown  drawn at rest, and drawing out on hover instead
+ *   aero-hover-appear something that shows on hover (an arrow, an icon): it fades in
+ *                     and slides in from --aero-hover-from (-0.35em), after
+ *                     --aero-hover-delay (0s); leaving, it goes at once
  *
  * Only transform is animated. On touch screens hover movement is cancelled so
  * a tap doesn't leave things stuck; keyboard focus still moves them.
@@ -70,13 +76,63 @@
  transform-origin: right;
  transition: transform var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
 }
-.aero-underline:is(:hover, :focus-visible)::after {
+/* :where() keeps the states at zero weight, so the -side and -shown variants below can override them. */
+.aero-underline:where(:hover, :focus-visible, .aero-on, [aria-current]:not([aria-current="false"]))::after {
  transform: scaleX(1);
  transform-origin: left;
 }
 @media (hover: none) {
- .aero-underline:hover:not(:focus-visible)::after {
+ .aero-underline:hover:not(:focus-visible, .aero-on, [aria-current]:not([aria-current="false"]))::after {
   transform: scaleX(0);
   transform-origin: right;
+ }
+}
+/* Side: a bar on the left, growing down. */
+.aero-underline-side::after {
+ left: calc(var(--aero-underline-offset, 0px) * -1);
+ right: auto;
+ top: 0;
+ bottom: 0;
+ width: var(--aero-underline-thickness, 2px);
+ height: auto;
+ transform: scaleY(0);
+ transform-origin: bottom;
+}
+.aero-underline-side:where(:hover, :focus-visible, .aero-on, [aria-current]:not([aria-current="false"]))::after {
+ transform: scaleY(1);
+ transform-origin: top;
+}
+/* Shown: drawn at rest; hovering draws it out to the right. */
+.aero-underline-shown::after {
+ transform: scaleX(1);
+ transform-origin: left;
+}
+.aero-underline-shown:is(:hover, :focus-visible)::after {
+ transform: scaleX(0);
+ transform-origin: right;
+}
+@media (hover: none) {
+ .aero-underline-shown:hover:not(:focus-visible)::after {
+  transform: scaleX(1);
+ }
+}
+
+/* Appear: hidden until its group is hovered or focused; it arrives after --aero-hover-delay and leaves at once. */
+.aero-hover-appear {
+ opacity: 0;
+ translate: var(--aero-hover-from, -0.35em) 0;
+ transition:
+  opacity var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1)),
+  translate var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+.aero-hover-group:is(:hover, :focus-within) .aero-hover-appear {
+ opacity: 1;
+ translate: 0 0;
+ transition-delay: var(--aero-hover-delay, 0s);
+}
+@media (hover: none) {
+ .aero-hover-group:hover:not(:focus-within) .aero-hover-appear {
+  opacity: 0;
+  translate: var(--aero-hover-from, -0.35em) 0;
  }
 }

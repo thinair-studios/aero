@@ -16,6 +16,12 @@
  *   .aero-scrub-root    follow the page scroll instead of the element's own
  *                       view; the range is then two lengths in px or vh (not %),
  *                       and leaving it out means the whole page
+ * Scrub-only variants (they only make sense tied to the scroll):
+ *   aero-slide-left / -right  slides sideways across the range, from
+ *                       --aero-slide-start (0) by --aero-slide (30%): a row of
+ *                       words or images drifting as you scroll
+ *   aero-fade-out       fades to --aero-opacity-to (0)
+ *
  *   .aero-scrub-track   follow the nearest .aero-track ancestor instead: give a
  *                       tall wrapper .aero-track, pin its contents with
  *                       position: sticky, and they play while it passes. The
@@ -67,4 +73,20 @@
 .aero-scrub-js .aero-scrub {
  animation-play-state: paused;
  animation-delay: 0s;
+}
+
+/* Scrub-only variants. They use the translate property, so they never fight a transform of your own. */
+.aero-scrub.aero-slide-left { animation-name: aero-slide-left; }
+.aero-scrub.aero-slide-right { animation-name: aero-slide-right; }
+.aero-scrub.aero-fade-out { animation-name: aero-fade-out; }
+@keyframes aero-slide-left {
+ from { translate: var(--aero-slide-start, 0px) 0; }
+ to { translate: calc(var(--aero-slide, 30%) * -1) 0; }
+}
+@keyframes aero-slide-right {
+ from { translate: calc(var(--aero-slide, 30%) * -1) 0; }
+ to { translate: var(--aero-slide-start, 0px) 0; }
+}
+@keyframes aero-fade-out {
+ to { opacity: var(--aero-opacity-to, 0); }
 }

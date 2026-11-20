@@ -29,4 +29,11 @@ details.aero-collapse[open]::details-content, details.ae-collapse[open]::details
   transform: perspective(var(--aero-flip-perspective, 900px)) rotateY(0deg);
  }
 }
+.aero-collapse-icon, .ae-collapse-icon {
+ display: inline-block;
+ transition: rotate var(--aero-duration, 0.35s) var(--aero-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+details.aero-collapse[open] > summary .aero-collapse-icon, details.ae-collapse[open] > summary .ae-collapse-icon {
+ rotate: var(--aero-collapse-turn, 45deg);
+}
 }

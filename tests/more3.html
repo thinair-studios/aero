@@ -1,0 +1,35 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Aero test fixture: underline states, appear, slides, fades, collapse icon, edge</title>
+<link rel="stylesheet" id="aero-css" href="/dist/aero.css">
+<style>
+  body { margin: 0; font: 16px sans-serif; }
+  .gap { height: 120vh; }
+  .row { display: flex; width: max-content; font-size: 60px; }
+  :root { --aero-edge-reach: 300px; }
+</style>
+<script>
+  const q = new URLSearchParams(location.search);
+  if (q.has("nonative")) {
+    document.getElementById("aero-css").href = "/tests/aero-nonative.css";
+    const supports = CSS.supports.bind(CSS);
+    CSS.supports = (...a) => (a.join(" ").includes("animation-timeline") ? false : supports(...a));
+  }
+</script>
+<nav style="padding: 40px 400px">
+  <a href="#" class="aero-underline aero-on" id="u-on">current</a>
+  <a href="#" class="aero-underline" aria-current="page" id="u-aria">aria</a>
+  <a href="#" class="aero-underline" id="u-off">plain</a>
+  <a href="#" class="aero-underline aero-underline-side" id="u-side">side</a>
+  <a href="#" class="aero-underline aero-underline-shown" id="u-shown">shown</a>
+</nav>
+<a href="#" class="aero-hover-group" id="appear-group" style="display:block; margin-left: 400px; padding: 20px">Title <i class="aero-hover-appear" id="appear" style="--aero-hover-delay: 100ms">→</i></a>
+<details class="aero-collapse" id="faq" style="margin-left: 400px"><summary>Q <i class="aero-collapse-icon" id="icon">+</i></summary><p>A</p></details>
+<main id="page" class="aero-edge-shift" style="margin-left: 400px">page</main>
+<div class="aero-edge" id="edge"><span class="aero-edge-fade" id="edge-fade">back</span></div>
+<div class="gap"></div>
+<div class="row aero-scrub aero-slide-left" id="slide" style="--aero-scrub-range: cover 0% cover 100%; --aero-slide: 200px">fade · scale · grow · wipe · lift · fan · pass</div>
+<p class="aero-scrub aero-fade-in" id="fade-from" style="--aero-opacity-from: .2; --aero-scrub-range: cover 0% cover 100%">fade from .2</p>
+<p class="aero-scrub aero-fade-out" id="fade-out" style="--aero-scrub-range: cover 0% cover 100%">fade out</p>
+<div class="gap"></div>
+<script src="/dist/aero.js" defer></script>

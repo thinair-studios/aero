@@ -24,6 +24,10 @@
  .aero-reduce-motion .aero-hover-wave .aero-piece {
   transform: none !important;
  }
+ .aero-reduce-motion .aero-hover-appear,
+ .aero-reduce-motion .aero-collapse-icon {
+  transition-duration: 0s !important;
+ }
  /* Exits still end hidden, just at once. */
  .aero-reduce-motion .aero-out {
   animation-duration: 0.01ms !important;

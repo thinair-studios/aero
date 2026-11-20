@@ -81,6 +81,8 @@ To pin something while it animates, give a tall wrapper `.aero-track`, make its 
 </section>
 ```
 
+Scrub-only variants: `aero-slide-left` / `aero-slide-right` drift something sideways as you scroll (`--aero-slide` 30%, from `--aero-slide-start`), and `aero-fade-out` fades it out (`--aero-opacity-to`). Any fade can start part-way with `--aero-opacity-from`.
+
 ## Exits
 
 ```html
@@ -184,6 +186,8 @@ Settings: `--aero-hover-duration` `--aero-hover-easing` `--aero-hover-distance` 
 `aero-underline` on a link draws an underline in from the left on hover or focus, and out to the right when you leave. It replaces the link's own underline. Settings: `--aero-underline-color` (`currentColor`) `--aero-underline-thickness` (2px) `--aero-underline-offset` (0.15em).
 Keyboard focus triggers the same motion. On touch screens hover motion is cancelled, so a tap doesn't leave things stuck.
 
+Underlines: `aero-underline` draws in on hover and focus, and stays drawn while the link is current (`.aero-on` or `aria-current`), which makes it a nav indicator too. `aero-underline-side` is the same as a bar on the left (a table of contents); `aero-underline-shown` is drawn at rest and draws out on hover. `aero-hover-appear` shows something (an arrow, an icon) when its group is hovered: it fades and slides in from `--aero-hover-from` after `--aero-hover-delay`, and leaves at once.
+
 ## Cursor
 
 ```html
@@ -216,6 +220,15 @@ Keyboard focus triggers the same motion. On touch screens hover motion is cancel
 Going to a sheet page, it slides in from the right over the last one; leaving it for a page underneath, it slides away again; between two sheets there's a quick cross-fade. The back and forward buttons work the same way. Settings (on `:root`): `--aero-page-duration` `--aero-page-easing` `--aero-page-fade`.
 
 Browsers without cross-document View Transitions (Firefox today) get the same direction from page arrival: `aero-pages.js` adds `aero-arrive` plus `aero-from-right` or `aero-from-left` to `<html>`, and `<main>` slides in once.
+
+## The edge
+
+```html
+<div class="aero-edge">…</div>             <!-- fixed at the left edge -->
+<main class="aero-edge-shift">…</main>     <!-- slides aside as it opens -->
+```
+
+As the mouse nears the left edge, `aero.js` eases `--aero-edge` from 0 to 1 on `<html>`: the panel widens to `--aero-edge-reach` (24vw, set it on `:root`) and takes clicks once open, `.aero-edge-shift` blocks slide aside with it, and inside the panel `.aero-edge-drift` drifts in while `.aero-edge-fade` fades in late. What the panel holds and where a click goes are yours; our site uses it as the way back, with the previous page live behind it. Mouse only.
 
 ## Layout changes
 

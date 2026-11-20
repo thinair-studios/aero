@@ -78,7 +78,7 @@
  from { opacity: 0; transform: translateX(calc(var(--aero-distance, 32px) * -1)); }
 }
 @keyframes aero-fade-in {
- from { opacity: 0; }
+ from { opacity: var(--aero-opacity-from, 0); }
 }
 @keyframes aero-scale-up {
  from { opacity: 0; transform: scale(var(--aero-scale-from, 0.96)) translateY(calc(var(--aero-distance, 32px) * 0.5)); }
@@ -295,6 +295,13 @@ details.aero-collapse[open]::details-content, details.ae-collapse[open]::details
   transform: perspective(var(--aero-flip-perspective, 900px)) rotateY(0deg);
  }
 }
+.aero-collapse-icon, .ae-collapse-icon {
+ display: inline-block;
+ transition: rotate var(--aero-duration, 0.35s) var(--aero-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+details.aero-collapse[open] > summary .aero-collapse-icon, details.ae-collapse[open] > summary .ae-collapse-icon {
+ rotate: var(--aero-collapse-turn, 45deg);
+}
 .aero-split, .ae-split { --aero-stagger: 45ms; }
 .aero-split .aero-word, .ae-split .ae-word { display: inline-block; white-space: nowrap; }
 .aero-split .aero-piece, .ae-split .ae-piece { display: inline-block; }
@@ -358,6 +365,20 @@ details.aero-collapse[open]::details-content, details.ae-collapse[open]::details
  animation-play-state: paused;
  animation-delay: 0s;
 }
+.aero-scrub.aero-slide-left, .ae-scrub.ae-slide-left { animation-name: aero-slide-left; }
+.aero-scrub.aero-slide-right, .ae-scrub.ae-slide-right { animation-name: aero-slide-right; }
+.aero-scrub.aero-fade-out, .ae-scrub.ae-fade-out { animation-name: aero-fade-out; }
+@keyframes aero-slide-left {
+ from { translate: var(--aero-slide-start, 0px) 0; }
+ to { translate: calc(var(--aero-slide, 30%) * -1) 0; }
+}
+@keyframes aero-slide-right {
+ from { translate: calc(var(--aero-slide, 30%) * -1) 0; }
+ to { translate: var(--aero-slide-start, 0px) 0; }
+}
+@keyframes aero-fade-out {
+ to { opacity: var(--aero-opacity-to, 0); }
+}
 .aero-hover-lift, .ae-hover-lift { --aero-hover-to: translateY(calc(var(--aero-hover-distance, 16px) * -1)); }
 .aero-hover-scale, .ae-hover-scale { --aero-hover-to: scale(var(--aero-hover-scale, 1.03)); }
 .aero-hover-rise, .ae-hover-rise { --aero-hover-to: translateY(calc(var(--aero-hover-distance, 6px) * -1)) scale(var(--aero-hover-scale, 1.03)); }
@@ -401,14 +422,59 @@ details.aero-collapse[open]::details-content, details.ae-collapse[open]::details
  transform-origin: right;
  transition: transform var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
 }
-.aero-underline:is(:hover, :focus-visible)::after, .ae-underline:is(:hover, :focus-visible)::after {
+.aero-underline:where(:hover, :focus-visible, .aero-on, [aria-current]:not([aria-current="false"]))::after, .ae-underline:where(:hover, :focus-visible, .ae-on, [aria-current]:not([aria-current="false"]))::after {
  transform: scaleX(1);
  transform-origin: left;
 }
 @media (hover: none) {
- .aero-underline:hover:not(:focus-visible)::after, .ae-underline:hover:not(:focus-visible)::after {
+ .aero-underline:hover:not(:focus-visible, .aero-on, [aria-current]:not([aria-current="false"]))::after, .ae-underline:hover:not(:focus-visible, .ae-on, [aria-current]:not([aria-current="false"]))::after {
   transform: scaleX(0);
   transform-origin: right;
+ }
+}
+.aero-underline-side::after, .ae-underline-side::after {
+ left: calc(var(--aero-underline-offset, 0px) * -1);
+ right: auto;
+ top: 0;
+ bottom: 0;
+ width: var(--aero-underline-thickness, 2px);
+ height: auto;
+ transform: scaleY(0);
+ transform-origin: bottom;
+}
+.aero-underline-side:where(:hover, :focus-visible, .aero-on, [aria-current]:not([aria-current="false"]))::after, .ae-underline-side:where(:hover, :focus-visible, .ae-on, [aria-current]:not([aria-current="false"]))::after {
+ transform: scaleY(1);
+ transform-origin: top;
+}
+.aero-underline-shown::after, .ae-underline-shown::after {
+ transform: scaleX(1);
+ transform-origin: left;
+}
+.aero-underline-shown:is(:hover, :focus-visible)::after, .ae-underline-shown:is(:hover, :focus-visible)::after {
+ transform: scaleX(0);
+ transform-origin: right;
+}
+@media (hover: none) {
+ .aero-underline-shown:hover:not(:focus-visible)::after, .ae-underline-shown:hover:not(:focus-visible)::after {
+  transform: scaleX(1);
+ }
+}
+.aero-hover-appear, .ae-hover-appear {
+ opacity: 0;
+ translate: var(--aero-hover-from, -0.35em) 0;
+ transition:
+  opacity var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1)),
+  translate var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+.aero-hover-group:is(:hover, :focus-within) .aero-hover-appear, .ae-hover-group:is(:hover, :focus-within) .ae-hover-appear {
+ opacity: 1;
+ translate: 0 0;
+ transition-delay: var(--aero-hover-delay, 0s);
+}
+@media (hover: none) {
+ .aero-hover-group:hover:not(:focus-within) .aero-hover-appear, .ae-hover-group:hover:not(:focus-within) .ae-hover-appear {
+  opacity: 0;
+  translate: var(--aero-hover-from, -0.35em) 0;
  }
 }
 .aero-tilt, .ae-tilt {
@@ -533,6 +599,20 @@ html:active-view-transition-type(aero-reveal, aero-reveal-back)::view-transition
  animation-duration: var(--aero-morph-duration, 0.5s);
  animation-timing-function: var(--aero-morph-easing, cubic-bezier(0.22, 1, 0.36, 1));
 }
+.aero-edge, .ae-edge {
+ position: fixed;
+ z-index: 40;
+ inset: 0 auto 0 0;
+ width: calc(var(--aero-edge, 0) * var(--aero-edge-reach, 24vw) + var(--aero-edge-strip, 10px));
+ overflow: clip;
+ opacity: min(1, calc(var(--aero-edge, 0) * 8));
+ pointer-events: none;
+}
+.aero-edge.aero-edge-live, .ae-edge.ae-edge-live { pointer-events: auto; }
+.aero-edge-on .aero-edge-shift, .ae-edge-on .ae-edge-shift { translate: calc(var(--aero-edge, 0) * var(--aero-edge-reach, 24vw)) 0; }
+.aero-edge-on, .aero-edge-on body, .ae-edge-on, .ae-edge-on body { overflow-x: clip; }
+.aero-edge-drift, .ae-edge-drift { translate: calc((1 - var(--aero-edge, 0)) * -6vw) 0; }
+.aero-edge-fade, .ae-edge-fade { opacity: max(0, calc(var(--aero-edge, 0) * 1.6 - 0.35)); }
 @media (prefers-reduced-motion: reduce) {
  .aero-reduce-motion :is(.aero-enter, .aero-scrub, .aero-shake, .aero-pop, .aero-spin, .aero-pulse, .aero-ping, .aero-bounce, .aero-float, .aero-marquee > :first-child),
  .aero-reduce-motion .aero-shimmer::after,
@@ -550,6 +630,11 @@ html:active-view-transition-type(aero-reveal, aero-reveal-back)::view-transition
  }
  .aero-reduce-motion .aero-hover-wave .aero-piece, .ae-reduce-motion .ae-hover-wave .ae-piece {
   transform: none !important;
+ }
+ .aero-reduce-motion .aero-hover-appear,
+ .aero-reduce-motion .aero-collapse-icon, .ae-reduce-motion .ae-hover-appear,
+ .ae-reduce-motion .ae-collapse-icon {
+  transition-duration: 0s !important;
  }
  .aero-reduce-motion .aero-out, .ae-reduce-motion .ae-out {
   animation-duration: 0.01ms !important;

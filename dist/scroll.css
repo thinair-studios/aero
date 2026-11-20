@@ -34,4 +34,18 @@
  animation-play-state: paused;
  animation-delay: 0s;
 }
+.aero-scrub.aero-slide-left, .ae-scrub.ae-slide-left { animation-name: aero-slide-left; }
+.aero-scrub.aero-slide-right, .ae-scrub.ae-slide-right { animation-name: aero-slide-right; }
+.aero-scrub.aero-fade-out, .ae-scrub.ae-fade-out { animation-name: aero-fade-out; }
+@keyframes aero-slide-left {
+ from { translate: var(--aero-slide-start, 0px) 0; }
+ to { translate: calc(var(--aero-slide, 30%) * -1) 0; }
+}
+@keyframes aero-slide-right {
+ from { translate: calc(var(--aero-slide, 30%) * -1) 0; }
+ to { translate: var(--aero-slide-start, 0px) 0; }
+}
+@keyframes aero-fade-out {
+ to { opacity: var(--aero-opacity-to, 0); }
+}
 }

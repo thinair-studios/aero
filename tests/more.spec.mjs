@@ -469,3 +469,63 @@ test.describe("page transitions", () => {
     else if (back.cls) expect(back.cls).toMatch(/aero-from-left/); // from the back-forward cache nothing runs, which is fine
   });
 });
+
+// ---- underline states, appear, slides and fades on the scroll, the collapse icon, the edge
+const P3 = "/tests/more3.html";
+const after = (page, id) => page.evaluate((id) => getComputedStyle(document.getElementById(id), "::after").transform, id);
+
+test("underline: drawn while current (.aero-on or aria-current), as a side bar, or at rest with -shown", async ({ page }) => {
+  await page.goto(P3);
+  await page.waitForTimeout(600);
+  expect(await after(page, "u-on")).toBe("matrix(1, 0, 0, 1, 0, 0)");
+  expect(await after(page, "u-aria")).toBe("matrix(1, 0, 0, 1, 0, 0)");
+  expect(await after(page, "u-off")).toBe("matrix(0, 0, 0, 1, 0, 0)");
+  expect(await after(page, "u-side")).toBe("matrix(1, 0, 0, 0, 0, 0)"); // scaleY(0) at rest
+  await page.hover("#u-side"); await page.waitForTimeout(600);
+  expect(await after(page, "u-side")).toBe("matrix(1, 0, 0, 1, 0, 0)");
+  expect(await after(page, "u-shown")).toBe("matrix(1, 0, 0, 1, 0, 0)");
+  await page.hover("#u-shown"); await page.waitForTimeout(600);
+  expect(await after(page, "u-shown")).toBe("matrix(0, 0, 0, 1, 0, 0)");
+});
+
+test("appear: shows when its group is hovered, after its delay, and goes at once", async ({ page }) => {
+  await page.goto(P3);
+  const op = () => page.evaluate(() => +getComputedStyle(document.getElementById("appear")).opacity);
+  expect(await op()).toBe(0);
+  await page.hover("#appear-group"); await page.waitForTimeout(800);
+  expect(await op()).toBe(1);
+  await page.mouse.move(5, 700); await page.waitForTimeout(80);
+  expect(await op()).toBeLessThan(1);
+});
+
+test("collapse icon: turns when its details opens", async ({ page }) => {
+  await page.goto(P3);
+  await page.click("#faq summary"); await page.waitForTimeout(600);
+  expect(await page.evaluate(() => getComputedStyle(document.getElementById("icon")).rotate)).toBe("45deg");
+});
+
+for (const q of ["", "?nonative"]) {
+  test(`slide and fades follow the scroll ${q}`, async ({ page }) => {
+    await page.goto(P3 + q);
+    const at = async (f) => {
+      await page.evaluate((f) => { const el = document.getElementById("slide"); let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; scrollTo(0, y - innerHeight + f * (innerHeight + el.offsetHeight)); }, f);
+      await page.waitForTimeout(150);
+      return page.evaluate(() => ({ x: parseFloat(getComputedStyle(document.getElementById("slide")).translate) || 0, from: +getComputedStyle(document.getElementById("fade-from")).opacity, out: +getComputedStyle(document.getElementById("fade-out")).opacity }));
+    };
+    const a = await at(0.05), b = await at(0.6);
+    expect(b.x).toBeLessThan(a.x - 50); // slid left
+    expect(a.from).toBeGreaterThanOrEqual(0.19); // starts from --aero-opacity-from, not 0
+    expect(b.out).toBeLessThan(a.out); // fading out
+  });
+}
+
+test("edge: the pointer at the left edge opens it and slides the page aside; away, it closes", async ({ page, browserName }) => {
+  await page.goto(P3);
+  await page.mouse.move(600, 300); await page.mouse.move(4, 300, { steps: 6 }); await page.waitForTimeout(900);
+  const open = await page.evaluate(() => ({ edge: +getComputedStyle(document.documentElement).getPropertyValue("--aero-edge"), on: document.documentElement.classList.contains("aero-edge-on"), live: document.getElementById("edge").classList.contains("aero-edge-live"), shift: parseFloat(getComputedStyle(document.getElementById("page")).translate) }));
+  expect(open.edge).toBeGreaterThan(0.95);
+  expect(open.on && open.live).toBe(true);
+  expect(open.shift).toBeGreaterThan(280); // most of the 300px reach
+  await page.mouse.move(900, 300, { steps: 4 }); await page.waitForTimeout(900);
+  expect(await page.evaluate(() => document.documentElement.classList.contains("aero-edge-on"))).toBe(false);
+});

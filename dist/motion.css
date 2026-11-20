@@ -18,6 +18,11 @@
  .aero-reduce-motion .aero-hover-wave .aero-piece, .ae-reduce-motion .ae-hover-wave .ae-piece {
   transform: none !important;
  }
+ .aero-reduce-motion .aero-hover-appear,
+ .aero-reduce-motion .aero-collapse-icon, .ae-reduce-motion .ae-hover-appear,
+ .ae-reduce-motion .ae-collapse-icon {
+  transition-duration: 0s !important;
+ }
  .aero-reduce-motion .aero-out, .ae-reduce-motion .ae-out {
   animation-duration: 0.01ms !important;
  }

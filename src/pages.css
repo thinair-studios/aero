@@ -83,3 +83,24 @@ html:active-view-transition-type(aero-reveal, aero-reveal-back)::view-transition
  animation-duration: var(--aero-morph-duration, 0.5s);
  animation-timing-function: var(--aero-morph-easing, cubic-bezier(0.22, 1, 0.36, 1));
 }
+
+/* ---- The edge: a way back at the side of the page (aero.js drives it) ----------------------------------
+ * <div class="aero-edge">…</div>  fixed at the left edge. As the pointer nears the edge (within
+ * --aero-edge-zone, 220px) aero.js eases --aero-edge from 0 to 1 on <html> and adds .aero-edge-on there.
+ * The panel widens to --aero-edge-reach (24vw) and takes clicks once it's open (.aero-edge-live).
+ * .aero-edge-shift on the page's blocks slides them aside with it; inside the panel, .aero-edge-drift
+ * drifts in from the left and .aero-edge-fade fades in late. Mouse only; set the reach on :root. */
+.aero-edge {
+ position: fixed;
+ z-index: 40;
+ inset: 0 auto 0 0;
+ width: calc(var(--aero-edge, 0) * var(--aero-edge-reach, 24vw) + var(--aero-edge-strip, 10px));
+ overflow: clip;
+ opacity: min(1, calc(var(--aero-edge, 0) * 8));
+ pointer-events: none;
+}
+.aero-edge.aero-edge-live { pointer-events: auto; }
+.aero-edge-on .aero-edge-shift { translate: calc(var(--aero-edge, 0) * var(--aero-edge-reach, 24vw)) 0; }
+.aero-edge-on, .aero-edge-on body { overflow-x: clip; }
+.aero-edge-drift { translate: calc((1 - var(--aero-edge, 0)) * -6vw) 0; }
+.aero-edge-fade { opacity: max(0, calc(var(--aero-edge, 0) * 1.6 - 0.35)); }

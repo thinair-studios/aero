@@ -64,7 +64,7 @@
  from { opacity: 0; transform: translateX(calc(var(--aero-distance, 32px) * -1)); }
 }
 @keyframes aero-fade-in {
- from { opacity: 0; }
+ from { opacity: var(--aero-opacity-from, 0); }
 }
 @keyframes aero-scale-up {
  from { opacity: 0; transform: scale(var(--aero-scale-from, 0.96)) translateY(calc(var(--aero-distance, 32px) * 0.5)); }

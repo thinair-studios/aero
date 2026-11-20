@@ -22,6 +22,10 @@ Aero now covers things leaving as well as arriving.
 - **Stagger order**: `data-aero-stagger-from="end" | "center" | "random"`.
 - **Text lines**: `data-aero-split="lines"` reveals each rendered line from behind its own mask.
 - **Fix:** the `aero.js` scroll fallback now works on SVG elements, which have no `offsetTop`.
+- **Underline states**: `aero-underline` also draws while current (`.aero-on`, `aria-current`); `aero-underline-side` and `aero-underline-shown`; and `aero-hover-appear` for things that show on hover.
+- **Scroll**: `aero-slide-left` / `-right` and `aero-fade-out` for scrubbed motion; `--aero-opacity-from` for any fade.
+- **The edge**: `aero-edge`, `aero-edge-shift`, `-drift`, `-fade`: a panel at the left edge that opens as the mouse nears it.
+- **Collapse icon**: `aero-collapse-icon` turns when its details opens.
 - **Replay on scroll** with `aero-repeat`, events `aero:in` and `aero:done`, and `Aero.replay(el)`.
 
 ## 2.1.0 — 2026-11-19

@@ -18,6 +18,9 @@
  * 10. Marquee: duplicates the children of .aero-marquee's track once (aria-hidden, inert) so the
  *     loop is seamless.
  *
+ * 11. Edge: with an .aero-edge on the page, the pointer nearing the left edge eases --aero-edge
+ *     from 0 to 1 on <html> (pages.css). Mouse only.
+ *
  *  Events (they bubble): "aero:in" when an entrance starts, "aero:done" when it ends.
  *  Elements added later are picked up automatically. Every class works with the ae- prefix too.
  *  With .aero-reduce-motion on <html> and the visitor preferring reduced motion, nothing moves.
@@ -214,6 +217,31 @@
       el.append(sr);
     }
   };
+
+  // ---- Edge: the pointer nearing the left edge eases --aero-edge (0..1) on <html>, while an .aero-edge is on the page
+  const fine = matchMedia("(hover: hover) and (pointer: fine)");
+  let edgeWant = 0, edgeNow = 0, edgeRaf = 0;
+  const edgeStep = () => {
+    edgeNow += (edgeWant - edgeNow) * 0.16;
+    if (Math.abs(edgeWant - edgeNow) < 0.001) edgeNow = edgeWant;
+    root.style.setProperty("--aero-edge", edgeNow.toFixed(4));
+    root.classList.toggle("aero-edge-on", edgeNow > 0.001);
+    root.classList.toggle("ae-edge-on", edgeNow > 0.001);
+    for (const p of document.querySelectorAll($(["edge"]))) { p.classList.toggle("aero-edge-live", edgeNow > 0.04); p.classList.toggle("ae-edge-live", edgeNow > 0.04); }
+    edgeRaf = edgeNow === edgeWant ? 0 : requestAnimationFrame(edgeStep);
+  };
+  const edgeTo = (v) => { edgeWant = v; if (!edgeRaf) edgeRaf = requestAnimationFrame(edgeStep); };
+  addEventListener("pointermove", (e) => {
+    const panel = document.querySelector($(["edge"]));
+    if (!panel || !fine.matches || e.pointerType !== "mouse" || still()) return;
+    const busy = e.buttons || document.querySelector("dialog[open]") || (window.getSelection && String(getSelection()));
+    const zone = parseFloat(getComputedStyle(panel).getPropertyValue("--aero-edge-zone")) || 220;
+    const k = busy ? 0 : Math.max(0, 1 - e.clientX / zone);
+    edgeTo(k * k * (3 - 2 * k)); // gentle at first, decisive near the edge
+  }, { passive: true });
+  root.addEventListener("pointerleave", () => edgeTo(0));
+  addEventListener("blur", () => edgeTo(0));
+  addEventListener("pageshow", () => { edgeWant = edgeNow = 0; root.style.setProperty("--aero-edge", "0"); root.classList.remove("aero-edge-on", "ae-edge-on"); });
 
   // ---- Stagger order, draw, marquee
   const SHAPES = "path, line, polyline, polygon, circle, ellipse, rect";
