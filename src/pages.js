@@ -10,6 +10,9 @@
  * A link can ask for its own: <a data-aero-transition="reveal"> opens the next page as a circle
  * growing out of the point you clicked (aero-reveal), and going back to where you came from
  * closes it into that same point (aero-reveal-back).
+ * A script that navigates without a link (history.back(), say) can name the transition first:
+ *   dispatchEvent(new CustomEvent("aero:transition", { detail: "sheet" }))
+ * "sheet" uses the page kinds as above, skipping any reveal-back; "reveal" needs a link and a point.
  * The back and forward buttons work the same way. Browsers without cross-document View
  * Transitions get a matching arrival instead (arrival.css).
  */
@@ -33,6 +36,7 @@
     via = { name: a.dataset.aeroTransition, href: page(a.href), from: page(location.href),
       x: key ? r.left + r.width / 2 : e.clientX, y: key ? r.top + r.height / 2 : e.clientY, w: innerWidth, h: innerHeight };
   }, true);
+  addEventListener("aero:transition", (e) => { via = { name: String(e.detail || "sheet"), from: page(location.href) }; });
 
   // Leaving: remember what kind of page this was, how it was opened, and the link that was used.
   // pageswap runs before the next page starts; pagehide covers browsers without it.
@@ -60,7 +64,7 @@
       circle(s.via);
       return "aero-reveal";
     }
-    if (s.opened && s.opened.name === "reveal" && s.opened.from === here) {
+    if (!(s.via && s.via.name !== "reveal") && s.opened && s.opened.name === "reveal" && s.opened.from === here) {
       circle(s.opened);
       return "aero-reveal-back";
     }

@@ -449,6 +449,16 @@ test.describe("page transitions", () => {
     if (back.vt) expect(back.types).toEqual(["aero-sheet-back"]);
     else expect(back.cls).toMatch(/aero-from-left/);
   });
+  test("a script can ask for the sheet instead of the reveal's way back", async ({ page }) => {
+    await page.goto("/tests/pages/base.html");
+    await go(page, "reveal-sheet");
+    await page.evaluate(() => { dispatchEvent(new CustomEvent("aero:transition", { detail: "sheet" })); });
+    await page.goBack();
+    await page.waitForTimeout(150);
+    const back = await page.evaluate(() => ({ vt: "onpagereveal" in window, types: window.__types, cls: document.documentElement.className }));
+    if (back.vt) expect(back.types).toEqual(["aero-sheet-back"]);
+    else if (back.cls) expect(back.cls).toMatch(/aero-from-left/);
+  });
   test("the back button runs the same way", async ({ page }) => {
     await page.goto("/tests/pages/base.html");
     await go(page, "to-sheet");
