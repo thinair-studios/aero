@@ -230,11 +230,12 @@
     for (const p of document.querySelectorAll($(["edge"]))) { p.classList.toggle("aero-edge-live", edgeNow > 0.04); p.classList.toggle("ae-edge-live", edgeNow > 0.04); }
     edgeRaf = edgeNow === edgeWant ? 0 : requestAnimationFrame(edgeStep);
   };
+  const openPopover = () => { try { return document.querySelector(":popover-open"); } catch { return null; } };
   const edgeTo = (v) => { edgeWant = v; if (!edgeRaf) edgeRaf = requestAnimationFrame(edgeStep); };
   addEventListener("pointermove", (e) => {
     const panel = document.querySelector($(["edge"]));
     if (!panel || !fine.matches || e.pointerType !== "mouse" || still()) return;
-    const busy = e.buttons || document.querySelector("dialog[open]") || (window.getSelection && String(getSelection()));
+    const busy = e.buttons || document.querySelector("dialog[open]") || openPopover() || (window.getSelection && String(getSelection()));
     const zone = parseFloat(getComputedStyle(panel).getPropertyValue("--aero-edge-zone")) || 220;
     const k = busy ? 0 : Math.max(0, 1 - e.clientX / zone);
     edgeTo(k * k * (3 - 2 * k)); // gentle at first, decisive near the edge

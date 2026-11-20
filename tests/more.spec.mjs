@@ -546,3 +546,14 @@ for (const q of ["", "?nonative"]) {
     expect((await at("vis", 0.4)).vis).toBe("visible");
   });
 }
+
+test("hover: --aero-hover-also adds transitions without dropping the move", async ({ page }) => {
+  await page.goto("/tests/fixture.html");
+  const t = await page.$eval("#shift", (el) => {
+    el.style.setProperty("--aero-hover-also", "border-color .2s, box-shadow .45s");
+    const s = getComputedStyle(el);
+    return [s.transitionProperty, s.transitionDuration];
+  });
+  expect(t[0]).toBe("transform, border-color, box-shadow");
+  expect(t[1]).toBe("0.45s, 0.2s, 0.45s");
+});

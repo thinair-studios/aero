@@ -182,7 +182,7 @@ Add `aero-repeat` to an `.aero-enter` (or `.aero-count`) and it plays again ever
 ```
 
 Effects: `aero-hover-lift` (`-sm` `-md` `-lg` `-xl`), `aero-hover-scale` (`-sm` `-md` `-lg`), `aero-hover-rise`, `aero-hover-nudge`, `aero-hover-shift`.
-Settings: `--aero-hover-duration` `--aero-hover-easing` `--aero-hover-distance` `--aero-hover-scale` `--aero-hover-nudge` `--aero-hover-x` `--aero-hover-y`.
+Settings: `--aero-hover-duration` `--aero-hover-easing` `--aero-hover-distance` `--aero-hover-scale` `--aero-hover-nudge` `--aero-hover-x` `--aero-hover-y`. To fade other things on the same element (a border colour, a shadow), list them in `--aero-hover-also` (`border-color .2s, box-shadow .45s`) instead of writing your own `transition`, which would replace the move.
 `aero-underline` on a link draws an underline in from the left on hover or focus, and out to the right when you leave. It replaces the link's own underline. Settings: `--aero-underline-color` (`currentColor`) `--aero-underline-thickness` (2px) `--aero-underline-offset` (0.15em).
 Keyboard focus triggers the same motion. On touch screens hover motion is cancelled, so a tap doesn't leave things stuck.
 

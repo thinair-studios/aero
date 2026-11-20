@@ -27,6 +27,7 @@ Aero now covers things leaving as well as arriving.
 - **The edge**: `aero-edge`, `aero-edge-shift`, `-drift`, `-fade`: a panel at the left edge that opens as the mouse nears it.
 - **Glide**: `aero-glide` flies from a measured spot through a waypoint into place (a logo from a hero into a header); fades can start hidden with `--aero-visibility-from`.
 - **Collapse icon**: `aero-collapse-icon` turns when its details opens.
+- **Hover, plus your own**: `--aero-hover-also` adds transitions next to the hover move instead of replacing it. The edge also stays shut while a popover is open.
 - **Replay on scroll** with `aero-repeat`, events `aero:in` and `aero:done`, and `Aero.replay(el)`.
 
 ## 2.1.0 — 2026-11-19

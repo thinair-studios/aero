@@ -391,7 +391,7 @@ details.aero-collapse[open] > summary .aero-collapse-icon, details.ae-collapse[o
 .aero-hover-nudge, .ae-hover-nudge { --aero-hover-to: translateX(var(--aero-hover-nudge, 4px)); }
 .aero-hover-shift, .ae-hover-shift { --aero-hover-to: translate(var(--aero-hover-x, 0px), var(--aero-hover-y, 0px)) scale(var(--aero-hover-scale, 1)); }
 :is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift), :is(.ae-hover-lift, .ae-hover-scale, .ae-hover-rise, .ae-hover-nudge, .ae-hover-shift) {
- transition: transform var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+ transition: transform var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1)), var(--aero-hover-also, --aero-hover-none 0s);
 }
 :is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift):not(.aero-hover-target):is(:hover, :focus-visible),
 .aero-hover-group:is(:hover, :focus-within) .aero-hover-target, :is(.ae-hover-lift, .ae-hover-scale, .ae-hover-rise, .ae-hover-nudge, .ae-hover-shift):not(.ae-hover-target):is(:hover, :focus-visible),
