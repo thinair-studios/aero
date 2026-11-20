@@ -21,6 +21,8 @@
  *        --aero-marquee-duration (30s) for one full loop.
  *
  * To play a once-effect again, call Aero.replay(el).
+ * On split text (.aero-split pieces) or in an .aero-stagger list they go one after another, like entrances:
+ * piece n starts at --aero-delay + n * --aero-stagger, so a word shakes or bounces letter by letter.
  *
  *   --aero-attention-duration   each effect has its own default
  *   --aero-shake                how far a shake goes (default 6px)
@@ -34,6 +36,11 @@
 .aero-ping { animation: aero-ping var(--aero-attention-duration, 1.4s) cubic-bezier(0, 0, 0.2, 1) infinite; }
 .aero-bounce { animation: aero-bounce var(--aero-attention-duration, 1s) infinite; }
 .aero-float { animation: aero-float var(--aero-attention-duration, 3.2s) ease-in-out infinite; }
+/* After the shorthands, so it isn't reset by them. Only on split pieces and in stagger lists, so a spinner that
+   merely sits inside a delayed or staggered block doesn't pick up its timing. */
+:is(.aero-piece, .ae-piece, .aero-stagger > *, .ae-stagger > *):is(.aero-shake, .aero-pop, .aero-spin, .aero-pulse, .aero-ping, .aero-bounce, .aero-float) {
+ animation-delay: calc(var(--aero-delay, 0s) + var(--aero-i, 0) * var(--aero-stagger, 0s));
+}
 
 @keyframes aero-shake {
  10%, 90% { transform: translateX(calc(var(--aero-shake, 6px) * -0.25)); }

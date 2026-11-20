@@ -24,9 +24,12 @@ Aero now covers things leaving as well as arriving.
 - **Fix:** the `aero.js` scroll fallback now works on SVG elements, which have no `offsetTop`.
 - **Underline states**: `aero-underline` also draws while current (`.aero-on`, `aria-current`); `aero-underline-side` and `aero-underline-shown`; and `aero-hover-appear` for things that show on hover.
 - **Scroll**: `aero-slide-left` / `-right` and `aero-fade-out` for scrubbed motion; `--aero-opacity-from` for any fade.
-- **The edge**: `aero-edge`, `aero-edge-shift`, `-drift`, `-fade`: a panel at the left edge that opens as the mouse nears it.
+- **The edge**: `aero-edge`, `aero-edge-shift`, `-drift`, `-pin`, `-fade`: a panel at the left edge that opens as the mouse nears it. Only layers move while it opens. `--aero-edge` lives on the panel (not `<html>`), and aero.js writes `translate` on the shifted blocks while it is open.
 - **Glide**: `aero-glide` flies from a measured spot through a waypoint into place (a logo from a hero into a header); fades can start hidden with `--aero-visibility-from`.
 - **Collapse icon**: `aero-collapse-icon` turns when its details opens.
+- **Fix:** `aero-flip` turns its faces, not the card, so a pointer near its edge no longer makes it flicker.
+- **Fix:** line masks (`data-aero-split="lines"`) leave room for descenders (`--aero-line-bleed`, .25em above and below; the mask is now a clip-path, so a page reset can't undo it).
+- **Attention, letter by letter**: on split text the attention effects stagger like entrances; `Aero.settle(el)` stops a loop at the end of its turn.
 - **Hover, plus your own**: `--aero-hover-also` adds transitions next to the hover move instead of replacing it. The edge also stays shut while a popover is open.
 - **Replay on scroll** with `aero-repeat`, events `aero:in` and `aero:done`, and `Aero.replay(el)`.
 

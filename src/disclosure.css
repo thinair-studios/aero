@@ -30,25 +30,21 @@ details.aero-collapse::details-content {
 }
 details.aero-collapse[open]::details-content { block-size: auto; }
 
-.aero-flip {
- position: relative;
- transform-style: preserve-3d;
- transform: perspective(var(--aero-flip-perspective, 900px)) rotateY(0deg);
+/* The card itself never moves, only its faces turn: a turning card narrows to a sliver halfway, and the
+   pointer would fall off it, turn it back, land on it again, and flicker. */
+/* --aero-flip-on is 0 or 1 on each card (set on every card, so a flip inside another starts fresh). */
+.aero-flip { position: relative; --aero-flip-on: 0; }
+.aero-flip:is(:hover, :focus-within, .aero-flipped) { --aero-flip-on: 1; }
+@media (hover: none) { .aero-flip:hover:not(:focus-within, .aero-flipped) { --aero-flip-on: 0; } }
+.aero-flip > :is(.aero-front, .aero-back) {
+ backface-visibility: hidden;
  transition: transform var(--aero-flip-duration, 0.6s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
 }
-.aero-flip > :is(.aero-front, .aero-back) { backface-visibility: hidden; }
+.aero-flip > .aero-front { transform: perspective(var(--aero-flip-perspective, 900px)) rotateY(calc(var(--aero-flip-on) * -180deg)); }
 .aero-flip > .aero-back {
  position: absolute;
  inset: 0;
- transform: rotateY(180deg);
-}
-.aero-flip:is(:hover, :focus-within, .aero-flipped) {
- transform: perspective(var(--aero-flip-perspective, 900px)) rotateY(180deg);
-}
-@media (hover: none) {
- .aero-flip:hover:not(:focus-within, .aero-flipped) {
-  transform: perspective(var(--aero-flip-perspective, 900px)) rotateY(0deg);
- }
+ transform: perspective(var(--aero-flip-perspective, 900px)) rotateY(calc((1 - var(--aero-flip-on)) * 180deg));
 }
 
 /* The accordion's own marker: an .aero-collapse-icon inside the summary turns by --aero-collapse-turn (45deg)

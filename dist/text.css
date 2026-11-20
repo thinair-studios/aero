@@ -3,7 +3,10 @@
 .aero-split, .ae-split { --aero-stagger: 45ms; }
 .aero-split .aero-word, .ae-split .ae-word { display: inline-block; white-space: nowrap; }
 .aero-split .aero-piece, .ae-split .ae-piece { display: inline-block; }
-.aero-split .aero-line, .ae-split .ae-line { display: block; overflow: clip; }
+.aero-split .aero-line, .ae-split .ae-line {
+ display: block;
+ clip-path: inset(calc(var(--aero-line-bleed, 0.25em) * -1) 0);
+}
 .aero-split .aero-line > .aero-piece, .ae-split .ae-line > .ae-piece { display: block; }
 .aero-split-text, .ae-split-text {
  position: absolute;

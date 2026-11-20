@@ -86,21 +86,30 @@ html:active-view-transition-type(aero-reveal, aero-reveal-back)::view-transition
 
 /* ---- The edge: a way back at the side of the page (aero.js drives it) ----------------------------------
  * <div class="aero-edge">…</div>  fixed at the left edge. As the pointer nears the edge (within
- * --aero-edge-zone, 220px) aero.js eases --aero-edge from 0 to 1 on <html> and adds .aero-edge-on there.
- * The panel widens to --aero-edge-reach (24vw) and takes clicks once it's open (.aero-edge-live).
- * .aero-edge-shift on the page's blocks slides them aside with it; inside the panel, .aero-edge-drift
- * drifts in from the left and .aero-edge-fade fades in late. Mouse only; set the reach on :root. */
+ * --aero-edge-zone, 220px) aero.js eases --aero-edge from 0 to 1 on the panel (not on <html>: a long page would restyle every element each
+ * frame) and adds .aero-edge-on to <html>.
+ * The panel opens to --aero-edge-reach (24vw) and takes clicks once it's open (.aero-edge-live). It slides in
+ * rather than widening, so the browser only moves layers (no layout or repaint per frame).
+ * .aero-edge-shift on the page's blocks slides them aside with it. Inside the panel, .aero-edge-drift drifts
+ * in from the left (a page underneath, say), .aero-edge-pin stays put on screen as the panel uncovers it, and
+ * .aero-edge-fade fades in late. Mouse only; set the reach on :root. */
+/* The panel's parts are always layers (they're small and fixed); the page's blocks become layers only while it's
+   open, so a long page isn't kept as one. aero.js writes the blocks' translate on them. */
+:is(.aero-edge, .aero-edge-drift, .aero-edge-pin) { will-change: translate; }
+.aero-edge-on .aero-edge-shift { will-change: translate; }
 .aero-edge {
  position: fixed;
  z-index: 40;
  inset: 0 auto 0 0;
- width: calc(var(--aero-edge, 0) * var(--aero-edge-reach, 24vw) + var(--aero-edge-strip, 10px));
+ width: calc(var(--aero-edge-reach, 24vw) + var(--aero-edge-strip, 10px));
+ translate: calc((var(--aero-edge, 0) - 1) * var(--aero-edge-reach, 24vw)) 0;
  overflow: clip;
  opacity: min(1, calc(var(--aero-edge, 0) * 8));
  pointer-events: none;
 }
 .aero-edge.aero-edge-live { pointer-events: auto; }
-.aero-edge-on .aero-edge-shift { translate: calc(var(--aero-edge, 0) * var(--aero-edge-reach, 24vw)) 0; }
 .aero-edge-on, .aero-edge-on body { overflow-x: clip; }
-.aero-edge-drift { translate: calc((1 - var(--aero-edge, 0)) * -6vw) 0; }
+/* On screen these sit at -6vw -> 0 (drift) and still (pin); the panel's own slide is taken back out. */
+.aero-edge-drift { translate: calc((1 - var(--aero-edge, 0)) * (var(--aero-edge-reach, 24vw) - 6vw)) 0; }
+.aero-edge-pin { translate: calc((1 - var(--aero-edge, 0)) * var(--aero-edge-reach, 24vw)) 0; }
 .aero-edge-fade { opacity: max(0, calc(var(--aero-edge, 0) * 1.6 - 0.35)); }

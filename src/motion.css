@@ -39,7 +39,7 @@
   transition: none !important;
   transform: none !important;
  }
- .aero-reduce-motion .aero-flip,
+ .aero-reduce-motion .aero-flip > *,
  .aero-reduce-motion .aero-underline::after {
   transition: none !important;
  }

@@ -7,6 +7,9 @@
 .aero-ping, .ae-ping { animation: aero-ping var(--aero-attention-duration, 1.4s) cubic-bezier(0, 0, 0.2, 1) infinite; }
 .aero-bounce, .ae-bounce { animation: aero-bounce var(--aero-attention-duration, 1s) infinite; }
 .aero-float, .ae-float { animation: aero-float var(--aero-attention-duration, 3.2s) ease-in-out infinite; }
+:is(.aero-piece, .ae-piece, .aero-stagger > *, .ae-stagger > *):is(.aero-shake, .aero-pop, .aero-spin, .aero-pulse, .aero-ping, .aero-bounce, .aero-float), :is(.ae-piece, .ae-piece, .ae-stagger > *, .ae-stagger > *):is(.ae-shake, .ae-pop, .ae-spin, .ae-pulse, .ae-ping, .ae-bounce, .ae-float) {
+ animation-delay: calc(var(--aero-delay, 0s) + var(--aero-i, 0) * var(--aero-stagger, 0s));
+}
 @keyframes aero-shake {
  10%, 90% { transform: translateX(calc(var(--aero-shake, 6px) * -0.25)); }
  20%, 80% { transform: translateX(calc(var(--aero-shake, 6px) * 0.5)); }

@@ -33,8 +33,8 @@
   transition: none !important;
   transform: none !important;
  }
- .aero-reduce-motion .aero-flip,
- .aero-reduce-motion .aero-underline::after, .ae-reduce-motion .ae-flip,
+ .aero-reduce-motion .aero-flip > *,
+ .aero-reduce-motion .aero-underline::after, .ae-reduce-motion .ae-flip > *,
  .ae-reduce-motion .ae-underline::after {
   transition: none !important;
  }

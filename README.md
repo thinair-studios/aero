@@ -109,7 +109,7 @@ Pure CSS: they animate in when they open and out when they close, backdrop inclu
 <span class="aero-spin">…</span>             <!-- loops -->
 ```
 
-Once: `aero-shake`, `aero-pop`. Loops: `aero-spin`, `aero-pulse`, `aero-ping`, `aero-bounce`, `aero-float`, `aero-shimmer`. Settings: `--aero-attention-duration` `--aero-shake` `--aero-pop`.
+Once: `aero-shake`, `aero-pop`. Loops: `aero-spin`, `aero-pulse`, `aero-ping`, `aero-bounce`, `aero-float`, `aero-shimmer`. Settings: `--aero-attention-duration` `--aero-shake` `--aero-pop`. On split text (`.aero-split`) they go one letter after another, `--aero-stagger` apart. To stop a loop that runs while something is hovered, `Aero.settle(el)` lets it finish the turn it's on and takes its class off, so it comes to rest instead of jumping back.
 
 `aero-shimmer` sweeps a light band across a loading skeleton (a `::after` that moves with `translateX`, clipped by the element). Settings: `--aero-shimmer-color` (`rgb(255 255 255 / .35)`) and `--aero-attention-duration` (1.6s here).
 
@@ -152,10 +152,10 @@ The track scrolls left forever. `aero.js` copies its children once (the copies a
 
 `aero.js` splits the text into words (or letters, kept inside their words) and each piece plays the parent's variant. Inline markup stays, and screen readers get letter-split text once, whole. Settings: `--aero-stagger` (45ms here) `--aero-wave`.
 
-`data-aero-split="lines"` gives each rendered line its own mask (`.aero-line`, `overflow: clip`) and plays the variant on a piece inside it, so each line rises from behind its own edge. Use `aero-fade-up` with `--aero-distance: 100%`:
+`data-aero-split="lines"` gives each rendered line its own mask (`.aero-line`, a clip-path reaching `--aero-line-bleed`, .25em, above and below so descenders show) and plays the variant on a piece inside it, so each line rises from behind its own edge. Use `aero-fade-up` with `--aero-distance: 120%`:
 
 ```html
-<h2 class="aero-split aero-fade-up" data-aero-split="lines" style="--aero-distance: 100%">A long headline that wraps</h2>
+<h2 class="aero-split aero-fade-up" data-aero-split="lines" style="--aero-distance: 120%">A long headline that wraps</h2>
 ```
 
 It splits again on resize (and when fonts load) until the text has played, then leaves it. Inline tags are kept, cloned for each line they wrap onto. Keep `line-height` at 1.1 or more so the mask doesn't clip letters.
@@ -228,7 +228,7 @@ Browsers without cross-document View Transitions (Firefox today) get the same di
 <main class="aero-edge-shift">…</main>     <!-- slides aside as it opens -->
 ```
 
-As the mouse nears the left edge, `aero.js` eases `--aero-edge` from 0 to 1 on `<html>`: the panel widens to `--aero-edge-reach` (24vw, set it on `:root`) and takes clicks once open, `.aero-edge-shift` blocks slide aside with it, and inside the panel `.aero-edge-drift` drifts in while `.aero-edge-fade` fades in late. What the panel holds and where a click goes are yours; our site uses it as the way back, with the previous page live behind it. Mouse only.
+As the mouse nears the left edge, `aero.js` eases `--aero-edge` from 0 to 1 on the panel (and adds `.aero-edge-on` to `<html>`): the panel slides open to `--aero-edge-reach` (24vw, set it on `:root`) and takes clicks once open, `.aero-edge-shift` blocks slide aside with it (aero.js writes their `translate`, so only they restyle), and inside the panel `.aero-edge-drift` drifts in, `.aero-edge-pin` stays put on screen as the panel uncovers it, and `.aero-edge-fade` fades in late. Only `translate` and `opacity` change while it moves, so it stays smooth on long pages. Once open it holds while the pointer is on it, and closes as the pointer leaves it. It opens when the pointer is reaching for it: a fast sweep past waits a beat, and pointing at a link or a control near the edge never opens it. `--aero-edge-zone` (220px) is how far out it starts; narrow it to your page's margin if content comes close. What the panel holds and where a click goes are yours; our site uses it as the way back, with the previous page live behind it. Mouse only.
 
 ## Layout changes
 

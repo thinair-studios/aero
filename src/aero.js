@@ -28,6 +28,8 @@
  *  window.Aero.refresh()   re-scan now (normally not needed)
  *  window.Aero.progress(el) a scrubbed element's position in its range, 0 to 1 (for debugging)
  *  window.Aero.replay(el)   play the entrances and once-effects in el again, from the start
+ *  window.Aero.settle(el)   let the loops in el (aero-spin, -bounce…) finish the turn they're on, then stop
+ *                           them (their class comes off); resolves when they've come to rest
  *  window.Aero.leave(el, { remove })  play el's .aero-leave-* exit; resolves when it ends
  *  window.Aero.swap(update) change the layout inside update(); .aero-morph elements move to
  *                           their new places (a View Transition; elsewhere it just updates)
@@ -218,31 +220,58 @@
     }
   };
 
-  // ---- Edge: the pointer nearing the left edge eases --aero-edge (0..1) on <html>, while an .aero-edge is on the page
+  // ---- Edge: the pointer nearing the left edge eases --aero-edge (0..1) while an .aero-edge is on the page.
+  // The value goes on the panels only, and each .aero-edge-shift block gets its translate written on it, so a long
+  // page doesn't restyle every element each frame; and far from the edge a move costs one comparison.
   const fine = matchMedia("(hover: hover) and (pointer: fine)");
-  let edgeWant = 0, edgeNow = 0, edgeRaf = 0;
+  let edgeWant = 0, edgeNow = 0, edgeRaf = 0, edgePanel = null, edgeZone = 220, edgePanels = [], edgeShifts = [];
+  const edgeSet = (v) => {
+    for (const p of edgePanels) p.style.setProperty("--aero-edge", v);
+    for (const el of edgeShifts) el.style.translate = +v ? `calc(${v} * var(--aero-edge-reach, 24vw)) 0` : "";
+  };
+  const edgeLive = (on) => { for (const p of edgePanels) { p.classList.toggle("aero-edge-live", on); p.classList.toggle("ae-edge-live", on); } };
   const edgeStep = () => {
+    if (edgeNow === 0) { edgePanels = [...document.querySelectorAll($(["edge"]))]; edgeShifts = [...document.querySelectorAll($(["edge-shift"]))]; } // as it starts to open
     edgeNow += (edgeWant - edgeNow) * 0.16;
     if (Math.abs(edgeWant - edgeNow) < 0.001) edgeNow = edgeWant;
-    root.style.setProperty("--aero-edge", edgeNow.toFixed(4));
+    edgeSet(edgeNow.toFixed(4));
     root.classList.toggle("aero-edge-on", edgeNow > 0.001);
     root.classList.toggle("ae-edge-on", edgeNow > 0.001);
-    for (const p of document.querySelectorAll($(["edge"]))) { p.classList.toggle("aero-edge-live", edgeNow > 0.04); p.classList.toggle("ae-edge-live", edgeNow > 0.04); }
+    edgeLive(edgeNow > 0.04);
     edgeRaf = edgeNow === edgeWant ? 0 : requestAnimationFrame(edgeStep);
   };
   const openPopover = () => { try { return document.querySelector(":popover-open"); } catch { return null; } };
   const edgeTo = (v) => { edgeWant = v; if (!edgeRaf) edgeRaf = requestAnimationFrame(edgeStep); };
+  // Reaching for it, not passing through: a fast sweep across the edge (on the way to the browser's back button, or
+  // off the window) waits a beat before it opens, and it never opens while the pointer is on a link or a control.
+  let edgeX = 0, edgeT = 0, edgeLater = 0;
+  const CONTROL = "a, button, input, select, textarea, summary, label, [role=button], [tabindex]:not([tabindex='-1'])";
+  addEventListener("resize", () => { edgePanel = null; }, { passive: true }); // the zone may depend on the width
   addEventListener("pointermove", (e) => {
-    const panel = document.querySelector($(["edge"]));
-    if (!panel || !fine.matches || e.pointerType !== "mouse" || still()) return;
-    const busy = e.buttons || document.querySelector("dialog[open]") || openPopover() || (window.getSelection && String(getSelection()));
-    const zone = parseFloat(getComputedStyle(panel).getPropertyValue("--aero-edge-zone")) || 220;
-    const k = busy ? 0 : Math.max(0, 1 - e.clientX / zone);
-    edgeTo(k * k * (3 - 2 * k)); // gentle at first, decisive near the edge
+    clearTimeout(edgeLater); // a sweep's pending open is void once the pointer moves again
+    if (e.pointerType !== "mouse" || !fine.matches) return;
+    const fast = Math.abs(e.clientX - edgeX) / Math.max(1, e.timeStamp - edgeT) > 1.5; // px per ms
+    edgeX = e.clientX; edgeT = e.timeStamp;
+    if (!edgePanel || !edgePanel.isConnected) {
+      edgePanel = document.querySelector($(["edge"]));
+      if (!edgePanel) return;
+      edgeZone = parseFloat(getComputedStyle(edgePanel).getPropertyValue("--aero-edge-zone")) || 220;
+    }
+    const zone = parseFloat(edgePanel.style.getPropertyValue("--aero-edge-zone")) || edgeZone; // set inline by a script: read it live
+    if (e.clientX >= zone && edgeWant === 0) return; // nowhere near it, and it's shut
+    if (still()) return;
+    const over = e.target.closest && !e.target.closest($(["edge"])) && e.target.closest(CONTROL);
+    const busy = over || e.buttons || document.querySelector("dialog[open]") || openPopover() || (window.getSelection && String(getSelection()));
+    // Once it's open, the panel holds while the pointer is on it (to look at it, or click anywhere on it).
+    const held = edgeNow > 0.3 && e.target.closest && e.target.closest($(["edge"]));
+    const k = busy ? 0 : held ? 1 : Math.max(0, 1 - e.clientX / zone);
+    const v = k * k * (3 - 2 * k); // gentle at first, decisive near the edge
+    if (v > edgeWant && fast) edgeLater = setTimeout(() => edgeTo(v), 140);
+    else edgeTo(v);
   }, { passive: true });
-  root.addEventListener("pointerleave", () => edgeTo(0));
-  addEventListener("blur", () => edgeTo(0));
-  addEventListener("pageshow", () => { edgeWant = edgeNow = 0; root.style.setProperty("--aero-edge", "0"); root.classList.remove("aero-edge-on", "ae-edge-on"); });
+  root.addEventListener("pointerleave", () => { clearTimeout(edgeLater); edgeTo(0); });
+  addEventListener("blur", () => { clearTimeout(edgeLater); edgeTo(0); });
+  addEventListener("pageshow", () => { clearTimeout(edgeLater); edgeWant = edgeNow = 0; edgeSet("0"); edgeLive(false); root.classList.remove("aero-edge-on", "ae-edge-on"); });
 
   // ---- Stagger order, draw, marquee
   const SHAPES = "path, line, polyline, polygon, circle, ellipse, rect";
@@ -299,8 +328,24 @@
     }
   });
 
-  // ---- Replay, leave, swap
+  // ---- Replay, settle, leave, swap
+  const settling = new WeakSet();
+  const settle = (el) => Promise.all(el.getAnimations({ subtree: true }).map((a) => {
+    const t = a.effect && a.effect.target, name = a.animationName || "";
+    if (!t || !name.startsWith("aero-") || a.effect.pseudoElement || a.effect.getTiming().iterations !== Infinity) return null;
+    if (!t.classList.contains(name) && !t.classList.contains(name.replace(/^aero-/, "ae-"))) return null; // shimmer, marquee: not a class on t
+    const off = () => { t.classList.remove(name, name.replace(/^aero-/, "ae-")); t.style.animationIterationCount = ""; settling.delete(t); };
+    const turn = a.effect.getComputedTiming().currentIteration;
+    if (turn == null) { off(); return null; } // still waiting for its delay: nothing to finish
+    settling.add(t);
+    t.style.animationIterationCount = String(turn + 1); // ends where it started, so taking the class off doesn't jump
+    return new Promise((done) => {
+      const end = (e) => { if (e.target !== t || e.animationName !== name) return; t.removeEventListener("animationend", end); if (settling.has(t)) off(); done(); };
+      t.addEventListener("animationend", end);
+    });
+  }));
   const replay = (el) => {
+    for (const t of [el, ...el.querySelectorAll("*")]) if (settling.has(t)) { settling.delete(t); t.style.animationIterationCount = ""; } // back to looping
     for (const x of [el, ...el.querySelectorAll($(["enter"]))]) if (has(x, "enter") && !has(x, "in")) enter(x);
     for (const a of el.getAnimations({ subtree: true })) {
       const t = a.effect && a.effect.target;
@@ -442,5 +487,5 @@
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
   else start();
-  window.Aero = { refresh, progress, replay, leave, swap };
+  window.Aero = { refresh, progress, replay, settle, leave, swap };
 })();

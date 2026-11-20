@@ -302,7 +302,7 @@ test("lines: each rendered line gets its mask and rises; tags are kept; screen r
     const lines = [...el.querySelectorAll(".aero-line")];
     return {
       n: lines.length, pieces: lines.map((l) => l.querySelectorAll(":scope > .aero-piece").length),
-      overflow: getComputedStyle(lines[0]).overflow, hidden: lines.every((l) => l.getAttribute("aria-hidden") === "true"),
+      clip: getComputedStyle(lines[0]).clipPath, hidden: lines.every((l) => l.getAttribute("aria-hidden") === "true"),
       idx: lines.map((l) => l.firstElementChild.style.getPropertyValue("--aero-i")),
       anim: lines.map((l) => l.firstElementChild.getAnimations()[0]?.animationName),
       em: [...el.querySelectorAll("em")].map((e) => e.textContent).join(" "),
@@ -312,7 +312,7 @@ test("lines: each rendered line gets its mask and rises; tags are kept; screen r
   });
   expect(r.n).toBeGreaterThan(2);
   expect(r.pieces.every((n) => n === 1)).toBe(true);
-  expect(r.overflow).toBe("clip");
+  expect(r.clip).toMatch(/^inset\(/); // the mask
   expect(r.hidden).toBe(true);
   expect(r.idx).toEqual(r.idx.map((_, i) => String(i)));
   expect(r.anim.every((a) => a === "aero-fade-up")).toBe(true);
@@ -335,12 +335,12 @@ test("lines: split again on resize until played, then left alone", async ({ page
 
 test("flip: hover turns the card over on Y, .aero-flipped does too, the front hides its back", async ({ page }) => {
   await page.goto(P2);
-  const m11 = (id) => page.evaluate((id) => new DOMMatrix(getComputedStyle(document.getElementById(id)).transform).m11, id);
+  const m11 = (id) => page.evaluate((id) => new DOMMatrix(getComputedStyle(document.querySelector(`#${id} > .aero-front`)).transform).m11, id);
   expect(await m11("flip")).toBeCloseTo(1, 1);
   expect(await page.evaluate(() => getComputedStyle(document.querySelector("#flip .aero-front")).backfaceVisibility)).toBe("hidden");
   const p = await pointOf(page, "#flip");
   await page.mouse.move(p.x, p.y);
-  expect(await page.evaluate(() => document.getElementById("flip").getAnimations().map((a) => a.transitionProperty))).toEqual(["transform"]);
+  expect(await page.evaluate(() => document.querySelector("#flip > .aero-front").getAnimations().map((a) => a.transitionProperty))).toEqual(["transform"]);
   await settle(page);
   expect(await m11("flip")).toBeCloseTo(-1, 1);
   await page.mouse.move(0, 0);
@@ -522,8 +522,10 @@ for (const q of ["", "?nonative"]) {
 test("edge: the pointer at the left edge opens it and slides the page aside; away, it closes", async ({ page, browserName }) => {
   await page.goto(P3);
   await page.mouse.move(600, 300); await page.mouse.move(4, 300, { steps: 6 }); await page.waitForTimeout(900);
-  const open = await page.evaluate(() => ({ edge: +getComputedStyle(document.documentElement).getPropertyValue("--aero-edge"), on: document.documentElement.classList.contains("aero-edge-on"), live: document.getElementById("edge").classList.contains("aero-edge-live"), shift: parseFloat(getComputedStyle(document.getElementById("page")).translate) }));
+  const open = await page.evaluate(() => ({ edge: +getComputedStyle(document.getElementById("edge")).getPropertyValue("--aero-edge"), fade: +getComputedStyle(document.getElementById("edge-fade")).opacity, body: getComputedStyle(document.body).getPropertyValue("--aero-edge").trim(), on: document.documentElement.classList.contains("aero-edge-on"), live: document.getElementById("edge").classList.contains("aero-edge-live"), shift: parseFloat(getComputedStyle(document.getElementById("page")).translate) }));
   expect(open.edge).toBeGreaterThan(0.95);
+  expect(open.fade).toBeGreaterThan(0.9); // passed down inside the panel
+  expect(["", "0"]).toContain(open.body); // the rest of the page isn't touched
   expect(open.on && open.live).toBe(true);
   expect(open.shift).toBeGreaterThan(280); // most of the 300px reach
   await page.mouse.move(900, 300, { steps: 4 }); await page.waitForTimeout(900);
@@ -556,4 +558,94 @@ test("hover: --aero-hover-also adds transitions without dropping the move", asyn
   });
   expect(t[0]).toBe("transform, border-color, box-shadow");
   expect(t[1]).toBe("0.45s, 0.2s, 0.45s");
+});
+
+test("flip: the card stays put while its faces turn, so a pointer near its edge doesn't make it flicker", async ({ page }) => {
+  await page.goto(P2);
+  const box = await page.locator("#flip").boundingBox();
+  await page.mouse.move(box.x + 6, box.y + box.height / 2);
+  await page.waitForTimeout(250); // halfway through the turn
+  expect(await page.evaluate(() => document.getElementById("flip").matches(":hover"))).toBe(true);
+  expect(await page.evaluate(() => getComputedStyle(document.getElementById("flip")).transform)).toBe("none");
+  await settle(page);
+  expect(await page.evaluate(() => new DOMMatrix(getComputedStyle(document.querySelector("#flip > .aero-back")).transform).m11)).toBeCloseTo(1, 1);
+});
+
+test("lines: the mask leaves room for descenders", async ({ page }) => {
+  await page.goto(P2);
+  // A page reset (unlayered, so it beats Aero's layer) mustn't undo it.
+  await page.addStyleTag({ content: "* { padding: 0; margin: 0; overflow: visible; }" });
+  const r = await page.evaluate(() => { const l = document.querySelector("#lines .aero-line"); const s = getComputedStyle(l); return [s.clipPath, s.overflow, parseFloat(s.fontSize)]; });
+  expect(r[0]).toMatch(/^inset\(-/);
+  expect(r[1]).toBe("visible");
+});
+
+test("edge: a fast sweep waits a beat before opening, and a link at the edge never opens it", async ({ page }) => {
+  await page.goto(P3);
+  const edge = () => page.evaluate(() => +getComputedStyle(document.getElementById("edge")).getPropertyValue("--aero-edge") || 0);
+  await page.mouse.move(900, 300); await page.mouse.move(4, 300); // one jump: as fast as a pointer goes
+  await page.waitForTimeout(60);
+  expect(await edge()).toBe(0);
+  await page.waitForTimeout(800);
+  expect(await edge()).toBeGreaterThan(0.9); // it stayed, so it opens
+  await page.mouse.move(900, 300, { steps: 3 }); await page.waitForTimeout(900);
+  const link = await page.locator("#edge-link").boundingBox();
+  await page.mouse.move(link.x + 8, link.y + 8, { steps: 8 }); await page.waitForTimeout(800);
+  expect(await edge()).toBe(0);
+});
+
+test("attention: split pieces shake one after another", async ({ page }) => {
+  await page.goto(P2);
+  const delays = await page.evaluate(() => {
+    const h = document.createElement("p"); h.className = "aero-split"; h.dataset.aeroSplit = "letters"; h.textContent = "abc"; document.body.append(h);
+    window.Aero.refresh();
+    const ps = [...h.querySelectorAll(".aero-piece")]; ps.forEach((p) => p.classList.add("aero-shake"));
+    return ps.map((p) => getComputedStyle(p).animationDelay);
+  });
+  expect(delays).toEqual(["0s", "0.045s", "0.09s"]);
+});
+
+test("settle: a loop finishes the turn it's on, then stops without a jump", async ({ page }) => {
+  await page.goto(P2);
+  const r = await page.evaluate(async () => {
+    const d = document.createElement("i"); d.className = "aero-spin"; d.style.cssText = "display:inline-block; --aero-attention-duration: 400ms"; d.textContent = "*"; document.body.append(d);
+    await new Promise((r) => setTimeout(r, 500)); // into its second turn
+    const t0 = performance.now();
+    await window.Aero.settle(d);
+    return { took: performance.now() - t0, cls: d.className, anims: d.getAnimations().length, tr: getComputedStyle(d).transform };
+  });
+  expect(r.took).toBeGreaterThan(150); // it finished the turn instead of stopping dead
+  expect(r.took).toBeLessThan(450);
+  expect(r.cls).toBe("");
+  expect(r.anims).toBe(0);
+  expect(r.tr).toBe("none");
+});
+
+test("edge: once open it holds while the pointer is on it, and closes when the pointer leaves it", async ({ page }) => {
+  await page.goto(P3);
+  const edge = () => page.evaluate(() => +getComputedStyle(document.getElementById("edge")).getPropertyValue("--aero-edge") || 0);
+  await page.mouse.move(600, 300); await page.mouse.move(4, 300, { steps: 6 }); await page.waitForTimeout(900);
+  await page.mouse.move(250, 300, { steps: 10 }); await page.waitForTimeout(700); // past the 220px zone, still on the 300px panel
+  expect(await edge()).toBeGreaterThan(0.95);
+  await page.mouse.move(700, 300, { steps: 10 }); await page.waitForTimeout(900); // off it, onto the page
+  expect(await edge()).toBe(0);
+});
+
+test("review fixes: settle skips shimmer, a spinner in a delayed block isn't delayed, a stale sweep doesn't open the edge", async ({ page }) => {
+  await page.goto(P2);
+  const r = await page.evaluate(async () => {
+    const sh = document.createElement("div"); sh.className = "aero-shimmer"; sh.style.cssText = "width:50px;height:10px"; document.body.append(sh);
+    const t0 = performance.now(); await window.Aero.settle(sh); const took = performance.now() - t0;
+    const box = document.createElement("div"); box.style.setProperty("--aero-delay", "0.5s"); box.style.setProperty("--aero-i", "2"); box.style.setProperty("--aero-stagger", "100ms");
+    const sp = document.createElement("i"); sp.className = "aero-spin"; box.append(sp); document.body.append(box);
+    return { took, cls: sh.className, delay: getComputedStyle(sp).animationDelay };
+  });
+  expect(r.took).toBeLessThan(100);
+  expect(r.cls).toBe("aero-shimmer");
+  expect(r.delay).toBe("0s");
+  await page.goto(P3);
+  const edge = () => page.evaluate(() => +getComputedStyle(document.getElementById("edge")).getPropertyValue("--aero-edge") || 0);
+  await page.mouse.move(900, 300); await page.mouse.move(4, 300); await page.mouse.move(700, 300); // flick in and out
+  await page.waitForTimeout(600);
+  expect(await edge()).toBe(0);
 });
