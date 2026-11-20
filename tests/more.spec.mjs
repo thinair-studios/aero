@@ -649,3 +649,17 @@ test("review fixes: settle skips shimmer, a spinner in a delayed block isn't del
   await page.waitForTimeout(600);
   expect(await edge()).toBe(0);
 });
+
+test("hover wave: a ripple runs through the letters, each rising and settling back in turn", async ({ page }) => {
+  await page.goto(P2);
+  await page.evaluate(() => { const a = document.createElement("a"); a.href = "#"; a.id = "wv"; a.className = "aero-split aero-hover-wave"; a.dataset.aeroSplit = "letters"; a.style.cssText = "display:inline-block; font-size: 60px; margin: 40px"; a.textContent = "wave"; document.body.prepend(a); window.Aero.refresh(); });
+  const ys = () => page.evaluate(() => [...document.querySelectorAll("#wv .aero-piece")].map((p) => new DOMMatrix(getComputedStyle(p).transform).m42));
+  const box = await page.locator("#wv").boundingBox();
+  await page.mouse.move(box.x + 10, box.y + box.height / 2);
+  await page.waitForTimeout(200);
+  const mid = await ys();
+  expect(Math.min(...mid)).toBeLessThan(-6); // the first letters are well up
+  expect(mid[0]).toBeLessThan(mid[3]); // and ahead of the last
+  await page.waitForTimeout(1200);
+  expect((await ys()).every((y) => Math.abs(y) < 0.5)).toBe(true); // all settled back, still hovered
+});

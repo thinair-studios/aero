@@ -150,7 +150,7 @@ The track scrolls left forever. `aero.js` copies its children once (the copies a
 <a class="aero-split aero-hover-wave" data-aero-split="letters">A wave on hover</a>
 ```
 
-`aero.js` splits the text into words (or letters, kept inside their words) and each piece plays the parent's variant. Inline markup stays, and screen readers get letter-split text once, whole. Settings: `--aero-stagger` (45ms here) `--aero-wave`.
+`aero.js` splits the text into words (or letters, kept inside their words) and each piece plays the parent's variant. Inline markup stays, and screen readers get letter-split text once, whole. Settings: `--aero-stagger` (45ms here) `--aero-wave` (how high the hover wave lifts each piece, 0.3em) `--aero-hover-duration` (each piece's rise and fall, 0.7s). The wave is a ripple: every piece rises and settles back in turn, each time the pointer arrives.
 
 `data-aero-split="lines"` gives each rendered line its own mask (`.aero-line`, a clip-path reaching `--aero-line-bleed`, .25em, above and below so descenders show) and plays the variant on a piece inside it, so each line rises from behind its own edge. Use `aero-fade-up` with `--aero-distance: 120%`:
 

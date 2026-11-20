@@ -15,10 +15,11 @@
  * the distance a little over 100% (120%) so nothing peeks above the mask before it rises.
  *
  * aero-hover-wave: inside an .aero-hover-group (or on hover/focus of the split
- * element itself), the pieces rise one after another.
+ * element itself), a ripple runs through the pieces: each rises and settles back, one after another.
  *
  *   --aero-stagger         time between pieces (default 45ms here)
- *   --aero-wave            how far a wave lifts a piece (default 0.12em)
+ *   --aero-wave            how far a wave lifts a piece (default 0.3em)
+ *   --aero-hover-duration  how long each piece takes to rise and settle (default 0.7s)
  * ========================================================================= */
 
 .aero-split { --aero-stagger: 45ms; }
@@ -41,17 +42,20 @@
  white-space: nowrap;
 }
 
-.aero-hover-wave .aero-piece {
- transition: transform var(--aero-hover-duration, 0.35s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
- transition-delay: calc(var(--aero-i, 0) * 18ms);
-}
+/* A ripple: each piece rises and settles back, one after another, every time the pointer arrives. */
 .aero-hover-wave:is(:hover, :focus-visible) .aero-piece,
 .aero-hover-group:is(:hover, :focus-within) .aero-hover-wave .aero-piece {
- transform: translateY(calc(var(--aero-wave, 0.12em) * -1));
+ animation: aero-wave var(--aero-hover-duration, 0.7s) both;
+ animation-delay: calc(var(--aero-i, 0) * var(--aero-stagger, 45ms));
 }
 @media (hover: none) {
  .aero-hover-wave:hover:not(:focus-visible) .aero-piece,
  .aero-hover-group:hover:not(:focus-within) .aero-hover-wave .aero-piece {
-  transform: none;
+  animation: none;
  }
 }
+@keyframes aero-wave {
+ 0%, 100% { transform: none; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+ 40% { transform: translateY(calc(var(--aero-wave, 0.3em) * -1)); animation-timing-function: cubic-bezier(0.32, 0, 0.67, 0); }
+}
+

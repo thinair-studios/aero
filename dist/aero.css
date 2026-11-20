@@ -320,21 +320,22 @@ details.aero-collapse[open] > summary .aero-collapse-icon, details.ae-collapse[o
  clip-path: inset(50%);
  white-space: nowrap;
 }
-.aero-hover-wave .aero-piece, .ae-hover-wave .ae-piece {
- transition: transform var(--aero-hover-duration, 0.35s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
- transition-delay: calc(var(--aero-i, 0) * 18ms);
-}
 .aero-hover-wave:is(:hover, :focus-visible) .aero-piece,
 .aero-hover-group:is(:hover, :focus-within) .aero-hover-wave .aero-piece, .ae-hover-wave:is(:hover, :focus-visible) .ae-piece,
 .ae-hover-group:is(:hover, :focus-within) .ae-hover-wave .ae-piece {
- transform: translateY(calc(var(--aero-wave, 0.12em) * -1));
+ animation: aero-wave var(--aero-hover-duration, 0.7s) both;
+ animation-delay: calc(var(--aero-i, 0) * var(--aero-stagger, 45ms));
 }
 @media (hover: none) {
  .aero-hover-wave:hover:not(:focus-visible) .aero-piece,
  .aero-hover-group:hover:not(:focus-within) .aero-hover-wave .aero-piece, .ae-hover-wave:hover:not(:focus-visible) .ae-piece,
  .ae-hover-group:hover:not(:focus-within) .ae-hover-wave .ae-piece {
-  transform: none;
+  animation: none;
  }
+}
+@keyframes aero-wave {
+ 0%, 100% { transform: none; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+ 40% { transform: translateY(calc(var(--aero-wave, 0.3em) * -1)); animation-timing-function: cubic-bezier(0.32, 0, 0.67, 0); }
 }
 .aero-scrub, .ae-scrub {
  animation-duration: 1s;
@@ -630,14 +631,12 @@ html:active-view-transition-type(aero-reveal, aero-reveal-back)::view-transition
   animation: none !important;
  }
  .aero-reduce-motion :is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover),
- .aero-reduce-motion :is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover)::backdrop,
- .aero-reduce-motion .aero-hover-wave .aero-piece, .ae-reduce-motion :is(.ae-dialog, .ae-drawer, .ae-drawer-left, .ae-drawer-bottom, .ae-popover),
- .ae-reduce-motion :is(.ae-dialog, .ae-drawer, .ae-drawer-left, .ae-drawer-bottom, .ae-popover)::backdrop,
- .ae-reduce-motion .ae-hover-wave .ae-piece {
+ .aero-reduce-motion :is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover)::backdrop, .ae-reduce-motion :is(.ae-dialog, .ae-drawer, .ae-drawer-left, .ae-drawer-bottom, .ae-popover),
+ .ae-reduce-motion :is(.ae-dialog, .ae-drawer, .ae-drawer-left, .ae-drawer-bottom, .ae-popover)::backdrop {
   transition-duration: 0s !important;
  }
  .aero-reduce-motion .aero-hover-wave .aero-piece, .ae-reduce-motion .ae-hover-wave .ae-piece {
-  transform: none !important;
+  animation: none !important;
  }
  .aero-reduce-motion .aero-hover-appear,
  .aero-reduce-motion .aero-collapse-icon, .ae-reduce-motion .ae-hover-appear,

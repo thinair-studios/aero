@@ -17,12 +17,11 @@
   animation: none !important;
  }
  .aero-reduce-motion :is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover),
- .aero-reduce-motion :is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover)::backdrop,
- .aero-reduce-motion .aero-hover-wave .aero-piece {
+ .aero-reduce-motion :is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover)::backdrop {
   transition-duration: 0s !important;
  }
  .aero-reduce-motion .aero-hover-wave .aero-piece {
-  transform: none !important;
+  animation: none !important;
  }
  .aero-reduce-motion .aero-hover-appear,
  .aero-reduce-motion .aero-collapse-icon {
