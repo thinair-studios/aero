@@ -230,15 +230,21 @@
     for (const el of edgeShifts) el.style.translate = +v ? `calc(${v} * var(--aero-edge-reach, 24vw)) 0` : "";
   };
   const edgeLive = (on) => { for (const p of edgePanels) { p.classList.toggle("aero-edge-live", on); p.classList.toggle("ae-edge-live", on); } };
-  const edgeStep = () => {
+  // It follows the pointer on a time constant (--aero-edge-follow, 55ms), not a share per frame, so it's just as
+  // quick on a busy or a 120Hz screen: about 90% of the way in 130ms.
+  let edgeLast = 0, edgeFollow = 55;
+  const edgeStep = (now) => {
+    const dt = edgeLast ? Math.min(64, now - edgeLast) : 16;
+    edgeLast = now;
     if (edgeNow === 0) { edgePanels = [...document.querySelectorAll($(["edge"]))]; edgeShifts = [...document.querySelectorAll($(["edge-shift"]))]; } // as it starts to open
-    edgeNow += (edgeWant - edgeNow) * 0.16;
+    edgeNow += (edgeWant - edgeNow) * (1 - Math.exp(-dt / edgeFollow));
     if (Math.abs(edgeWant - edgeNow) < 0.001) edgeNow = edgeWant;
     edgeSet(edgeNow.toFixed(4));
     root.classList.toggle("aero-edge-on", edgeNow > 0.001);
     root.classList.toggle("ae-edge-on", edgeNow > 0.001);
     edgeLive(edgeNow > 0.04);
     edgeRaf = edgeNow === edgeWant ? 0 : requestAnimationFrame(edgeStep);
+    if (!edgeRaf) edgeLast = 0;
   };
   const openPopover = () => { try { return document.querySelector(":popover-open"); } catch { return null; } };
   const edgeTo = (v) => { edgeWant = v; if (!edgeRaf) edgeRaf = requestAnimationFrame(edgeStep); };
@@ -250,12 +256,14 @@
   addEventListener("pointermove", (e) => {
     clearTimeout(edgeLater); // a sweep's pending open is void once the pointer moves again
     if (e.pointerType !== "mouse" || !fine.matches) return;
-    const fast = Math.abs(e.clientX - edgeX) / Math.max(1, e.timeStamp - edgeT) > 1.5; // px per ms
+    const fast = Math.abs(e.clientX - edgeX) / Math.max(1, e.timeStamp - edgeT) > 3; // px per ms: a sweep, not a reach
     edgeX = e.clientX; edgeT = e.timeStamp;
     if (!edgePanel || !edgePanel.isConnected) {
       edgePanel = document.querySelector($(["edge"]));
       if (!edgePanel) return;
-      edgeZone = parseFloat(getComputedStyle(edgePanel).getPropertyValue("--aero-edge-zone")) || 220;
+      const cs = getComputedStyle(edgePanel);
+      edgeZone = parseFloat(cs.getPropertyValue("--aero-edge-zone")) || 220;
+      edgeFollow = parseFloat(cs.getPropertyValue("--aero-edge-follow")) || 55;
     }
     const zone = parseFloat(edgePanel.style.getPropertyValue("--aero-edge-zone")) || edgeZone; // set inline by a script: read it live
     if (e.clientX >= zone && edgeWant === 0) return; // nowhere near it, and it's shut
@@ -266,7 +274,7 @@
     const held = edgeNow > 0.3 && e.target.closest && e.target.closest($(["edge"]));
     const k = busy ? 0 : held ? 1 : Math.max(0, 1 - e.clientX / zone);
     const v = k * k * (3 - 2 * k); // gentle at first, decisive near the edge
-    if (v > edgeWant && fast) edgeLater = setTimeout(() => edgeTo(v), 140);
+    if (v > edgeWant && fast) edgeLater = setTimeout(() => edgeTo(v), 70);
     else edgeTo(v);
   }, { passive: true });
   root.addEventListener("pointerleave", () => { clearTimeout(edgeLater); edgeTo(0); });

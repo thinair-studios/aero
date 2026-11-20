@@ -217,7 +217,7 @@ Underlines: `aero-underline` draws in on hover and focus, and stays drawn while 
 <script src="node_modules/aero-css/dist/aero-pages.js"></script>   <!-- in <head>, not deferred -->
 ```
 
-Going to a sheet page, it slides in from the right over the last one; leaving it for a page underneath, it slides away again; between two sheets there's a quick cross-fade. The back and forward buttons work the same way. Settings (on `:root`): `--aero-page-duration` `--aero-page-easing` `--aero-page-fade`.
+Going to a sheet page, it slides in from the right over the last one; leaving it for a page underneath, it slides away again; between two sheets there's a quick cross-fade. The back and forward buttons work the same way. Settings (on `:root`): `--aero-page-duration` `--aero-page-easing` `--aero-page-fade`, and `--aero-page-back-duration` `--aero-page-back-easing` for leaving a sheet (0.45s, starting fast, so going back answers the click at once).
 
 Browsers without cross-document View Transitions (Firefox today) get the same direction from page arrival: `aero-pages.js` adds `aero-arrive` plus `aero-from-right` or `aero-from-left` to `<html>`, and `<main>` slides in once.
 
@@ -228,7 +228,7 @@ Browsers without cross-document View Transitions (Firefox today) get the same di
 <main class="aero-edge-shift">…</main>     <!-- slides aside as it opens -->
 ```
 
-As the mouse nears the left edge, `aero.js` eases `--aero-edge` from 0 to 1 on the panel (and adds `.aero-edge-on` to `<html>`): the panel slides open to `--aero-edge-reach` (24vw, set it on `:root`) and takes clicks once open, `.aero-edge-shift` blocks slide aside with it (aero.js writes their `translate`, so only they restyle), and inside the panel `.aero-edge-drift` drifts in, `.aero-edge-pin` stays put on screen as the panel uncovers it, and `.aero-edge-fade` fades in late. Only `translate` and `opacity` change while it moves, so it stays smooth on long pages. Once open it holds while the pointer is on it, and closes as the pointer leaves it. It opens when the pointer is reaching for it: a fast sweep past waits a beat, and pointing at a link or a control near the edge never opens it. `--aero-edge-zone` (220px) is how far out it starts; narrow it to your page's margin if content comes close. What the panel holds and where a click goes are yours; our site uses it as the way back, with the previous page live behind it. Mouse only.
+As the mouse nears the left edge, `aero.js` eases `--aero-edge` from 0 to 1 on the panel (and adds `.aero-edge-on` to `<html>`): the panel slides open to `--aero-edge-reach` (24vw, set it on `:root`) and takes clicks once open, `.aero-edge-shift` blocks slide aside with it (aero.js writes their `translate`, so only they restyle), and inside the panel `.aero-edge-drift` drifts in, `.aero-edge-pin` stays put on screen as the panel uncovers it, and `.aero-edge-fade` fades in late. Only `translate` and `opacity` change while it moves, so it stays smooth on long pages. Once open it holds while the pointer is on it, and closes as the pointer leaves it. It opens when the pointer is reaching for it: a fast sweep past waits a beat, and pointing at a link or a control near the edge never opens it. `--aero-edge-follow` (55ms) is how closely it follows the pointer. `--aero-edge-zone` (220px) is how far out it starts; narrow it to your page's margin if content comes close. What the panel holds and where a click goes are yours; our site uses it as the way back, with the previous page live behind it. Mouse only.
 
 ## Layout changes
 

@@ -558,7 +558,7 @@ html:active-view-transition-type(aero-sheet-back)::view-transition-new(root) {
  animation: none;
 }
 html:active-view-transition-type(aero-sheet-back)::view-transition-old(root) {
- animation: aero-sheet-out var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
+ animation: aero-sheet-out var(--aero-page-back-duration, var(--aero-page-duration, 0.45s)) var(--aero-page-back-easing, var(--aero-page-easing, cubic-bezier(0.22, 1, 0.36, 1))) both;
  z-index: 1;
 }
 html:active-view-transition-type(aero-fade)::view-transition-group(root) {

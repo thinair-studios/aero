@@ -583,8 +583,9 @@ test("lines: the mask leaves room for descenders", async ({ page }) => {
 test("edge: a fast sweep waits a beat before opening, and a link at the edge never opens it", async ({ page }) => {
   await page.goto(P3);
   const edge = () => page.evaluate(() => +getComputedStyle(document.getElementById("edge")).getPropertyValue("--aero-edge") || 0);
-  await page.mouse.move(900, 300); await page.mouse.move(4, 300); // one jump: as fast as a pointer goes
-  await page.waitForTimeout(60);
+  await page.mouse.move(900, 300); await page.mouse.move(4, 300, { steps: 4 }); // a quick sweep, as a hand makes one
+  expect(await edge()).toBe(0); // not yet
+  await page.waitForTimeout(20);
   expect(await edge()).toBe(0);
   await page.waitForTimeout(800);
   expect(await edge()).toBeGreaterThan(0.9); // it stayed, so it opens
@@ -645,7 +646,7 @@ test("review fixes: settle skips shimmer, a spinner in a delayed block isn't del
   expect(r.delay).toBe("0s");
   await page.goto(P3);
   const edge = () => page.evaluate(() => +getComputedStyle(document.getElementById("edge")).getPropertyValue("--aero-edge") || 0);
-  await page.mouse.move(900, 300); await page.mouse.move(4, 300); await page.mouse.move(700, 300); // flick in and out
+  await page.mouse.move(900, 300); await page.mouse.move(4, 300, { steps: 4 }); await page.mouse.move(700, 300, { steps: 4 }); // flick in and out
   await page.waitForTimeout(600);
   expect(await edge()).toBe(0);
 });

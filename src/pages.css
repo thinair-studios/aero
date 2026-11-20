@@ -16,6 +16,7 @@
  * Browsers without them (Firefox) get the same direction from aero-arrive.
  *
  *   --aero-page-duration  default 0.6s      --aero-page-easing  default an ease-in-out
+ *   --aero-page-back-duration / -easing   going back from a sheet: 0.45s, an ease-out
  *   --aero-page-fade      the cross-fade (default 0.3s)
  * (set them on :root: page transitions read them from <html>)
  *
@@ -32,8 +33,9 @@ html:active-view-transition-type(aero-sheet)::view-transition-new(root) {
 html:active-view-transition-type(aero-sheet-back)::view-transition-new(root) {
  animation: none;
 }
+/* Going back answers the click at once: it starts fast and settles (an ease-out), and is a little quicker. */
 html:active-view-transition-type(aero-sheet-back)::view-transition-old(root) {
- animation: aero-sheet-out var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
+ animation: aero-sheet-out var(--aero-page-back-duration, var(--aero-page-duration, 0.45s)) var(--aero-page-back-easing, var(--aero-page-easing, cubic-bezier(0.22, 1, 0.36, 1))) both;
  z-index: 1;
 }
 html:active-view-transition-type(aero-fade)::view-transition-group(root) {
@@ -87,7 +89,7 @@ html:active-view-transition-type(aero-reveal, aero-reveal-back)::view-transition
 /* ---- The edge: a way back at the side of the page (aero.js drives it) ----------------------------------
  * <div class="aero-edge">…</div>  fixed at the left edge. As the pointer nears the edge (within
  * --aero-edge-zone, 220px) aero.js eases --aero-edge from 0 to 1 on the panel (not on <html>: a long page would restyle every element each
- * frame) and adds .aero-edge-on to <html>.
+ * frame) and adds .aero-edge-on to <html>. It follows the pointer within --aero-edge-follow (55ms).
  * The panel opens to --aero-edge-reach (24vw) and takes clicks once it's open (.aero-edge-live). It slides in
  * rather than widening, so the browser only moves layers (no layout or repaint per frame).
  * .aero-edge-shift on the page's blocks slides them aside with it. Inside the panel, .aero-edge-drift drifts
