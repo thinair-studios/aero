@@ -1,0 +1,73 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Aero test fixture: draw, collapse, marquee, depth, magnetic, springs, stagger, lines, flip, shimmer, underline</title>
+<style>
+  body { margin: 0; font: 16px/1.4 sans-serif; }
+  .gap { height: 150vh; }
+  .item { display: block; width: 100px; height: 30px; background: #40826D; }
+  .box { width: 200px; height: 60px; margin: 10px 40px; background: #40826D; }
+</style>
+<script>
+  // ?nonative: behave like a browser without CSS scroll timelines (aero.js drives .aero-scrub).
+  // ?reduce:   the site opts in to respecting reduced motion.
+  const q = new URLSearchParams(location.search);
+  document.write(`<link rel="stylesheet" href="${q.has("nonative") ? "/tests/aero-nonative.css" : "/dist/aero.css"}">`);
+  if (q.has("nonative")) {
+    const supports = CSS.supports.bind(CSS);
+    CSS.supports = (...a) => (a.join(" ").includes("animation-timeline") ? false : supports(...a));
+  }
+  if (q.has("reduce")) document.documentElement.classList.add("aero-reduce-motion");
+</script>
+
+<h2 id="lines" class="aero-split aero-fade-up" data-aero-split="lines" style="width: 300px; --aero-distance: 100%">Lines that <em>wrap and keep</em> their tags when the text is long enough</h2>
+<svg id="draw-svg" class="aero-enter aero-draw aero-in" width="240" height="60" fill="none" stroke="#40826D" stroke-width="4" style="--aero-duration: 1s; --aero-easing: linear">
+  <path id="draw-a" d="M5 30 H120"/><circle id="draw-b" cx="180" cy="30" r="20"/>
+</svg>
+<svg width="240" height="60" fill="none" stroke="#40826D" stroke-width="4">
+  <path id="draw-own" class="aero-draw aero-enter aero-in" d="M5 30 H200" style="--aero-duration: 1s; --aero-easing: linear"/>
+</svg>
+
+<details id="collapse" class="aero-collapse" style="--aero-duration: 1s"><summary>Question</summary><div style="height: 200px">Answer</div></details>
+
+<div id="flip" class="aero-flip" style="width: 200px; height: 100px; margin: 10px 40px; --aero-flip-duration: 0.5s">
+  <div class="aero-front" style="height: 100px; background: #40826D">Front</div>
+  <div class="aero-back" style="background: #02364D">Back <a href="#">link</a></div>
+</div>
+<div id="flip-click" class="aero-flip" style="width: 200px; height: 100px; margin: 10px 40px">
+  <div class="aero-front" style="height: 100px; background: #40826D">Front</div>
+  <div class="aero-back" style="background: #02364D">Back</div>
+</div>
+
+<div id="shimmer" class="aero-shimmer" style="width: 200px; height: 20px; margin: 10px 40px; background: #ddd"></div>
+<p style="margin: 10px 40px"><a id="underline" class="aero-underline" href="#" style="--aero-hover-duration: 0.6s">Underlined link</a></p>
+
+<div id="mag-area" class="aero-cursor" data-aero-smoothing="0" style="width: 400px; height: 200px; margin: 10px 40px; background: #eee">
+  <button id="mag" class="aero-magnetic" type="button" style="margin: 80px 0 0 170px">Go</button>
+</div>
+
+<div id="marquee" class="aero-marquee" style="width: 300px; --aero-marquee-duration: 6s">
+  <div id="track"><span class="item">A</span><span class="item" id="dup">B</span><span class="item">C</span></div>
+</div>
+<div id="marquee-r" class="aero-marquee aero-marquee-reverse" style="width: 300px">
+  <div><span class="item"></span><span class="item"></span><span class="item"></span></div>
+</div>
+
+<ul id="st-end" class="aero-stagger" data-aero-stagger-from="end"><li>1</li><li>2</li><li>3</li><li>4</li></ul>
+<ul id="st-center" class="aero-stagger" data-aero-stagger-from="center"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li></ul>
+<ul id="st-random" class="aero-stagger" data-aero-stagger-from="random"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li></ul>
+
+<div class="box aero-enter aero-in aero-ease-spring" id="ease-spring"></div>
+<div class="box aero-enter aero-in aero-ease-spring-soft" id="ease-soft"></div>
+<div class="box aero-enter aero-in aero-ease-bounce" id="ease-bounce"></div>
+
+
+<div class="gap"></div>
+<svg id="draw-scrub-svg" width="240" height="60" fill="none" stroke="#40826D" stroke-width="4" class="aero-scrub aero-draw" style="--aero-scrub-range: cover 0% cover 100%">
+  <path d="M5 30 H200"/>
+</svg>
+<div class="gap"></div>
+<div id="depth" class="box aero-scrub aero-depth"></div>
+<div class="gap"></div>
+<p id="lines-late" class="aero-split aero-fade-up" data-aero-split="lines" style="--aero-distance: 100%; margin: 0">Words that sit far below the fold stay split by their lines of text until they have played at least once, so a resize may split them again.</p>
+<div class="gap"></div>
+<script src="/dist/aero.js" defer></script>

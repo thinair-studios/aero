@@ -19,6 +19,14 @@
  *   aero-wipe-right / -left / -up / -down  revealed by a moving edge
  *                   (clip-path), e.g. wipe-right uncovers left to right
  *
+ *   aero-draw       an SVG stroke drawing itself in: on a shape (path, line,
+ *                   polyline, polygon, circle, ellipse, rect) or on the <svg>,
+ *                   which draws every shape inside. aero.js sets pathLength="1"
+ *                   on those shapes if missing (without it, add it yourself).
+ *                   Animates stroke-dasharray / -dashoffset, an exception to
+ *                   the transform/opacity rule. Needs a stroke; works with
+ *                   .aero-enter and .aero-scrub, duration from --aero-duration.
+ *
  * Fade-left comes in from the right, moving left; fade-right the reverse.
  * Keyframes only state the start, so each element ends on its own styles.
  * ========================================================================= */
@@ -61,6 +69,7 @@
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-wipe-up { animation-name: aero-wipe-up; }
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-wipe-down { animation-name: aero-wipe-down; }
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-pass { animation-name: aero-pass; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-draw { animation-name: aero-draw; }
 
 /* Stagger: children of .aero-stagger start one after another (--aero-stagger apart). */
 .aero-stagger > :nth-child(2) { --aero-i: 1; }
@@ -128,4 +137,9 @@
  28% { opacity: 1; }
  62% { opacity: 1; }
  100% { opacity: var(--aero-pass-to, 0.18); }
+}
+/* The dash settings are inherited, so animating them on an <svg> draws every shape inside it. */
+@keyframes aero-draw {
+ from { stroke-dasharray: 1; stroke-dashoffset: 1; }
+ to { stroke-dasharray: 1; stroke-dashoffset: 0; }
 }

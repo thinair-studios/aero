@@ -27,4 +27,30 @@
   transform: none;
  }
 }
+.aero-underline, .ae-underline {
+ position: relative;
+ text-decoration: none;
+}
+.aero-underline::after, .ae-underline::after {
+ content: "";
+ position: absolute;
+ left: 0;
+ right: 0;
+ bottom: calc(var(--aero-underline-offset, 0.15em) * -1);
+ height: var(--aero-underline-thickness, 2px);
+ background: var(--aero-underline-color, currentColor);
+ transform: scaleX(0);
+ transform-origin: right;
+ transition: transform var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+.aero-underline:is(:hover, :focus-visible)::after, .ae-underline:is(:hover, :focus-visible)::after {
+ transform: scaleX(1);
+ transform-origin: left;
+}
+@media (hover: none) {
+ .aero-underline:hover:not(:focus-visible)::after, .ae-underline:hover:not(:focus-visible)::after {
+  transform: scaleX(0);
+  transform-origin: right;
+ }
+}
 }

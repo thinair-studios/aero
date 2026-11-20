@@ -8,6 +8,18 @@
  * Loops: aero-spin (loading)  aero-pulse (waiting, a skeleton)  aero-ping (a
  *        ring spreading out, for a live dot)  aero-bounce (look here)  aero-float
  *
+ * aero-shimmer (loops): a light band sweeping across a loading skeleton. A ::after
+ *        band moves with translateX, clipped by the element (overflow: clip).
+ *        --aero-shimmer-color (rgb(255 255 255 / .35))  --aero-attention-duration (1.6s)
+ *
+ * aero-marquee (loops): <div class="aero-marquee"><div>items</div></div>. The single
+ *        child (the track) scrolls left forever. aero.js duplicates the track's
+ *        children once (copies are aria-hidden and inert) so the loop is seamless, so
+ *        the items together should be wider than the container, and spaced with
+ *        margin or padding, not `gap` (a gap leaves a seam). aero-marquee-reverse
+ *        goes the other way; hover or focus inside pauses it.
+ *        --aero-marquee-duration (30s) for one full loop.
+ *
  * To play a once-effect again, call Aero.replay(el).
  *
  *   --aero-attention-duration   each effect has its own default
@@ -47,4 +59,44 @@
 }
 @keyframes aero-float {
  50% { transform: translateY(calc(var(--aero-distance, 8px) * -1)); }
+}
+
+.aero-shimmer {
+ position: relative;
+ overflow: clip;
+}
+.aero-shimmer::after {
+ content: "";
+ position: absolute;
+ inset: 0;
+ pointer-events: none;
+ background: linear-gradient(100deg, transparent 30%, var(--aero-shimmer-color, rgb(255 255 255 / 0.35)) 50%, transparent 70%);
+ transform: translateX(-100%);
+ animation: aero-shimmer var(--aero-attention-duration, 1.6s) ease-in-out infinite;
+}
+@keyframes aero-shimmer {
+ to { transform: translateX(100%); }
+}
+
+.aero-marquee {
+ overflow: clip;
+}
+.aero-marquee > :first-child {
+ display: flex;
+ width: max-content;
+ animation: aero-marquee var(--aero-marquee-duration, 30s) linear infinite;
+}
+.aero-marquee-reverse > :first-child {
+ animation-direction: reverse;
+}
+.aero-marquee:is(:hover, :focus-within) > :first-child {
+ animation-play-state: paused;
+}
+@media (hover: none) {
+ .aero-marquee:hover:not(:focus-within) > :first-child {
+  animation-play-state: running;
+ }
+}
+@keyframes aero-marquee {
+ to { transform: translateX(-50%); }
 }

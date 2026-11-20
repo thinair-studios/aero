@@ -22,6 +22,12 @@
  *                       range defaults to contain 0% contain 100% (from the
  *                       wrapper filling the screen to it starting to leave);
  *                       contain, cover, entry and exit all work
+ *
+ * aero-depth: scroll parallax. Write class="aero-scrub aero-depth" on an element and it
+ * moves vertically against the scroll as it passes: from --aero-depth (default 80px)
+ * below its place to the same distance above it (negative reverses it). The range
+ * defaults to cover 0% cover 100% (its whole pass through the screen). It uses the
+ * individual `translate` property, so a transform of your own doesn't fight it.
  * ========================================================================= */
 
 .aero-scrub {
@@ -30,10 +36,19 @@
  animation-fill-mode: both;
 }
 
+.aero-scrub.aero-depth { animation-name: aero-depth; }
+@keyframes aero-depth {
+ from { translate: 0 var(--aero-depth, 80px); }
+ to { translate: 0 calc(var(--aero-depth, 80px) * -1); }
+}
+
 @supports (animation-timeline: view()) {
  .aero-scrub {
   animation-timeline: view();
   animation-range: var(--aero-scrub-range, entry 0% entry 80%);
+ }
+ .aero-scrub.aero-depth {
+  animation-range: var(--aero-scrub-range, cover 0% cover 100%);
  }
  .aero-scrub.aero-scrub-root {
   animation-timeline: scroll(root);

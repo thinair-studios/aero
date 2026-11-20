@@ -32,4 +32,42 @@
 @keyframes aero-float {
  50% { transform: translateY(calc(var(--aero-distance, 8px) * -1)); }
 }
+.aero-shimmer, .ae-shimmer {
+ position: relative;
+ overflow: clip;
+}
+.aero-shimmer::after, .ae-shimmer::after {
+ content: "";
+ position: absolute;
+ inset: 0;
+ pointer-events: none;
+ background: linear-gradient(100deg, transparent 30%, var(--aero-shimmer-color, rgb(255 255 255 / 0.35)) 50%, transparent 70%);
+ transform: translateX(-100%);
+ animation: aero-shimmer var(--aero-attention-duration, 1.6s) ease-in-out infinite;
+}
+@keyframes aero-shimmer {
+ to { transform: translateX(100%); }
+}
+.aero-marquee, .ae-marquee {
+ overflow: clip;
+}
+.aero-marquee > :first-child, .ae-marquee > :first-child {
+ display: flex;
+ width: max-content;
+ animation: aero-marquee var(--aero-marquee-duration, 30s) linear infinite;
+}
+.aero-marquee-reverse > :first-child, .ae-marquee-reverse > :first-child {
+ animation-direction: reverse;
+}
+.aero-marquee:is(:hover, :focus-within) > :first-child, .ae-marquee:is(:hover, :focus-within) > :first-child {
+ animation-play-state: paused;
+}
+@media (hover: none) {
+ .aero-marquee:hover:not(:focus-within) > :first-child, .ae-marquee:hover:not(:focus-within) > :first-child {
+  animation-play-state: running;
+ }
+}
+@keyframes aero-marquee {
+ to { transform: translateX(-50%); }
+}
 }

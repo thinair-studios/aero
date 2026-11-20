@@ -9,6 +9,14 @@
  *  4. Text: splits .aero-split elements into words or letters (see text.css).
  *  5. Numbers: .aero-count counts up to the number in its text when it comes into view.
  *  6. Repeat: .aero-enter.aero-repeat plays again each time it comes back into view.
+ *  7. Stagger order: data-aero-stagger-from="end" | "center" | "random" on .aero-stagger sets
+ *     --aero-i on its children in that order (the default, from the start, stays CSS). Set again
+ *     when the number of children changes.
+ *  8. Lines: data-aero-split="lines" on .aero-split wraps each rendered line in .aero-line, with
+ *     the entrance on a piece inside it. Re-split on resize until it has played.
+ *  9. Draw: sets pathLength="1" on the shapes in .aero-draw if missing.
+ * 10. Marquee: duplicates the children of .aero-marquee's track once (aria-hidden, inert) so the
+ *     loop is seamless.
  *
  *  Events (they bubble): "aero:in" when an entrance starts, "aero:done" when it ends.
  *  Elements added later are picked up automatically. Every class works with the ae- prefix too.
@@ -87,14 +95,91 @@
   };
 
   // ---- Text split: words, or letters kept inside their words; each piece plays the parent's variant.
-  const splits = new WeakSet();
+  const splits = new WeakSet(), lineEls = [], lineSrc = new WeakMap();
+  const noId = (n) => { n.removeAttribute("id"); n.querySelectorAll("[id]").forEach((x) => x.removeAttribute("id")); return n; };
+  // Lines: split into words, group them by rendered line (offsetTop), then wrap each line in a
+  // clipping .aero-line with one piece inside it. Inline markup is kept by cloning its tags per line.
+  const splitLines = (el, html, cls, text) => {
+    lineSrc.set(el, [html, cls, text]);
+    el.innerHTML = html;
+    const words = [];
+    const walk = (node, chain) => {
+      for (const n of [...node.childNodes]) {
+        if (n.nodeType === 1) { walk(n, [...chain, n]); continue; }
+        if (n.nodeType !== 3 || !n.data.trim()) continue;
+        const frag = document.createDocumentFragment();
+        for (const part of n.data.split(/(\s+)/)) {
+          if (!part) continue;
+          if (!part.trim()) { frag.append(" "); continue; }
+          const w = document.createElement("span");
+          w.style.display = "inline-block";
+          w.textContent = part;
+          words.push({ w, part, chain });
+          frag.append(w);
+        }
+        n.replaceWith(frag);
+      }
+    };
+    walk(el, []);
+    const groups = [];
+    let last;
+    for (const o of words) {
+      const t = o.w.offsetTop;
+      if (!last || t >= last.top + o.w.offsetHeight * 0.5) groups.push(last = { top: t, words: [] });
+      last.words.push(o);
+    }
+    el.textContent = "";
+    groups.forEach((g, i) => {
+      const line = document.createElement("span"), p = document.createElement("span");
+      line.className = "aero-line";
+      line.setAttribute("aria-hidden", "true");
+      p.className = cls.join(" ");
+      p.style.setProperty("--aero-i", i);
+      let key, box;
+      g.words.forEach((o, k) => {
+        const tag = o.chain[o.chain.length - 1];
+        if (tag && tag === key) { box.append(" " + o.part); return; } // same tag as the word before
+        if (k) p.append(" ");
+        key = tag;
+        if (!tag) { box = null; p.append(o.part); return; }
+        let outer;
+        box = null;
+        for (const a of o.chain) { const c = noId(a.cloneNode(false)); if (box) box.append(c); else outer = c; box = c; }
+        box.append(o.part);
+        p.append(outer);
+      });
+      line.append(p);
+      el.append(line);
+    });
+    const sr = document.createElement("span");
+    sr.className = "aero-split-text";
+    sr.textContent = text;
+    el.append(sr);
+  };
+  // After a resize or font load, split again, but only while nothing has played yet.
+  let resizeTimer = 0;
+  const resplit = () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      let again = false;
+      for (const el of lineEls) {
+        if (!el.isConnected || el.querySelector(".aero-piece.aero-in")) continue;
+        splitLines(el, ...lineSrc.get(el));
+        again = true;
+      }
+      if (again) refresh();
+    }, 150);
+  };
+  addEventListener("resize", resplit);
+  if (document.fonts) document.fonts.ready.then(resplit);
   const split = (el) => {
     if (splits.has(el)) return;
     splits.add(el);
-    const letters = el.dataset.aeroSplit === "letters";
+    const lines = el.dataset.aeroSplit === "lines", letters = el.dataset.aeroSplit === "letters";
     const variants = [...el.classList].filter((c) => /^(aero|ae)-((fade|scale|grow|wipe)-[a-z]+|repeat)$/.test(c));
     const cls = variants.some((c) => !c.endsWith("repeat")) ? ["aero-piece", "aero-enter", ...variants] : ["aero-piece"];
     const text = el.textContent.replace(/\s+/g, " ").trim();
+    if (lines) { splitLines(el, el.innerHTML, cls, text); lineEls.push(el); return; }
     let i = 0;
     const piece = (str) => {
       const p = document.createElement("span");
@@ -130,8 +215,38 @@
     }
   };
 
+  // ---- Stagger order, draw, marquee
+  const SHAPES = "path, line, polyline, polygon, circle, ellipse, rect";
+  const ordered = new WeakMap(), looped = new WeakSet(); // stagger -> what it was ordered for
+  const order = (el) => {
+    const from = el.dataset.aeroStaggerFrom, kids = [...el.children], n = kids.length;
+    if (!from || ordered.get(el) === from + n) return; // the same children: keep the order (random stays put)
+    ordered.set(el, from + n);
+    const pos = kids.map((_, i) => i);
+    if (from === "random") for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pos[i], pos[j]] = [pos[j], pos[i]]; }
+    kids.forEach((k, i) => k.style.setProperty("--aero-i", from === "end" ? n - 1 - i : from === "center" ? Math.abs(i - (n - 1) / 2) : pos[i]));
+  };
+  const prepare = () => {
+    for (const el of document.querySelectorAll($(["stagger"]))) order(el);
+    for (const el of document.querySelectorAll($(["draw"]))) {
+      for (const sh of el.matches(SHAPES) ? [el] : el.querySelectorAll(SHAPES)) if (!sh.hasAttribute("pathLength")) sh.setAttribute("pathLength", "1");
+    }
+    for (const el of document.querySelectorAll($(["marquee"]))) {
+      const track = el.firstElementChild;
+      if (!track || looped.has(el)) continue;
+      looped.add(el);
+      for (const c of [...track.children]) {
+        const copy = noId(c.cloneNode(true));
+        copy.setAttribute("aria-hidden", "true");
+        copy.setAttribute("inert", "");
+        track.append(copy);
+      }
+    }
+  };
+
   const seen = new WeakSet();
   const watch = () => {
+    prepare();
     for (const el of document.querySelectorAll($(["split"]))) split(el);
     for (const el of document.querySelectorAll($(["enter", "count"]))) {
       if (seen.has(el) || has(el, "in")) continue;
@@ -201,7 +316,7 @@
     return H - f * (H + h); // cover
   };
   // Layout position, ignoring transforms (the animation's own transform must not move the measurement).
-  const top = (el) => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y - scrollY; };
+  const top = (el) => { if (el.offsetTop === undefined) return el.getBoundingClientRect().top; let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y - scrollY; };
 
   const progress = (el) => {
     const raw = getComputedStyle(el).getPropertyValue("--aero-scrub-range").trim();
@@ -214,10 +329,10 @@
       // .aero-scrub-track measures its .aero-track wrapper, so pinned (sticky) children still move.
       const track = has(el, "scrub-track") && el.closest(".aero-track, .ae-track");
       const box = track || el;
-      const r = (raw || (track ? "contain 0% contain 100%" : "entry 0% entry 80%")).split(/\s+/);
+      const r = (raw || (track ? "contain 0% contain 100%" : has(el, "depth") ? "cover 0% cover 100%" : "entry 0% entry 80%")).split(/\s+/);
       // Like CSS view timelines, measure against the viewport minus the page's scroll-padding.
       const cs = getComputedStyle(root), pt = parseFloat(cs.scrollPaddingTop) || 0, pb = parseFloat(cs.scrollPaddingBottom) || 0;
-      const H = innerHeight - pt - pb, h = box.offsetHeight, t = top(box) - pt;
+      const H = innerHeight - pt - pb, h = box.offsetHeight ?? box.getBoundingClientRect().height, t = top(box) - pt;
       const t0 = point(r[0], parseFloat(r[1]), H, h), t1 = point(r[2], parseFloat(r[3]), H, h);
       p = (t0 - t) / (t0 - t1 || 1);
     }

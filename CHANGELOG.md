@@ -12,6 +12,16 @@ Aero now covers things leaving as well as arriving.
 - **Attention** effects: `aero-shake`, `aero-pop`, `aero-spin`, `aero-pulse`, `aero-ping`, `aero-bounce`, `aero-float`.
 - **Wipes**: `aero-wipe-right` / `-left` / `-up` / `-down` entrances, scrubbable too.
 - **Numbers**: `aero-count` counts up to the number in its text.
+- **`aero-draw`**: an SVG stroke drawing in, as an entrance or scrubbed; `aero.js` sets `pathLength="1"` on the shapes.
+- **`aero-collapse`** (a `<details>` that opens and closes smoothly) and **`aero-flip`** (a two-faced card), in a new `disclosure` module.
+- **`aero-marquee`** (a seamless loop; `aero-marquee-reverse`, `--aero-marquee-duration`) and **`aero-shimmer`** (a loading-skeleton sweep).
+- **`aero-depth`**: scroll parallax, `aero-scrub aero-depth` with `--aero-depth`.
+- **`aero-magnetic`**: a button leaning toward the pointer inside an `.aero-cursor` area.
+- **`aero-underline`**: a link underline that draws in on hover and out on leave.
+- **Real springs and bounce**: `aero-ease-spring` is now a `linear()` spring with a slight overshoot (old browsers keep the cubic-bezier), plus `aero-ease-spring-soft` and `aero-ease-bounce`.
+- **Stagger order**: `data-aero-stagger-from="end" | "center" | "random"`.
+- **Text lines**: `data-aero-split="lines"` reveals each rendered line from behind its own mask.
+- **Fix:** the `aero.js` scroll fallback now works on SVG elements, which have no `offsetTop`.
 - **Replay on scroll** with `aero-repeat`, events `aero:in` and `aero:done`, and `Aero.replay(el)`.
 
 ## 2.1.0 — 2026-11-19

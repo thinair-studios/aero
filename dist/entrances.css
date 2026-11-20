@@ -36,6 +36,7 @@
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-wipe-up, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-wipe-up { animation-name: aero-wipe-up; }
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-wipe-down, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-wipe-down { animation-name: aero-wipe-down; }
 :is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-pass, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-pass { animation-name: aero-pass; }
+:is(.aero-enter.aero-in, .aero-in .aero-enter, .aero-scrub).aero-draw, :is(.ae-enter.ae-in, .ae-in .ae-enter, .ae-scrub).ae-draw { animation-name: aero-draw; }
 .aero-stagger > :nth-child(2), .ae-stagger > :nth-child(2) { --aero-i: 1; }
 .aero-stagger > :nth-child(3), .ae-stagger > :nth-child(3) { --aero-i: 2; }
 .aero-stagger > :nth-child(4), .ae-stagger > :nth-child(4) { --aero-i: 3; }
@@ -100,5 +101,9 @@
  28% { opacity: 1; }
  62% { opacity: 1; }
  100% { opacity: var(--aero-pass-to, 0.18); }
+}
+@keyframes aero-draw {
+ from { stroke-dasharray: 1; stroke-dashoffset: 1; }
+ to { stroke-dasharray: 1; stroke-dashoffset: 0; }
 }
 }

@@ -12,6 +12,10 @@
  *   aero-hover-rise   lift and scale together (6px, 1.03): a card coming forward
  *   aero-hover-nudge  sideways by --aero-hover-nudge (4px; negative goes left)
  *   aero-hover-shift  any move plus scale: --aero-hover-x / -y / -scale
+ *   aero-underline    a link's underline drawing in from the left on hover or
+ *                     focus, and out to the right on leave (replaces the
+ *                     link's own underline). --aero-underline-color (currentColor)
+ *                     --aero-underline-thickness (2px) --aero-underline-offset (0.15em)
  *
  * Only transform is animated. On touch screens hover movement is cancelled so
  * a tap doesn't leave things stuck; keyboard focus still moves them.
@@ -46,5 +50,33 @@
  :is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift):not(.aero-hover-target):hover:not(:focus-visible),
  .aero-hover-group:hover:not(:focus-within) .aero-hover-target {
   transform: none;
+ }
+}
+
+/* Underline: scaleX 0 -> 1 from the left on hover/focus; the origin flips so it leaves to the right. */
+.aero-underline {
+ position: relative;
+ text-decoration: none;
+}
+.aero-underline::after {
+ content: "";
+ position: absolute;
+ left: 0;
+ right: 0;
+ bottom: calc(var(--aero-underline-offset, 0.15em) * -1);
+ height: var(--aero-underline-thickness, 2px);
+ background: var(--aero-underline-color, currentColor);
+ transform: scaleX(0);
+ transform-origin: right;
+ transition: transform var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+.aero-underline:is(:hover, :focus-visible)::after {
+ transform: scaleX(1);
+ transform-origin: left;
+}
+@media (hover: none) {
+ .aero-underline:hover:not(:focus-visible)::after {
+  transform: scaleX(0);
+  transform-origin: right;
  }
 }

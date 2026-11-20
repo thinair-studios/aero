@@ -13,7 +13,7 @@ const read = (p) => readFileSync(root + p, "utf8");
 const pkg = JSON.parse(read("package.json"));
 
 // Order matters only for readability: rules don't depend on each other's position.
-const MODULES = ["core", "entrances", "exits", "overlays", "attention", "text", "scroll", "hover", "cursor", "arrival", "pages", "motion"];
+const MODULES = ["core", "entrances", "exits", "overlays", "attention", "disclosure", "text", "scroll", "hover", "cursor", "arrival", "pages", "motion"];
 
 const stripComments = (css) => css.replace(/\/\*[\s\S]*?\*\//g, "");
 

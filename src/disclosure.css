@@ -1,0 +1,52 @@
+/* ============================================================================
+ * Aero — disclosure: things that open and turn over
+ *
+ *   <details class="aero-collapse"><summary>Question</summary>Answer…</details>
+ *   <div class="aero-flip">
+ *     <div class="aero-front">…</div>
+ *     <div class="aero-back">…</div>
+ *   </div>
+ *
+ * aero-collapse  a <details> whose content slides open and closed (block-size
+ *                 transition on ::details-content, with interpolate-size set
+ *                 on the element itself, never on :root). Where the browser
+ *                 lacks ::details-content or interpolate-size it just opens at
+ *                 once. Settings: --aero-duration (.35s) --aero-easing.
+ *
+ * aero-flip      a card with two faces. .aero-front sets the size, .aero-back is
+ *                 laid over it. Hover, focus inside, or .aero-flipped (add it to
+ *                 flip on click) turns it 180deg around the vertical axis.
+ *                 --aero-flip-duration (.6s)  --aero-flip-perspective (900px)
+ *                 --aero-hover-easing. On touch screens hover alone doesn't flip.
+ * ========================================================================= */
+
+.aero-collapse { interpolate-size: allow-keywords; }
+details.aero-collapse::details-content {
+ block-size: 0;
+ overflow: clip;
+ transition:
+  block-size var(--aero-duration, 0.35s) var(--aero-easing, cubic-bezier(0.22, 1, 0.36, 1)),
+  content-visibility var(--aero-duration, 0.35s) allow-discrete;
+}
+details.aero-collapse[open]::details-content { block-size: auto; }
+
+.aero-flip {
+ position: relative;
+ transform-style: preserve-3d;
+ transform: perspective(var(--aero-flip-perspective, 900px)) rotateY(0deg);
+ transition: transform var(--aero-flip-duration, 0.6s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+.aero-flip > :is(.aero-front, .aero-back) { backface-visibility: hidden; }
+.aero-flip > .aero-back {
+ position: absolute;
+ inset: 0;
+ transform: rotateY(180deg);
+}
+.aero-flip:is(:hover, :focus-within, .aero-flipped) {
+ transform: perspective(var(--aero-flip-perspective, 900px)) rotateY(180deg);
+}
+@media (hover: none) {
+ .aero-flip:hover:not(:focus-within, .aero-flipped) {
+  transform: perspective(var(--aero-flip-perspective, 900px)) rotateY(0deg);
+ }
+}

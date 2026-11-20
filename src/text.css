@@ -8,6 +8,12 @@
  * words), and each piece plays the entrance variant on the parent, one after
  * another. Inline markup inside stays. Screen readers get the text once, whole.
  *
+ * data-aero-split="lines": each rendered line gets its own mask (.aero-line, overflow
+ * clipped) and rises from behind it: aero-fade-up with --aero-distance: 100% is the usual
+ * choice. Inline tags are kept, split across lines where the text wraps. It splits again
+ * on resize (and when fonts load) until the text has played, then leaves it. Keep
+ * line-height at 1.1 or more so the mask doesn't clip letters.
+ *
  * aero-hover-wave: inside an .aero-hover-group (or on hover/focus of the split
  * element itself), the pieces rise one after another.
  *
@@ -18,6 +24,8 @@
 .aero-split { --aero-stagger: 45ms; }
 .aero-split .aero-word { display: inline-block; white-space: nowrap; }
 .aero-split .aero-piece { display: inline-block; }
+.aero-split .aero-line { display: block; overflow: clip; }
+.aero-split .aero-line > .aero-piece { display: block; }
 .aero-split-text {
  position: absolute;
  width: 1px;

@@ -22,6 +22,7 @@
     "./exits.css": "./dist/exits.css",
     "./overlays.css": "./dist/overlays.css",
     "./attention.css": "./dist/attention.css",
+    "./disclosure.css": "./dist/disclosure.css",
     "./text.css": "./dist/text.css",
     "./pages.css": "./dist/pages.css",
     "./motion.css": "./dist/motion.css",
