@@ -71,6 +71,8 @@ html:active-view-transition-type(aero-reveal, aero-reveal-back)::view-transition
 @keyframes aero-sheet-in {
  from { transform: translateX(100%); }
 }
+/* Carrying on from a gesture (aero-pages.js): the arriving page comes in whole. */
+:is(.aero-carrying, .ae-carrying) * { view-transition-name: none !important; }
 @keyframes aero-sheet-out {
  from { transform: translateX(var(--aero-sheet-from, 0px)); } /* aero-pages.js: where a gesture left the page */
  to { transform: translateX(100%); }
@@ -93,7 +95,10 @@ html:active-view-transition-type(aero-reveal, aero-reveal-back)::view-transition
  * rather than widening, so the browser only moves layers (no layout or repaint per frame).
  * .aero-edge-shift on the page's blocks slides them aside with it. Inside the panel, .aero-edge-drift drifts
  * in from the left (a page underneath, say), .aero-edge-pin stays put on screen as the panel uncovers it, and
- * .aero-edge-fade fades in late. Mouse only; set the reach on :root. */
+ * .aero-edge-fade fades in late. Mouse only; set the reach on :root.
+ * Two stages: with --aero-edge-peek (a length) nearing the edge opens it only that far, enough for a handle; an
+ * .aero-edge-more inside it (the handle) opens it all the way, and it holds while the pointer stays on it.
+ * --aero-edge-full (0..1) is that second stage, and --aero-edge-y the pointer's height, for the handle. */
 /* The panel's parts are always layers (they're small and fixed); the page's blocks become layers only while it's
    open, so a long page isn't kept as one. aero.js writes the blocks' translate on them. */
 :is(.aero-edge, .aero-edge-drift, .aero-edge-pin) { will-change: translate; }
@@ -114,3 +119,9 @@ html:active-view-transition-type(aero-reveal, aero-reveal-back)::view-transition
 .aero-edge-drift { translate: calc((1 - var(--aero-edge, 0)) * (var(--aero-edge-reach, 24vw) - 6vw)) 0; }
 .aero-edge-pin { translate: calc((1 - var(--aero-edge, 0)) * var(--aero-edge-reach, 24vw)) 0; }
 .aero-edge-fade { opacity: max(0, calc(var(--aero-edge, 0) * 1.6 - 0.35)); }
+.aero-edge-full-fade { opacity: var(--aero-edge-full, 0); } /* only in the second stage */
+
+/* Going back after the edge has moved a page aside: name the panel aero-edge for the snapshot (at pageswap) and it
+   stays where it was, fading out over the slide instead of vanishing or sliding off with the page. */
+::view-transition-old(aero-edge) { animation: aero-edge-out var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both; }
+@keyframes aero-edge-out { to { opacity: 0; } }

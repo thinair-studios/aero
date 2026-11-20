@@ -225,8 +225,13 @@
   // page doesn't restyle every element each frame; and far from the edge a move costs one comparison.
   const fine = matchMedia("(hover: hover) and (pointer: fine)");
   let edgeWant = 0, edgeNow = 0, edgeRaf = 0, edgePanel = null, edgeZone = 220, edgePanels = [], edgeShifts = [];
+  // With --aero-edge-peek set, nearing the edge opens it only that far (enough for a handle); it opens all the way
+  // when the pointer is on an .aero-edge-more inside it, and holds while the pointer stays on the panel.
+  // --aero-edge-full is that second stage, 0..1. --aero-edge-y is the pointer's height, to keep a handle beside it.
+  let edgePeek = 1;
   const edgeSet = (v) => {
-    for (const p of edgePanels) p.style.setProperty("--aero-edge", v);
+    const full = edgePeek < 1 ? Math.min(1, Math.max(0, (v - edgePeek) / (1 - edgePeek))) : +v;
+    for (const p of edgePanels) { p.style.setProperty("--aero-edge", v); p.style.setProperty("--aero-edge-full", full.toFixed(4)); }
     for (const el of edgeShifts) el.style.translate = +v ? `calc(${v} * var(--aero-edge-reach, 24vw)) 0` : "";
   };
   const edgeLive = (on) => { for (const p of edgePanels) { p.classList.toggle("aero-edge-live", on); p.classList.toggle("ae-edge-live", on); } };
@@ -266,16 +271,22 @@
       const cs = getComputedStyle(edgePanel);
       edgeZone = parseFloat(cs.getPropertyValue("--aero-edge-zone")) || 220;
       edgeFollow = parseFloat(cs.getPropertyValue("--aero-edge-follow")) || 380;
+      const peek = parseFloat(cs.getPropertyValue("--aero-edge-peek")) || 0;
+      const reach = edgePanel.getBoundingClientRect().width - (parseFloat(cs.getPropertyValue("--aero-edge-strip")) || 10);
+      edgePeek = peek > 0 && reach > 0 ? Math.min(1, peek / reach) : 1;
     }
     const zone = parseFloat(edgePanel.style.getPropertyValue("--aero-edge-zone")) || edgeZone; // set inline by a script: read it live
     if (e.clientX >= zone && edgeWant === 0) return; // nowhere near it, and it's shut
     if (still()) return;
     const over = e.target.closest && !e.target.closest($(["edge"])) && e.target.closest(CONTROL);
     const busy = over || e.buttons || document.querySelector("dialog[open]") || openPopover() || (window.getSelection && String(getSelection()));
-    // Once it's open, the panel holds while the pointer is on it (to look at it, or click anywhere on it).
-    const held = edgeNow > 0.3 && e.target.closest && e.target.closest($(["edge"]));
-    const k = busy ? 0 : held ? 1 : Math.max(0, 1 - e.clientX / zone);
-    const v = k * k * (3 - 2 * k); // gentle at first, decisive near the edge
+    const onPanel = e.target.closest && e.target.closest($(["edge"]));
+    // All the way open: on an .aero-edge-more, or (once it's past the first stage) anywhere on the panel. Without a
+    // peek there is one stage, and it holds on the panel once it's well open.
+    const more = onPanel && (e.target.closest($(["edge-more"])) || (edgePeek < 1 ? edgeNow > edgePeek + 0.02 : edgeNow > 0.3));
+    const k = busy ? 0 : more ? 1 : Math.max(0, 1 - e.clientX / zone);
+    const v = more && !busy ? 1 : k * k * (3 - 2 * k) * edgePeek; // gentle at first, decisive near the edge
+    if (!(more && edgeNow > edgePeek + 0.02)) for (const p of edgePanels.length ? edgePanels : [edgePanel]) p.style.setProperty("--aero-edge-y", `${Math.round(e.clientY)}px`); // the handle stays by the pointer until it's all the way open
     if (v > edgeWant && fast) edgeLater = setTimeout(() => edgeTo(v), 70);
     else edgeTo(v);
   }, { passive: true });

@@ -469,8 +469,10 @@ test.describe("page transitions", () => {
     if (!back.vt || !back.types) return; // no View Transition here (or restored without one): nothing to carry on
     expect(back.types).toEqual(["aero-sheet-back"]);
     expect(back.from).toBe("300px");
+    expect(await page.evaluate(() => document.documentElement.classList.contains("aero-carrying"))).toBe(true); // arrives whole
     await page.waitForTimeout(900);
     expect(await page.evaluate(() => document.documentElement.style.getPropertyValue("--aero-sheet-from"))).toBe(""); // cleaned up
+    expect(await page.evaluate(() => document.documentElement.classList.contains("aero-carrying"))).toBe(false);
   });
   test("the back button runs the same way", async ({ page }) => {
     await page.goto("/tests/pages/base.html");
@@ -701,4 +703,27 @@ test("hover reveal: a circle grows out of where the pointer comes in, and shrink
   expect(leaving.left).toBeGreaterThan(220);
   await page.waitForTimeout(450);
   expect((await read()).scale).toBe(0);
+});
+
+test("edge in two stages: near the edge it opens to the peek; on the handle all the way; it holds on the panel", async ({ page }) => {
+  await page.goto(P3);
+  await page.evaluate(() => {
+    document.documentElement.style.setProperty("--aero-edge-peek", "100px"); // of the fixture's 300px reach
+    const h = document.createElement("span"); h.id = "edge-handle"; h.className = "aero-edge-more aero-edge-pin";
+    h.style.cssText = "position: absolute; left: 10px; top: 280px; width: 70px; height: 40px; background: #fff";
+    document.getElementById("edge").append(h);
+  });
+  const read = () => page.evaluate(() => { const s = getComputedStyle(document.getElementById("edge")); return { e: +s.getPropertyValue("--aero-edge") || 0, full: +s.getPropertyValue("--aero-edge-full") || 0, y: s.getPropertyValue("--aero-edge-y") }; });
+  await page.mouse.move(600, 600); await page.mouse.move(4, 600, { steps: 12 }); await page.waitForTimeout(800);
+  const near = await read();
+  expect(near.e).toBeGreaterThan(0.3); expect(near.e).toBeLessThan(0.36); // the peek: 100 of 300px
+  expect(near.full).toBe(0);
+  expect(near.y).toBe("600px");
+  await page.mouse.move(40, 300, { steps: 8 }); await page.waitForTimeout(800); // onto the handle
+  expect((await read()).e).toBeGreaterThan(0.97);
+  expect((await read()).full).toBeGreaterThan(0.95);
+  await page.mouse.move(250, 500, { steps: 8 }); await page.waitForTimeout(600); // elsewhere on the open panel
+  expect((await read()).e).toBeGreaterThan(0.97);
+  await page.mouse.move(900, 500, { steps: 8 }); await page.waitForTimeout(900); // off it
+  expect((await read()).e).toBe(0);
 });

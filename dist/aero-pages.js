@@ -90,8 +90,11 @@
       const t = type();
       if (t && vt.types) vt.types.add(t);
       if (t === "aero-sheet-back" && offset) {
+        // Carrying on from a gesture: the page underneath arrives whole (nothing lifted out to morph over the page
+        // that's still sliding away).
         root.style.setProperty("--aero-sheet-from", offset);
-        vt.finished.finally(() => root.style.removeProperty("--aero-sheet-from"));
+        root.classList.add("aero-carrying", "ae-carrying");
+        vt.finished.finally(() => { root.style.removeProperty("--aero-sheet-from"); root.classList.remove("aero-carrying", "ae-carrying"); });
       }
     });
   } else if (!still()) {

@@ -610,6 +610,7 @@ html:active-view-transition-type(aero-reveal, aero-reveal-back)::view-transition
 @keyframes aero-sheet-in {
  from { transform: translateX(100%); }
 }
+:is(.aero-carrying, .ae-carrying) *, :is(.ae-carrying, .ae-carrying) * { view-transition-name: none !important; }
 @keyframes aero-sheet-out {
  from { transform: translateX(var(--aero-sheet-from, 0px)); } 
  to { transform: translateX(100%); }
@@ -639,6 +640,9 @@ html:active-view-transition-type(aero-reveal, aero-reveal-back)::view-transition
 .aero-edge-drift, .ae-edge-drift { translate: calc((1 - var(--aero-edge, 0)) * (var(--aero-edge-reach, 24vw) - 6vw)) 0; }
 .aero-edge-pin, .ae-edge-pin { translate: calc((1 - var(--aero-edge, 0)) * var(--aero-edge-reach, 24vw)) 0; }
 .aero-edge-fade, .ae-edge-fade { opacity: max(0, calc(var(--aero-edge, 0) * 1.6 - 0.35)); }
+.aero-edge-full-fade, .ae-edge-full-fade { opacity: var(--aero-edge-full, 0); } 
+::view-transition-old(aero-edge) { animation: aero-edge-out var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both; }
+@keyframes aero-edge-out { to { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) {
  .aero-reduce-motion :is(.aero-enter, .aero-scrub, .aero-shake, .aero-pop, .aero-spin, .aero-pulse, .aero-ping, .aero-bounce, .aero-float, .aero-marquee > :first-child),
  .aero-reduce-motion .aero-shimmer::after,
