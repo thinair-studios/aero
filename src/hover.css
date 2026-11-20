@@ -19,6 +19,7 @@
  *                     Also drawn while the link is current: .aero-on or aria-current.
  *   aero-underline-side   the same as a bar on the link's left (a table of contents)
  *   aero-underline-shown  drawn at rest, and drawing out on hover instead
+ *   aero-hover-reveal a circle growing out of the pointer to cover its element
  *   aero-hover-appear something that shows on hover (an arrow, an icon): it fades in
  *                     and slides in from --aero-hover-from (-0.35em), after
  *                     --aero-hover-delay (0s); leaving, it goes at once
@@ -137,3 +138,27 @@
   translate: var(--aero-hover-from, -0.35em) 0;
  }
 }
+
+/* Hover reveal: a circle grows out of the pointer to cover its element, follows the pointer, and shrinks back toward
+ * where it leaves; keyboard focus grows it from the middle. Put it inside an .aero-hover-group that is also an
+ * .aero-cursor (aero.js tracks the pointer there) with overflow clipped:
+ *   <a class="aero-hover-group aero-cursor" style="position: relative; overflow: clip; isolation: isolate">
+ *     <span class="aero-hover-reveal" aria-hidden="true"></span> Label </a>
+ * --aero-hover-reveal-color (currentColor)  --aero-hover-reveal-size (250% of the width: enough for anything wider
+ * than it is tall)  --aero-hover-duration (0.6s)  --aero-hover-easing (an ease-in-out) */
+.aero-hover-reveal {
+ position: absolute;
+ z-index: -1;
+ left: calc(var(--aero-cursor-x, 0.5) * 100%);
+ top: calc(var(--aero-cursor-y, 0.5) * 100%);
+ width: var(--aero-hover-reveal-size, 250%);
+ aspect-ratio: 1;
+ border-radius: 50%;
+ translate: -50% -50%;
+ scale: 0;
+ background: var(--aero-hover-reveal-color, currentColor);
+ pointer-events: none;
+ transition: scale var(--aero-hover-duration, 0.6s) var(--aero-hover-easing, cubic-bezier(0.65, 0, 0.35, 1));
+}
+.aero-hover-group:is(:hover, :focus-visible) .aero-hover-reveal { scale: 1; }
+@media (hover: none) { .aero-hover-group:hover:not(:focus-visible) .aero-hover-reveal { scale: 0; } }

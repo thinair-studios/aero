@@ -483,6 +483,22 @@ details.aero-collapse[open] > summary .aero-collapse-icon, details.ae-collapse[o
   translate: var(--aero-hover-from, -0.35em) 0;
  }
 }
+.aero-hover-reveal, .ae-hover-reveal {
+ position: absolute;
+ z-index: -1;
+ left: calc(var(--aero-cursor-x, 0.5) * 100%);
+ top: calc(var(--aero-cursor-y, 0.5) * 100%);
+ width: var(--aero-hover-reveal-size, 250%);
+ aspect-ratio: 1;
+ border-radius: 50%;
+ translate: -50% -50%;
+ scale: 0;
+ background: var(--aero-hover-reveal-color, currentColor);
+ pointer-events: none;
+ transition: scale var(--aero-hover-duration, 0.6s) var(--aero-hover-easing, cubic-bezier(0.65, 0, 0.35, 1));
+}
+.aero-hover-group:is(:hover, :focus-visible) .aero-hover-reveal, .ae-hover-group:is(:hover, :focus-visible) .ae-hover-reveal { scale: 1; }
+@media (hover: none) { .aero-hover-group:hover:not(:focus-visible) .aero-hover-reveal, .ae-hover-group:hover:not(:focus-visible) .ae-hover-reveal { scale: 0; } }
 .aero-tilt, .ae-tilt {
  transform-style: preserve-3d;
  transform:
@@ -635,6 +651,9 @@ html:active-view-transition-type(aero-reveal, aero-reveal-back)::view-transition
  .aero-reduce-motion :is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover)::backdrop, .ae-reduce-motion :is(.ae-dialog, .ae-drawer, .ae-drawer-left, .ae-drawer-bottom, .ae-popover),
  .ae-reduce-motion :is(.ae-dialog, .ae-drawer, .ae-drawer-left, .ae-drawer-bottom, .ae-popover)::backdrop {
   transition-duration: 0s !important;
+ }
+ .aero-reduce-motion .aero-hover-reveal, .ae-reduce-motion .ae-hover-reveal {
+  transition: none !important;
  }
  .aero-reduce-motion .aero-hover-wave .aero-piece, .ae-reduce-motion .ae-hover-wave .ae-piece {
   animation: none !important;

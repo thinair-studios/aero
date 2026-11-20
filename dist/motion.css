@@ -13,6 +13,9 @@
  .ae-reduce-motion :is(.ae-dialog, .ae-drawer, .ae-drawer-left, .ae-drawer-bottom, .ae-popover)::backdrop {
   transition-duration: 0s !important;
  }
+ .aero-reduce-motion .aero-hover-reveal, .ae-reduce-motion .ae-hover-reveal {
+  transition: none !important;
+ }
  .aero-reduce-motion .aero-hover-wave .aero-piece, .ae-reduce-motion .ae-hover-wave .ae-piece {
   animation: none !important;
  }

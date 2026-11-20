@@ -458,19 +458,22 @@
       raf = done ? 0 : requestAnimationFrame(step);
     };
     const go = () => { if (!raf && !still()) raf = requestAnimationFrame(step); };
-    el.addEventListener("pointermove", (e) => {
+    const at = (e) => {
       const r = el.getBoundingClientRect();
-      if (!r.width || !r.height) return;
+      if (!r.width || !r.height) return false;
       // A magnetic element moves toward the pointer; measure from where it rests, or it chases itself and jitters.
       let left = r.left, topY = r.top;
       if (has(el, "magnetic")) {
         const [tx, ty] = getComputedStyle(el).translate.split(" ").map(parseFloat);
         left -= tx || 0; topY -= ty || 0;
       }
-      target.x = (e.clientX - left) / r.width; target.y = (e.clientY - topY) / r.height; target.a = 1; go();
-    });
-    el.addEventListener("pointerenter", () => { target.a = 1; go(); });
-    el.addEventListener("pointerleave", () => { target.x = 0.5; target.y = 0.5; target.a = 0; go(); });
+      target.x = Math.min(1, Math.max(0, (e.clientX - left) / r.width)); target.y = Math.min(1, Math.max(0, (e.clientY - topY) / r.height));
+      return true;
+    };
+    el.addEventListener("pointermove", (e) => { if (at(e)) { target.a = 1; go(); } });
+    // In at the point the pointer came in (no glide from wherever it last was); out where it left, fading there.
+    el.addEventListener("pointerenter", (e) => { if (at(e)) { now.x = target.x; now.y = target.y; write(); } target.a = 1; go(); });
+    el.addEventListener("pointerleave", (e) => { at(e); target.a = 0; go(); });
     write();
   };
 

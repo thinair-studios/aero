@@ -20,6 +20,9 @@
  .aero-reduce-motion :is(.aero-dialog, .aero-drawer, .aero-drawer-left, .aero-drawer-bottom, .aero-popover)::backdrop {
   transition-duration: 0s !important;
  }
+ .aero-reduce-motion .aero-hover-reveal {
+  transition: none !important;
+ }
  .aero-reduce-motion .aero-hover-wave .aero-piece {
   animation: none !important;
  }

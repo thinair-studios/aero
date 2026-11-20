@@ -186,7 +186,7 @@ Settings: `--aero-hover-duration` `--aero-hover-easing` `--aero-hover-distance` 
 `aero-underline` on a link draws an underline in from the left on hover or focus, and out to the right when you leave. It replaces the link's own underline. Settings: `--aero-underline-color` (`currentColor`) `--aero-underline-thickness` (2px) `--aero-underline-offset` (0.15em).
 Keyboard focus triggers the same motion. On touch screens hover motion is cancelled, so a tap doesn't leave things stuck.
 
-Underlines: `aero-underline` draws in on hover and focus, and stays drawn while the link is current (`.aero-on` or `aria-current`), which makes it a nav indicator too. `aero-underline-side` is the same as a bar on the left (a table of contents); `aero-underline-shown` is drawn at rest and draws out on hover. `aero-hover-appear` shows something (an arrow, an icon) when its group is hovered: it fades and slides in from `--aero-hover-from` after `--aero-hover-delay`, and leaves at once.
+Underlines: `aero-underline` draws in on hover and focus, and stays drawn while the link is current (`.aero-on` or `aria-current`), which makes it a nav indicator too. `aero-underline-side` is the same as a bar on the left (a table of contents); `aero-underline-shown` is drawn at rest and draws out on hover. `aero-hover-appear` shows something (an arrow, an icon) when its group is hovered: it fades and slides in from `--aero-hover-from` after `--aero-hover-delay`, and leaves at once. `aero-hover-reveal` is a circle that grows out of the point where the pointer comes in until it covers its element, follows the pointer, and shrinks back toward where it leaves (keyboard focus grows it from the middle); put it in an `.aero-hover-group` that is also an `.aero-cursor`, with overflow clipped. It's a small preview of a page reveal opening from the same point. Settings: `--aero-hover-reveal-color` `--aero-hover-reveal-size` (250% of the width) `--aero-hover-duration` `--aero-hover-easing`.
 
 ## Cursor
 
@@ -198,7 +198,7 @@ Underlines: `aero-underline` draws in on hover and focus, and stays drawn while 
 </div>
 ```
 
-`aero.js` writes `--aero-cursor-x` `-y` (0 to 1), `-cx` `-cy` (-1 to 1) and `-active` on each `.aero-cursor`; effects read them from any parent.
+`aero.js` writes `--aero-cursor-x` `-y` (0 to 1), `-cx` `-cy` (-1 to 1) and `-active` on each `.aero-cursor` (starting at the point the pointer comes in, and staying where it leaves while `-active` fades); effects read them from any parent.
 
 `aero-magnetic` makes a button or link lean toward the pointer by up to `--aero-magnetic` (10px) and rest centred. Put it inside an `.aero-cursor` area, or on the `.aero-cursor` element itself:
 

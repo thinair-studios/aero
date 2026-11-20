@@ -677,3 +677,28 @@ test("hover wave: a ripple runs through the letters, each rising and settling ba
   await page.waitForTimeout(1200);
   expect((await ys()).every((y) => Math.abs(y) < 0.5)).toBe(true); // all settled back, still hovered
 });
+
+test("hover reveal: a circle grows out of where the pointer comes in, and shrinks back toward where it leaves", async ({ page }) => {
+  await page.goto(P2);
+  await page.evaluate(() => {
+    const a = document.createElement("a"); a.href = "#"; a.id = "rv"; a.className = "aero-hover-group aero-cursor";
+    a.style.cssText = "position: relative; overflow: clip; isolation: isolate; display: inline-block; width: 300px; height: 60px; margin: 40px; --aero-hover-duration: 300ms";
+    a.innerHTML = '<span class="aero-hover-reveal" id="rv-fill" style="--aero-hover-reveal-color: green"></span>label';
+    document.body.prepend(a); window.Aero.refresh();
+  });
+  const box = await page.locator("#rv").boundingBox();
+  const read = () => page.evaluate(() => { const f = document.getElementById("rv-fill"), s = getComputedStyle(f); return { x: +getComputedStyle(document.getElementById("rv")).getPropertyValue("--aero-cursor-x"), scale: +s.scale || 0, left: parseFloat(s.left) }; });
+  expect((await read()).scale).toBe(0);
+  await page.mouse.move(box.x - 30, box.y + 30); await page.mouse.move(box.x + 30, box.y + 30); // in from the left
+  const entered = await read();
+  expect(entered.x).toBeLessThan(0.2); // at the entry point at once, not gliding in from the middle
+  await page.waitForTimeout(450);
+  expect((await read()).scale).toBeCloseTo(1, 1);
+  await page.mouse.move(box.x + 290, box.y + 30, { steps: 6 }); await page.mouse.move(box.x + 340, box.y + 30); // out to the right
+  await page.waitForTimeout(80);
+  const leaving = await read();
+  expect(leaving.x).toBeGreaterThan(0.8); // it shrinks back toward the right, where it left
+  expect(leaving.left).toBeGreaterThan(220);
+  await page.waitForTimeout(450);
+  expect((await read()).scale).toBe(0);
+});
