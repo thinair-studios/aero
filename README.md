@@ -217,7 +217,7 @@ Underlines: `aero-underline` draws in on hover and focus, and stays drawn while 
 <script src="node_modules/aero-css/dist/aero-pages.js"></script>   <!-- in <head>, not deferred -->
 ```
 
-Going to a sheet page, it slides in from the right over the last one; leaving it for a page underneath, it slides away again; between two sheets there's a quick cross-fade. The back and forward buttons work the same way. Settings (on `:root`): `--aero-page-duration` `--aero-page-easing` `--aero-page-fade`.
+Going to a sheet page, it slides in from the right over the last one; leaving it for a page underneath, it slides away again; between two sheets there's a quick cross-fade. The back and forward buttons work the same way. Settings (on `:root`): `--aero-page-duration` `--aero-page-easing` `--aero-page-fade`. A script that navigates after a gesture has already moved the page aside can say how far, and the sheet carries on from there instead of jumping back first: `dispatchEvent(new CustomEvent("aero:transition", { detail: { name: "sheet", offset: "320px" } }))`.
 
 Browsers without cross-document View Transitions (Firefox today) get the same direction from page arrival: `aero-pages.js` adds `aero-arrive` plus `aero-from-right` or `aero-from-left` to `<html>`, and `<main>` slides in once.
 

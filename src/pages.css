@@ -72,6 +72,7 @@ html:active-view-transition-type(aero-reveal, aero-reveal-back)::view-transition
  from { transform: translateX(100%); }
 }
 @keyframes aero-sheet-out {
+ from { transform: translateX(var(--aero-sheet-from, 0px)); } /* aero-pages.js: where a gesture left the page */
  to { transform: translateX(100%); }
 }
 

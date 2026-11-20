@@ -29,6 +29,7 @@ Aero now covers things leaving as well as arriving.
 - **Collapse icon**: `aero-collapse-icon` turns when its details opens.
 - **Fix:** `aero-flip` turns its faces, not the card, so a pointer near its edge no longer makes it flicker.
 - **Fix:** line masks (`data-aero-split="lines"`) leave room for descenders (`--aero-line-bleed`, .25em above and below; the mask is now a clip-path, so a page reset can't undo it).
+- **Carry on from a gesture**: `aero:transition` can pass an `offset`, and going back slides the sheet off from there.
 - **The edge glides**: it follows the pointer like a damped spring (`--aero-edge-follow`, 380ms), the same on any screen.
 - **Pulse depth**: `--aero-pulse` sets how far `aero-pulse` fades (0.45).
 - **Attention, letter by letter**: on split text the attention effects stagger like entrances; `Aero.settle(el)` stops a loop at the end of its turn.

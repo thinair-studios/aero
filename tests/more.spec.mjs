@@ -459,6 +459,19 @@ test.describe("page transitions", () => {
     if (back.vt) expect(back.types).toEqual(["aero-sheet-back"]);
     else if (back.cls) expect(back.cls).toMatch(/aero-from-left/);
   });
+  test("a gesture that already moved the page aside: the sheet carries on from there", async ({ page }) => {
+    await page.goto("/tests/pages/base.html");
+    await go(page, "to-sheet");
+    await page.evaluate(() => { dispatchEvent(new CustomEvent("aero:transition", { detail: { name: "sheet", offset: "300px" } })); });
+    await page.goBack();
+    await page.waitForTimeout(100);
+    const back = await page.evaluate(() => ({ vt: "onpagereveal" in window, types: window.__types, from: document.documentElement.style.getPropertyValue("--aero-sheet-from") }));
+    if (!back.vt || !back.types) return; // no View Transition here (or restored without one): nothing to carry on
+    expect(back.types).toEqual(["aero-sheet-back"]);
+    expect(back.from).toBe("300px");
+    await page.waitForTimeout(900);
+    expect(await page.evaluate(() => document.documentElement.style.getPropertyValue("--aero-sheet-from"))).toBe(""); // cleaned up
+  });
   test("the back button runs the same way", async ({ page }) => {
     await page.goto("/tests/pages/base.html");
     await go(page, "to-sheet");

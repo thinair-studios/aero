@@ -13,6 +13,8 @@
  * A script that navigates without a link (history.back(), say) can name the transition first:
  *   dispatchEvent(new CustomEvent("aero:transition", { detail: "sheet" }))
  * "sheet" uses the page kinds as above, skipping any reveal-back; "reveal" needs a link and a point.
+ * When a gesture has already moved the page aside (Aero's edge, a swipe), say how far, and the sheet carries on from
+ * there instead of jumping back first:  { detail: { name: "sheet", offset: "320px" } }
  * The back and forward buttons work the same way. Browsers without cross-document View
  * Transitions get a matching arrival instead (arrival.css).
  */
@@ -36,7 +38,10 @@
     via = { name: a.dataset.aeroTransition, href: page(a.href), from: page(location.href),
       x: key ? r.left + r.width / 2 : e.clientX, y: key ? r.top + r.height / 2 : e.clientY, w: innerWidth, h: innerHeight };
   }, true);
-  addEventListener("aero:transition", (e) => { via = { name: String(e.detail || "sheet"), from: page(location.href) }; });
+  addEventListener("aero:transition", (e) => {
+    const d = e.detail || "sheet";
+    via = { name: String(d.name || d), from: page(location.href), offset: d.offset ? String(d.offset) : undefined };
+  });
 
   // Leaving: remember what kind of page this was, how it was opened, and the link that was used.
   // pageswap runs before the next page starts; pagehide covers browsers without it.
@@ -54,8 +59,10 @@
   };
 
   // Arriving: what the previous page was (if it was ours, just now), and how we got here.
+  let offset = null; // where a gesture left the last page (aero:transition's offset), for the sheet to carry on from
   const type = () => {
     const s = load(KEY);
+    offset = s && s.via && s.via.offset;
     try { sessionStorage.removeItem(KEY); } catch {}
     if (!s || Date.now() - s.t > 10000 || s.url === page(location.href)) return null;
     const here = page(location.href);
@@ -81,6 +88,10 @@
       if (still()) return vt.skipTransition();
       const t = type();
       if (t && vt.types) vt.types.add(t);
+      if (t === "aero-sheet-back" && offset) {
+        root.style.setProperty("--aero-sheet-from", offset);
+        vt.finished.finally(() => root.style.removeProperty("--aero-sheet-from"));
+      }
     });
   } else if (!still()) {
     const side = ARRIVE[type()];
