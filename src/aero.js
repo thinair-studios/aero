@@ -230,15 +230,17 @@
     for (const el of edgeShifts) el.style.translate = +v ? `calc(${v} * var(--aero-edge-reach, 24vw)) 0` : "";
   };
   const edgeLive = (on) => { for (const p of edgePanels) { p.classList.toggle("aero-edge-live", on); p.classList.toggle("ae-edge-live", on); } };
-  // It follows the pointer on a time constant (--aero-edge-follow, 55ms), not a share per frame, so it's just as
-  // quick on a busy or a 120Hz screen: about 90% of the way in 130ms.
-  let edgeLast = 0, edgeFollow = 55;
+  // It follows the pointer like a damped spring: it sets off at once but gently, glides, and settles without
+  // overshooting, in about --aero-edge-follow (380ms). Time-based, so it's the same on a busy or a 120Hz screen.
+  let edgeLast = 0, edgeFollow = 380, edgeV = 0;
   const edgeStep = (now) => {
-    const dt = edgeLast ? Math.min(64, now - edgeLast) : 16;
+    const dt = edgeLast ? Math.min(40, now - edgeLast) / 1000 : 1 / 60;
     edgeLast = now;
     if (edgeNow === 0) { edgePanels = [...document.querySelectorAll($(["edge"]))]; edgeShifts = [...document.querySelectorAll($(["edge-shift"]))]; } // as it starts to open
-    edgeNow += (edgeWant - edgeNow) * (1 - Math.exp(-dt / edgeFollow));
-    if (Math.abs(edgeWant - edgeNow) < 0.001) edgeNow = edgeWant;
+    const w = 5.8 / (edgeFollow / 1000); // critically damped: ~99% there after edgeFollow
+    for (let t = dt; t > 0; t -= 1 / 240) { const h = Math.min(t, 1 / 240); edgeV += (w * w * (edgeWant - edgeNow) - 2 * w * edgeV) * h; edgeNow += edgeV * h; }
+    if (edgeNow <= 0 || edgeNow >= 1) { edgeNow = Math.min(1, Math.max(0, edgeNow)); edgeV = 0; } // at a bound: stop there
+    if (Math.abs(edgeWant - edgeNow) < 0.002 && Math.abs(edgeV) < 0.02) { edgeNow = edgeWant; edgeV = 0; }
     edgeSet(edgeNow.toFixed(4));
     root.classList.toggle("aero-edge-on", edgeNow > 0.001);
     root.classList.toggle("ae-edge-on", edgeNow > 0.001);
@@ -263,7 +265,7 @@
       if (!edgePanel) return;
       const cs = getComputedStyle(edgePanel);
       edgeZone = parseFloat(cs.getPropertyValue("--aero-edge-zone")) || 220;
-      edgeFollow = parseFloat(cs.getPropertyValue("--aero-edge-follow")) || 55;
+      edgeFollow = parseFloat(cs.getPropertyValue("--aero-edge-follow")) || 380;
     }
     const zone = parseFloat(edgePanel.style.getPropertyValue("--aero-edge-zone")) || edgeZone; // set inline by a script: read it live
     if (e.clientX >= zone && edgeWant === 0) return; // nowhere near it, and it's shut
@@ -279,7 +281,7 @@
   }, { passive: true });
   root.addEventListener("pointerleave", () => { clearTimeout(edgeLater); edgeTo(0); });
   addEventListener("blur", () => { clearTimeout(edgeLater); edgeTo(0); });
-  addEventListener("pageshow", () => { clearTimeout(edgeLater); edgeWant = edgeNow = 0; edgeSet("0"); edgeLive(false); root.classList.remove("aero-edge-on", "ae-edge-on"); });
+  addEventListener("pageshow", () => { clearTimeout(edgeLater); edgeWant = edgeNow = edgeV = 0; edgeSet("0"); edgeLive(false); root.classList.remove("aero-edge-on", "ae-edge-on"); });
 
   // ---- Stagger order, draw, marquee
   const SHAPES = "path, line, polyline, polygon, circle, ellipse, rect";
