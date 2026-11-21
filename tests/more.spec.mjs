@@ -271,14 +271,14 @@ test("stagger order: end, center and random set --aero-i, and again when childre
     Aero.refresh();
     const again = vals("st-random");
     document.getElementById("st-end").append(document.createElement("li"));
-    await new Promise((res) => setTimeout(res, 100));
-    return { end, center, random, again, end5: vals("st-end") };
+    return { end, center, random, again };
   });
+  // Re-ordered once Aero sees the new child (wait for it, however slow the machine).
+  await expect.poll(() => page.evaluate(() => [...document.getElementById("st-end").children].map((c) => parseFloat(c.style.getPropertyValue("--aero-i"))))).toEqual([4, 3, 2, 1, 0]);
   expect(r.end).toEqual([3, 2, 1, 0]);
   expect(r.center).toEqual([2, 1, 0, 1, 2]);
   expect([...r.random].sort()).toEqual([0, 1, 2, 3, 4, 5]);
   expect(r.again).toEqual(r.random);
-  expect(r.end5).toEqual([4, 3, 2, 1, 0]);
 });
 
 test("stagger order: removing the attribute restores the default, and setting it again applies again", async ({ page }) => {
@@ -625,13 +625,16 @@ test("settle: a loop finishes the turn it's on, then stops without a jump", asyn
   await page.goto(P2);
   const r = await page.evaluate(async () => {
     const d = document.createElement("i"); d.className = "aero-spin"; d.style.cssText = "display:inline-block; --aero-attention-duration: 400ms"; d.textContent = "*"; document.body.append(d);
-    await new Promise((r) => setTimeout(r, 500)); // into its second turn
+    // Wait until it's in the middle of a turn (by its own clock, so a slow machine doesn't matter).
+    const a = d.getAnimations()[0];
+    while (a.currentTime == null || a.currentTime < 400 || a.currentTime % 400 < 120 || a.currentTime % 400 > 220) await new Promise((r) => requestAnimationFrame(r));
+    const left = 400 - (a.currentTime % 400);
     const t0 = performance.now();
     await window.Aero.settle(d);
-    return { took: performance.now() - t0, cls: d.className, anims: d.getAnimations().length, tr: getComputedStyle(d).transform };
+    return { took: performance.now() - t0, left, cls: d.className, anims: d.getAnimations().length, tr: getComputedStyle(d).transform };
   });
-  expect(r.took).toBeGreaterThan(150); // it finished the turn instead of stopping dead
-  expect(r.took).toBeLessThan(450);
+  expect(r.took).toBeGreaterThan(r.left * 0.6); // it finished the turn instead of stopping dead
+  expect(r.took).toBeLessThan(r.left + 400); // and stopped there, without starting another
   expect(r.cls).toBe("");
   expect(r.anims).toBe(0);
   expect(r.tr).toBe("none");
