@@ -406,6 +406,7 @@ test.describe("page transitions", () => {
   const go = async (page, id) => {
     await page.click(`#${id}`);
     await page.waitForLoadState("domcontentloaded");
+    await page.waitForFunction(() => !("onpagereveal" in window) || window.__types !== undefined, null, { timeout: 3000 }).catch(() => {}); // slow CI: wait for the reveal to tag it
     await page.waitForTimeout(100);
     return page.evaluate(() => ({ vt: "onpagereveal" in window, types: window.__types, cls: document.documentElement.className }));
   };
@@ -479,6 +480,7 @@ test.describe("page transitions", () => {
     await page.goto("/tests/pages/base.html");
     await go(page, "to-sheet");
     await page.goBack();
+    await page.waitForFunction(() => !("onpagereveal" in window) || window.__types !== undefined, null, { timeout: 3000 }).catch(() => {});
     await page.waitForTimeout(150);
     const back = await page.evaluate(() => ({ vt: "onpagereveal" in window, types: window.__types, cls: document.documentElement.className }));
     if (back.vt) expect(back.types).toEqual(["aero-sheet-back"]);
