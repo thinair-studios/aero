@@ -1,4 +1,4 @@
-/* Aero 2.0.0 — arrival. https://github.com/thinair-studios/aero (MIT) */
+/* Aero 2.1.0 — arrival. https://github.com/thinair-studios/aero (MIT) */
 @layer aero {
 .aero-arrive main, .ae-arrive main {
  animation-duration: var(--aero-duration, 0.6s);

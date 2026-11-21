@@ -1,4 +1,4 @@
-/* Aero 2.0.0 — scroll. https://github.com/thinair-studios/aero (MIT) */
+/* Aero 2.1.0 — scroll. https://github.com/thinair-studios/aero (MIT) */
 @layer aero {
 .aero-scrub, .ae-scrub {
  animation-duration: 1s;
@@ -13,6 +13,13 @@
  .aero-scrub.aero-scrub-root, .ae-scrub.ae-scrub-root {
   animation-timeline: scroll(root);
   animation-range: var(--aero-scrub-range, normal);
+ }
+ .aero-track, .ae-track {
+  view-timeline-name: --aero-track;
+ }
+ .aero-scrub.aero-scrub-track, .ae-scrub.ae-scrub-track {
+  animation-timeline: --aero-track;
+  animation-range: var(--aero-scrub-range, contain 0% contain 100%);
  }
 }
 .aero-scrub-js .aero-scrub, .ae-scrub-js .ae-scrub {

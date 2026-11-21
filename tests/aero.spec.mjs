@@ -44,15 +44,17 @@ test("entrances play when they come into view, with either prefix", async ({ pag
   await expect(page.locator("#enter-aero")).toHaveCSS("opacity", "1");
 });
 
-test("scrub: aero.js agrees with the browser's own scroll timeline", async ({ page }) => {
-  await page.goto("/tests/fixture.html");
-  test.skip(!(await page.evaluate(() => CSS.supports("animation-timeline: view()"))), "no native scroll timelines here; covered by the fallback test");
-  for (const id of ["scrub-entry", "scrub-cover", "scrub-mixed"]) {
-    for (const s of await sample(page, id)) {
-      if (s.native !== null && s.aero > 0.02 && s.aero < 0.98) expect(Math.abs(s.aero - s.native), `${id} ${JSON.stringify(s)}`).toBeLessThan(0.03);
+for (const q of ["", "?padding"]) {
+  test(`scrub: aero.js agrees with the browser's own scroll timeline ${q}`, async ({ page }) => {
+    await page.goto(`/tests/fixture.html${q}`);
+    test.skip(!(await page.evaluate(() => CSS.supports("animation-timeline: view()"))), "no native scroll timelines here; covered by the fallback test");
+    for (const id of ["scrub-entry", "scrub-cover", "scrub-mixed"]) {
+      for (const s of await sample(page, id)) {
+        if (s.native !== null && s.aero > 0.02 && s.aero < 0.98) expect(Math.abs(s.aero - s.native), `${id} ${JSON.stringify(s)}`).toBeLessThan(0.03);
+      }
     }
-  }
-});
+  });
+}
 
 test("scrub fallback: without scroll timelines, aero.js drives the same animation", async ({ page }) => {
   await page.goto("/tests/fixture.html?nonative");
@@ -61,6 +63,45 @@ test("scrub fallback: without scroll timelines, aero.js drives the same animatio
   const samples = await sample(page, "scrub-entry");
   expect(samples.some((s) => s.aero > 0.1 && s.aero < 0.9)).toBe(true);
   for (const s of samples) expect(Math.abs(s.opacity - s.aero), JSON.stringify(s)).toBeLessThan(0.05);
+});
+
+// Scroll through the .aero-track wrapper (its contain range: top at 0, down to its bottom at the screen's bottom).
+async function sampleTrack(page) {
+  return page.evaluate(async () => {
+    const track = document.getElementById("track"), el = document.getElementById("scrub-track");
+    let y0 = 0; for (let n = track; n; n = n.offsetParent) y0 += n.offsetTop;
+    const out = [];
+    for (const f of [0.1, 0.3, 0.5, 0.7, 0.9]) {
+      scrollTo(0, y0 + f * (track.offsetHeight - innerHeight));
+      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+      await new Promise((r) => setTimeout(r, 60));
+      const t = el.getAnimations()[0]?.effect.getComputedTiming();
+      out.push({ f, aero: window.Aero.progress(el), native: t?.progress ?? null, opacity: +getComputedStyle(el).opacity });
+    }
+    return out;
+  });
+}
+
+test("track scrub: a pinned child follows its .aero-track wrapper", async ({ page }) => {
+  await page.goto("/tests/fixture.html");
+  const native = await page.evaluate(() => CSS.supports("animation-timeline: view()"));
+  for (const s of await sampleTrack(page)) {
+    expect(Math.abs(s.aero - s.f), JSON.stringify(s)).toBeLessThan(0.03);
+    if (native) expect(Math.abs(s.native - s.f), JSON.stringify(s)).toBeLessThan(0.03);
+  }
+});
+
+test("track scrub: aero.js agrees with the browser under scroll-padding", async ({ page }) => {
+  await page.goto("/tests/fixture.html?padding");
+  test.skip(!(await page.evaluate(() => CSS.supports("animation-timeline: view()"))), "no native scroll timelines here");
+  for (const s of await sampleTrack(page)) {
+    if (s.aero > 0.02 && s.aero < 0.98) expect(Math.abs(s.aero - s.native), JSON.stringify(s)).toBeLessThan(0.03);
+  }
+});
+
+test("track scrub fallback: aero.js drives the pinned child the same way", async ({ page }) => {
+  await page.goto("/tests/fixture.html?nonative");
+  for (const s of await sampleTrack(page)) expect(Math.abs(s.opacity - s.f), JSON.stringify(s)).toBeLessThan(0.05);
 });
 
 test("hover: real pointer on a self-triggered effect", async ({ page }) => {
