@@ -454,10 +454,11 @@ test.describe("page transitions", () => {
     await go(page, "reveal-sheet");
     await page.evaluate(() => { dispatchEvent(new CustomEvent("aero:transition", { detail: "sheet" })); });
     await page.goBack();
-    await page.waitForTimeout(150);
-    const back = await page.evaluate(() => ({ vt: "onpagereveal" in window, types: window.__types, cls: document.documentElement.className }));
-    if (back.vt) expect(back.types).toEqual(["aero-sheet-back"]);
-    else if (back.cls) expect(back.cls).toMatch(/aero-from-left/);
+    const read = () => page.evaluate(() => ({ vt: "onpagereveal" in window, types: window.__types, cls: document.documentElement.className }));
+    if ((await read()).vt) await expect.poll(async () => (await read()).types).toEqual(["aero-sheet-back"]);
+    else await page.waitForTimeout(150);
+    const back = await read();
+    if (!back.vt && back.cls) expect(back.cls).toMatch(/aero-from-left/);
   });
   test("a gesture that already moved the page aside: the sheet carries on from there", async ({ page }) => {
     await page.goto("/tests/pages/base.html");
