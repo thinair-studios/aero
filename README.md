@@ -259,7 +259,7 @@ await swap(() => …);     // change the layout; .aero-morph elements move to th
 
 ## Demo and tests
 
-See every module live at **https://aero.thinairstudios.dev** (`docs/index.html`; locally, serve the repo root with any static server and open `/docs/`). `npm test` checks that `dist/` is current and runs the test suite in Chromium, Firefox and WebKit.
+See Aero live at **https://thinairstudios.dev/aero**. `docs/index.html` is a plain page with every module, for working on Aero locally: serve the repo root with any static server and open `/docs/`. `npm test` checks that `dist/` is current and runs the test suite in Chromium, Firefox and WebKit.
 
 ## Contributing
 
