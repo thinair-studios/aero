@@ -16,12 +16,24 @@
  *   .aero-scrub-root    follow the page scroll instead of the element's own
  *                       view; the range is then two lengths in px or vh (not %),
  *                       and leaving it out means the whole page
+ * Scrub-only variants (they only make sense tied to the scroll):
+ *   aero-slide-left / -right  slides sideways across the range, from
+ *                       --aero-slide-start (0) by --aero-slide (30%): a row of
+ *                       words or images drifting as you scroll
+ *   aero-fade-out       fades to --aero-opacity-to (0)
+ *
  *   .aero-scrub-track   follow the nearest .aero-track ancestor instead: give a
  *                       tall wrapper .aero-track, pin its contents with
  *                       position: sticky, and they play while it passes. The
  *                       range defaults to contain 0% contain 100% (from the
  *                       wrapper filling the screen to it starting to leave);
  *                       contain, cover, entry and exit all work
+ *
+ * aero-depth: scroll parallax. Write class="aero-scrub aero-depth" on an element and it
+ * moves vertically against the scroll as it passes: from --aero-depth (default 80px)
+ * below its place to the same distance above it (negative reverses it). The range
+ * defaults to cover 0% cover 100% (its whole pass through the screen). It uses the
+ * individual `translate` property, so a transform of your own doesn't fight it.
  * ========================================================================= */
 
 .aero-scrub {
@@ -30,10 +42,19 @@
  animation-fill-mode: both;
 }
 
+.aero-scrub.aero-depth { animation-name: aero-depth; }
+@keyframes aero-depth {
+ from { translate: 0 var(--aero-depth, 80px); }
+ to { translate: 0 calc(var(--aero-depth, 80px) * -1); }
+}
+
 @supports (animation-timeline: view()) {
  .aero-scrub {
   animation-timeline: view();
   animation-range: var(--aero-scrub-range, entry 0% entry 80%);
+ }
+ .aero-scrub.aero-depth {
+  animation-range: var(--aero-scrub-range, cover 0% cover 100%);
  }
  .aero-scrub.aero-scrub-root {
   animation-timeline: scroll(root);
@@ -52,4 +73,20 @@
 .aero-scrub-js .aero-scrub {
  animation-play-state: paused;
  animation-delay: 0s;
+}
+
+/* Scrub-only variants. They use the translate property, so they never fight a transform of your own. */
+.aero-scrub.aero-slide-left { animation-name: aero-slide-left; }
+.aero-scrub.aero-slide-right { animation-name: aero-slide-right; }
+.aero-scrub.aero-fade-out { animation-name: aero-fade-out; }
+@keyframes aero-slide-left {
+ from { translate: var(--aero-slide-start, 0px) 0; }
+ to { translate: calc(var(--aero-slide, 30%) * -1) 0; }
+}
+@keyframes aero-slide-right {
+ from { translate: calc(var(--aero-slide, 30%) * -1) 0; }
+ to { translate: var(--aero-slide-start, 0px) 0; }
+}
+@keyframes aero-fade-out {
+ to { opacity: var(--aero-opacity-to, 0); }
 }

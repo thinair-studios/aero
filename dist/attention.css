@@ -1,0 +1,76 @@
+/* Aero 2.2.0 — attention. https://github.com/thinair-studios/aero (MIT) */
+@layer aero {
+.aero-shake, .ae-shake { animation: aero-shake var(--aero-attention-duration, 0.5s) cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
+.aero-pop, .ae-pop { animation: aero-pop var(--aero-attention-duration, 0.4s) cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.aero-spin, .ae-spin { animation: aero-spin var(--aero-attention-duration, 0.9s) linear infinite; }
+.aero-pulse, .ae-pulse { animation: aero-pulse var(--aero-attention-duration, 1.8s) ease-in-out infinite; }
+.aero-ping, .ae-ping { animation: aero-ping var(--aero-attention-duration, 1.4s) cubic-bezier(0, 0, 0.2, 1) infinite; }
+.aero-bounce, .ae-bounce { animation: aero-bounce var(--aero-attention-duration, 1s) infinite; }
+.aero-float, .ae-float { animation: aero-float var(--aero-attention-duration, 3.2s) ease-in-out infinite; }
+:is(.aero-piece, .ae-piece, .aero-stagger > *, .ae-stagger > *):is(.aero-shake, .aero-pop, .aero-spin, .aero-pulse, .aero-ping, .aero-bounce, .aero-float), :is(.ae-piece, .ae-piece, .ae-stagger > *, .ae-stagger > *):is(.ae-shake, .ae-pop, .ae-spin, .ae-pulse, .ae-ping, .ae-bounce, .ae-float) {
+ animation-delay: calc(var(--aero-delay, 0s) + var(--aero-i, 0) * var(--aero-stagger, 0s));
+}
+@keyframes aero-shake {
+ 10%, 90% { transform: translateX(calc(var(--aero-shake, 6px) * -0.25)); }
+ 20%, 80% { transform: translateX(calc(var(--aero-shake, 6px) * 0.5)); }
+ 30%, 50%, 70% { transform: translateX(calc(var(--aero-shake, 6px) * -1)); }
+ 40%, 60% { transform: translateX(var(--aero-shake, 6px)); }
+}
+@keyframes aero-pop {
+ 50% { transform: scale(var(--aero-pop, 1.15)); }
+}
+@keyframes aero-spin {
+ to { transform: rotate(1turn); }
+}
+@keyframes aero-pulse {
+ 50% { opacity: var(--aero-pulse, 0.45); }
+}
+@keyframes aero-ping {
+ 75%, 100% { transform: scale(2); opacity: 0; }
+}
+@keyframes aero-bounce {
+ 0%, 100% { transform: translateY(0); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+ 50% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+}
+@keyframes aero-float {
+ 50% { transform: translateY(calc(var(--aero-distance, 8px) * -1)); }
+}
+.aero-shimmer, .ae-shimmer {
+ position: relative;
+ overflow: clip;
+}
+.aero-shimmer::after, .ae-shimmer::after {
+ content: "";
+ position: absolute;
+ inset: 0;
+ pointer-events: none;
+ background: linear-gradient(100deg, transparent 30%, var(--aero-shimmer-color, rgb(255 255 255 / 0.35)) 50%, transparent 70%);
+ transform: translateX(-100%);
+ animation: aero-shimmer var(--aero-attention-duration, 1.6s) ease-in-out infinite;
+}
+@keyframes aero-shimmer {
+ to { transform: translateX(100%); }
+}
+.aero-marquee, .ae-marquee {
+ overflow: clip;
+}
+.aero-marquee > :first-child, .ae-marquee > :first-child {
+ display: flex;
+ width: max-content;
+ animation: aero-marquee var(--aero-marquee-duration, 30s) linear infinite;
+}
+.aero-marquee-reverse > :first-child, .ae-marquee-reverse > :first-child {
+ animation-direction: reverse;
+}
+.aero-marquee:is(:hover, :focus-within) > :first-child, .ae-marquee:is(:hover, :focus-within) > :first-child {
+ animation-play-state: paused;
+}
+@media (hover: none) {
+ .aero-marquee:hover:not(:focus-within) > :first-child, .ae-marquee:hover:not(:focus-within) > :first-child {
+  animation-play-state: running;
+ }
+}
+@keyframes aero-marquee {
+ to { transform: translateX(-50%); }
+}
+}

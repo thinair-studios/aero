@@ -12,6 +12,7 @@
   --bg: #fbfbf9; --surface: #ffffff; --ink: #1b1f1d; --muted: #5b655f; --line: #e1e5e1;
   --accent: #40826d; --accent-ink: #ffffff; --code-bg: #f1f4f1;
   --aero-spotlight-color: rgb(64 130 109 / 0.22);
+  --aero-edge-reach: 280px;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -78,6 +79,30 @@ nav a:hover { color: var(--accent); }
 
 .arrow-link { display: inline-flex; gap: 8px; align-items: center; text-decoration: none; font-weight: 600; }
 .arrow-link span { display: inline-block; }
+dialog.aero-dialog, dialog.aero-drawer, .aero-popover { background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+dialog.aero-drawer { position: fixed; inset: 0 0 0 auto; height: 100dvh; margin: 0; max-height: none; width: min(360px, 100vw); border-radius: 0; }
+.badge { display: inline-block; min-width: 2.2em; text-align: center; padding: 2px 10px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.spinner { width: 32px; height: 32px; border: 3px solid var(--line); border-top-color: var(--accent); border-radius: 50%; }
+.skeleton { height: 14px; width: 80%; border-radius: 6px; background: var(--line); margin-top: 12px; }
+.live { position: relative; display: inline-block; width: 14px; height: 14px; margin-top: 12px; }
+.dot { position: absolute; inset: 0; border-radius: 50%; background: var(--accent); }
+.stat { font-size: 2.4rem; font-weight: 700; letter-spacing: -0.02em; }
+.morph-box { flex: 1 1 0; min-width: 0; height: 90px; border-radius: 10px; color: #fff; display: grid; place-items: center; font-weight: 700; }
+svg.draw { display: block; max-width: 100%; }
+.marquee-item { padding-right: 32px; font-size: 1.4rem; font-weight: 700; white-space: nowrap; }
+.skel { height: 14px; border-radius: 6px; background: var(--line); margin-top: 12px; }
+.flip-face { height: 120px; border-radius: 10px; display: grid; place-items: center; font-weight: 700; }
+.mag-stage { display: flex; gap: 24px; justify-content: center; padding: 40px 0; }
+.subnav { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; }
+.toc { display: grid; gap: 10px; margin: 0; padding: 0 0 0 14px; list-style: none; }
+.toc a { text-decoration: none; color: var(--ink); }
+.slide-clip { overflow: clip; }
+.slide-row { white-space: nowrap; font-size: clamp(2.5rem, 8vw, 5rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.3; }
+.edge-panel { background: var(--surface); border-right: 1px solid var(--line); }
+.edge-panel button { all: unset; box-sizing: border-box; cursor: pointer; display: block; width: 100%; height: 100%; padding: 96px 24px 24px; }
+.edge-panel button:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
+.edge-panel .edge-label { display: block; font-weight: 700; font-size: 1.2rem; color: var(--ink); white-space: nowrap; }
+#edge-msg { min-height: 1.6em; }
 footer { border-top: 1px solid var(--line); padding: 40px 0 60px; color: var(--muted); font-size: 0.9rem; }
 footer a { margin-right: 16px; }
 </style>
@@ -85,18 +110,24 @@ footer a { margin-right: 16px; }
 <body>
 <div class="top aero-scrub aero-scrub-root" style="animation-name: docs-progress" aria-hidden="true"></div>
 
-<nav aria-label="Sections">
+<nav class="aero-edge-shift" aria-label="Sections">
   <div class="wrap">
     <a href="#entrances">Entrances</a><a href="#scroll">Scroll-linked</a><a href="#hover">Hover</a>
-    <a href="#cursor">Cursor</a><a href="#prefixes">Prefixes</a><a href="#motion">Reduced motion</a>
+    <a href="#cursor">Cursor</a>
+    <a href="#exits">Exits</a><a href="#overlays">Overlays</a><a href="#attention">Attention</a><a href="#disclosure">Disclosure</a><a href="#text">Text</a><a href="#numbers">Numbers</a><a href="#layout">Layout</a><a href="#pages">Pages</a><a href="#edge">Edge</a>
+    <a href="#prefixes">Prefixes</a><a href="#motion">Reduced motion</a>
   </div>
 </nav>
 
-<main>
+<div class="aero-edge edge-panel" aria-label="Edge panel">
+  <button type="button" id="edge-btn" class="aero-edge-drift" tabindex="-1"><span class="edge-label aero-edge-fade">Back to the overview</span></button>
+</div>
+
+<main class="aero-edge-shift">
 <header class="hero">
   <div class="wrap aero-in aero-stagger">
     <h1 class="aero-enter aero-fade-up">Aero</h1>
-    <p class="lead aero-enter aero-fade-up">A small CSS animation library with an optional 6 KB script. Add a class, get the motion. It looks the same in every modern browser.</p>
+    <p class="lead aero-enter aero-fade-up">A small CSS animation library with an optional 7 KB script. Add a class, get the motion. It looks the same in every modern browser.</p>
     <div class="aero-enter aero-fade-up">
       <div class="snippet"><pre><code>npm i https://github.com/thinair-studios/aero/archive/refs/tags/v2.0.0.tar.gz</code></pre></div>
     </div>
@@ -138,8 +169,12 @@ footer a { margin-right: 16px; }
       <div class="tile aero-enter aero-fade-up aero-ease-expo"><code>aero-ease-expo</code></div>
       <div class="tile aero-enter aero-fade-up aero-ease-back"><code>aero-ease-back</code></div>
       <div class="tile aero-enter aero-fade-up aero-ease-spring"><code>aero-ease-spring</code></div>
+      <div class="tile aero-enter aero-fade-up aero-ease-spring-soft"><code>aero-ease-spring-soft</code></div>
+      <div class="tile aero-enter aero-fade-up aero-ease-bounce"><code>aero-ease-bounce</code></div>
     </div>
-    <div class="snippet"><pre><code>&lt;div class="aero-enter aero-fade-up aero-slow aero-ease-back"&gt;...&lt;/div&gt;</code></pre></div>
+    <p class="muted"><code>aero-ease-spring</code>, <code>-spring-soft</code> and <code>-bounce</code> are real springs and bounces (CSS <code>linear()</code>); older browsers get a smooth curve instead.</p>
+    <div class="snippet"><pre><code>&lt;div class="aero-enter aero-fade-up aero-slow aero-ease-back"&gt;...&lt;/div&gt;
+&lt;div class="aero-enter aero-fade-up aero-ease-spring"&gt;...&lt;/div&gt;</code></pre></div>
 
     <h3 class="sub">Stagger</h3>
     <p>Children of <code>aero-stagger</code> start one after another, <code>--aero-stagger</code> apart (80ms by default).</p>
@@ -155,6 +190,48 @@ footer a { margin-right: 16px; }
   &lt;li class="aero-enter aero-scale-up"&gt;...&lt;/li&gt;
   &lt;li class="aero-enter aero-scale-up"&gt;...&lt;/li&gt;
 &lt;/ul&gt;</code></pre></div>
+
+    <h3 class="sub">Stagger order</h3>
+    <p>By default the first child goes first. <code>data-aero-stagger-from</code> on the parent changes the order: <code>end</code>, <code>center</code> or <code>random</code>. <code>aero.js</code> sets <code>--aero-i</code> on the children, and again when you add some.</p>
+    <div class="grid" id="stagger-order-grid">
+      <div class="aero-stagger" data-aero-stagger-from="end" style="display: contents">
+        <div class="tile aero-enter aero-scale-up"><code>end 1</code></div>
+        <div class="tile aero-enter aero-scale-up"><code>end 2</code></div>
+        <div class="tile aero-enter aero-scale-up"><code>end 3</code></div>
+      </div>
+      <div class="aero-stagger" data-aero-stagger-from="center" style="display: contents">
+        <div class="tile aero-enter aero-scale-up"><code>center 1</code></div>
+        <div class="tile aero-enter aero-scale-up"><code>center 2</code></div>
+        <div class="tile aero-enter aero-scale-up"><code>center 3</code></div>
+      </div>
+      <div class="aero-stagger" data-aero-stagger-from="random" style="display: contents">
+        <div class="tile aero-enter aero-scale-up"><code>random 1</code></div>
+        <div class="tile aero-enter aero-scale-up"><code>random 2</code></div>
+        <div class="tile aero-enter aero-scale-up"><code>random 3</code></div>
+      </div>
+    </div>
+    <div class="snippet"><pre><code>&lt;ul class="aero-stagger" data-aero-stagger-from="center"&gt;...&lt;/ul&gt;</code></pre></div>
+
+    <h3 class="sub">Wipes</h3>
+    <p>A wipe reveals the element with a moving edge instead of fading it. <code>aero-wipe-right</code> uncovers left to right, and there are <code>-left</code>, <code>-up</code> and <code>-down</code> too.</p>
+    <div class="grid" id="wipe-grid">
+      <div class="tile solid aero-enter aero-wipe-right"><code>aero-wipe-right</code></div>
+      <div class="tile solid aero-enter aero-wipe-left"><code>aero-wipe-left</code></div>
+      <div class="tile solid aero-enter aero-wipe-up"><code>aero-wipe-up</code></div>
+      <div class="tile solid aero-enter aero-wipe-down"><code>aero-wipe-down</code></div>
+    </div>
+    <div class="snippet"><pre><code>&lt;img class="aero-enter aero-wipe-right" src="photo.jpg" alt=""&gt;
+&lt;div class="aero-enter aero-wipe-up"&gt;...&lt;/div&gt;</code></pre></div>
+
+    <h3 class="sub">Draw</h3>
+    <p><code>aero-draw</code> draws an SVG stroke in. Put it on a shape, or on the <code>&lt;svg&gt;</code> to draw every shape inside. <code>aero.js</code> sets <code>pathLength="1"</code> on the shapes if it is missing (without the script, add it yourself). It animates <code>stroke-dasharray</code> and <code>stroke-dashoffset</code>, the one exception to the transform and opacity rule. It needs a stroke, and works as an entrance or with <code>aero-scrub</code>.</p>
+    <div class="row"><svg class="draw aero-enter aero-draw" id="draw-grid" width="320" height="90" viewBox="0 0 320 90" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="butt" style="color: var(--accent); --aero-duration: 1.4s">
+      <path d="M8 70 C 50 10, 90 10, 130 70 S 210 130, 250 40"/><circle cx="285" cy="45" r="24"/>
+    </svg></div>
+    <div class="snippet"><pre><code>&lt;svg class="aero-enter aero-draw" fill="none" stroke="currentColor" stroke-width="4"&gt;
+  &lt;path d="M8 70 C 50 10, 90 10, 130 70"/&gt;
+&lt;/svg&gt;
+&lt;svg class="aero-scrub aero-draw" style="--aero-scrub-range: cover 0% cover 60%"&gt;...&lt;/svg&gt;</code></pre></div>
   </div>
 </section>
 
@@ -178,6 +255,34 @@ footer a { margin-right: 16px; }
       <div class="tile right aero-scrub aero-pass" style="--aero-scrub-range: cover 0% cover 100%"><h3>aero-pass</h3><code>cover 0% cover 100%</code></div>
       <div class="tile aero-scrub aero-fan-left" style="--aero-scrub-range: entry 25% cover 50%"><h3>aero-fan-left</h3><code>entry 25% cover 50%</code></div>
     </div>
+    <h3 class="sub">Depth</h3>
+    <p><code>aero-depth</code> is scroll parallax: write <code>aero-scrub aero-depth</code> and the element moves against the scroll as it passes, from <code>--aero-depth</code> (80px) below its place to the same distance above. A negative value reverses it. The range defaults to <code>cover 0% cover 100%</code>.</p>
+    <div class="cols" style="margin: 40px 0 120px">
+      <div class="tile aero-scrub aero-depth"><h3>aero-depth</h3><span class="muted">80px</span></div>
+      <div class="tile aero-scrub aero-depth" style="--aero-depth: 160px"><h3>--aero-depth: 160px</h3><span class="muted">moves more</span></div>
+      <div class="tile aero-scrub aero-depth" style="--aero-depth: -60px"><h3>--aero-depth: -60px</h3><span class="muted">the other way</span></div>
+    </div>
+    <div class="snippet"><pre><code>&lt;img class="aero-scrub aero-depth" src="..." alt=""&gt;
+&lt;img class="aero-scrub aero-depth" style="--aero-depth: -60px" src="..." alt=""&gt;</code></pre></div>
+
+    <h3 class="sub">Slide and fade out</h3>
+    <p><code>aero-slide-left</code> and <code>aero-slide-right</code> only make sense tied to the scroll, so use them with <code>aero-scrub</code>. A row of words slides sideways across its range, by <code>--aero-slide</code> (30% of its own width) from <code>--aero-slide-start</code> (0). <code>aero-fade-out</code> fades to <code>--aero-opacity-to</code> (0), and <code>aero-fade-in</code> starts from <code>--aero-opacity-from</code> (0).</p>
+    <div class="slide-clip" style="margin: 40px 0">
+      <div class="slide-row aero-scrub aero-slide-left" style="--aero-scrub-range: cover 0% cover 100%">Entrances &middot; Scroll &middot; Hover &middot; Cursor &middot; Exits &middot; Text</div>
+      <div class="slide-row aero-scrub aero-slide-right" style="--aero-scrub-range: cover 0% cover 100%; color: var(--accent)">Disclosure &middot; Numbers &middot; Layout &middot; Pages &middot; Edge</div>
+    </div>
+    <div class="cols" style="margin-bottom: 40px">
+      <p class="lead aero-scrub aero-fade-out" style="--aero-scrub-range: exit 0% exit 80%; --aero-opacity-to: 0.1">This paragraph fades as it leaves the top of the screen.</p>
+      <div class="tile aero-scrub aero-fade-in" style="--aero-opacity-from: 0.2"><h3>aero-fade-in</h3><span class="muted">--aero-opacity-from: .2, so it never starts invisible</span></div>
+    </div>
+    <div class="snippet"><pre><code>&lt;div class="aero-scrub aero-slide-left"&gt;Entrances &middot; Scroll &middot; Hover&lt;/div&gt;
+&lt;div class="aero-scrub aero-slide-right" style="--aero-slide: 20%; --aero-slide-start: 0px"&gt;...&lt;/div&gt;
+
+&lt;p class="aero-scrub aero-fade-out" style="--aero-scrub-range: exit 0% exit 80%; --aero-opacity-to: .1"&gt;...&lt;/p&gt;
+&lt;div class="aero-scrub aero-fade-in" style="--aero-opacity-from: .2"&gt;...&lt;/div&gt;
+
+&lt;!-- clip the row so it doesn't widen the page --&gt;
+&lt;div style="overflow: clip"&gt;...&lt;/div&gt;</code></pre></div>
   </div>
 </section>
 
@@ -200,6 +305,38 @@ footer a { margin-right: 16px; }
 &lt;a class="aero-hover-rise"&gt;...&lt;/a&gt;
 &lt;a class="aero-hover-shift" style="--aero-hover-x: 8px; --aero-hover-y: 8px"&gt;...&lt;/a&gt;</code></pre></div>
 
+    <h3 class="sub">Underline</h3>
+    <p><code>aero-underline</code> draws a link's underline in from the left on hover or focus, and out to the right when you leave. It replaces the link's own underline. Settings: <code>--aero-underline-color</code> <code>-thickness</code> <code>-offset</code>.</p>
+    <p style="font-size: 1.25rem"><a class="aero-underline" href="#hover">Read the guide</a> &nbsp; <a class="aero-underline" href="#hover" style="--aero-underline-thickness: 4px; --aero-underline-color: var(--ink); color: var(--ink)">A thicker one</a></p>
+    <div class="snippet"><pre><code>&lt;a class="aero-underline" href="/guide"&gt;Read the guide&lt;/a&gt;
+&lt;a class="aero-underline" style="--aero-underline-thickness: 4px"&gt;Thicker&lt;/a&gt;</code></pre></div>
+
+    <p>The underline is also drawn while a link is current: give it <code>aero-on</code> or <code>aria-current</code>. Move <code>aero-on</code> to another link and the old one draws out as the new one draws in.</p>
+    <div class="subnav" id="underline-nav">
+      <a class="aero-underline aero-on" href="#hover">Overview</a>
+      <a class="aero-underline" href="#hover">Pricing</a>
+      <a class="aero-underline" href="#hover">Changelog</a>
+      <button class="btn" id="underline-next" type="button">Next link</button>
+    </div>
+    <p class="sub"><code>aero-underline-side</code> is the same as a bar on the link's left, for a table of contents. <code>aero-underline-shown</code> is drawn at rest and draws out on hover.</p>
+    <div class="cols">
+      <ul class="toc" id="underline-toc">
+        <li><a class="aero-underline aero-underline-side aero-on" href="#hover" style="--aero-underline-offset: 14px">Introduction</a></li>
+        <li><a class="aero-underline aero-underline-side" href="#hover" style="--aero-underline-offset: 14px">Install</a></li>
+        <li><a class="aero-underline aero-underline-side" href="#hover" style="--aero-underline-offset: 14px">Usage</a></li>
+      </ul>
+      <p style="font-size: 1.25rem"><a class="aero-underline aero-underline-shown" href="#hover">Always underlined</a></p>
+    </div>
+    <div class="snippet"><pre><code>&lt;a class="aero-underline aero-on" href="/a"&gt;Overview&lt;/a&gt;   &lt;!-- or aria-current="page" --&gt;
+&lt;a class="aero-underline" href="/b"&gt;Pricing&lt;/a&gt;
+&lt;script&gt;
+  a.classList.remove("aero-on");
+  b.classList.add("aero-on");   // the underline moves across
+&lt;/script&gt;
+
+&lt;a class="aero-underline aero-underline-side aero-on" style="--aero-underline-offset: 14px"&gt;Intro&lt;/a&gt;
+&lt;a class="aero-underline aero-underline-shown" href="/"&gt;Always underlined&lt;/a&gt;</code></pre></div>
+
     <h3 class="sub">Group-triggered</h3>
     <p>Hover or focus anywhere in an <code>aero-hover-group</code> and its <code>aero-hover-target</code> moves. The arrow nudges when the whole link is hovered.</p>
     <div class="cols">
@@ -217,6 +354,20 @@ footer a { margin-right: 16px; }
     <div class="snippet"><pre><code>&lt;a class="aero-hover-group" href="/guide"&gt;
   Continue
   &lt;span class="aero-hover-target aero-hover-nudge"&gt;&amp;rarr;&lt;/span&gt;
+&lt;/a&gt;</code></pre></div>
+
+    <h3 class="sub">Appear</h3>
+    <p><code>aero-hover-appear</code> is hidden until its group is hovered or focused, then fades in and slides in from <code>--aero-hover-from</code> (-0.35em) after <code>--aero-hover-delay</code> (0s). Leaving, it goes at once.</p>
+    <div class="cols">
+      <a class="tile aero-hover-group" href="#hover" style="color: inherit; text-decoration: none">
+        <h3>Open the report</h3>
+        <p class="muted">The arrow shows up late, from further left.</p>
+        <span class="arrow-link" style="color: var(--accent)">Open <span class="aero-hover-appear" style="--aero-hover-delay: 0.12s; --aero-hover-from: -1em">&rarr;</span></span>
+      </a>
+    </div>
+    <div class="snippet"><pre><code>&lt;a class="aero-hover-group" href="/report"&gt;
+  Open
+  &lt;span class="aero-hover-appear" style="--aero-hover-delay: .12s; --aero-hover-from: -1em"&gt;&amp;rarr;&lt;/span&gt;
 &lt;/a&gt;</code></pre></div>
   </div>
 </section>
@@ -236,12 +387,248 @@ footer a { margin-right: 16px; }
         <div class="p3 aero-parallax aero-parallax-xl"></div>
       </div>
     </div>
+    <h3 class="sub">Magnetic</h3>
+    <p><code>aero-magnetic</code> makes a button lean toward the pointer, up to <code>--aero-magnetic</code> (10px), and rest centred. It sits inside an <code>aero-cursor</code> area, or is the <code>aero-cursor</code> element itself, as the second button is.</p>
+    <div class="stage aero-cursor mag-stage" data-aero-smoothing="0.18">
+      <button class="btn primary aero-magnetic" type="button" style="--aero-magnetic: 14px; padding: 12px 22px">Inside an area</button>
+      <button class="btn aero-cursor aero-magnetic" type="button" data-aero-smoothing="0.18" style="--aero-magnetic: 8px; padding: 12px 22px">Its own area</button>
+    </div>
+    <div class="snippet"><pre><code>&lt;div class="aero-cursor"&gt;
+  &lt;button class="aero-magnetic" style="--aero-magnetic: 14px"&gt;Get started&lt;/button&gt;
+&lt;/div&gt;
+&lt;button class="aero-cursor aero-magnetic"&gt;Its own area&lt;/button&gt;</code></pre></div>
     <div class="snippet"><pre><code>&lt;div class="aero-cursor" data-aero-smoothing="0.18"&gt;
   &lt;div class="aero-tilt"&gt;Tilts toward the pointer&lt;/div&gt;
   &lt;div class="aero-spotlight" style="--aero-spotlight-color: rgb(64 130 109 / 0.22)"&gt;A soft light&lt;/div&gt;
   &lt;div class="aero-parallax aero-parallax-lg"&gt;Moves with the pointer&lt;/div&gt;
   &lt;div class="aero-parallax aero-parallax-xl"&gt;Moves further&lt;/div&gt;
 &lt;/div&gt;</code></pre></div>
+  </div>
+</section>
+
+<section id="exits">
+  <div class="wrap">
+    <h2>Exits</h2>
+    <p>An <code>aero-leave-*</code> class says how an element leaves, and <code>aero-out</code> starts it. <code>Aero.leave(el)</code> adds <code>aero-out</code> for you, waits for the end and can remove the element with <code>{ remove: true }</code>. These boxes stay in the page so you can reset them.</p>
+    <div class="row"><button class="btn" id="leave-reset" type="button">Reset</button></div>
+    <div class="grid" id="leave-grid">
+      <div><div class="tile aero-leave-fade"><code>aero-leave-fade</code></div><p class="row"><button class="btn" type="button">Leave</button></p></div>
+      <div><div class="tile aero-leave-up"><code>aero-leave-up</code></div><p class="row"><button class="btn" type="button">Leave</button></p></div>
+      <div><div class="tile aero-leave-right"><code>aero-leave-right</code></div><p class="row"><button class="btn" type="button">Leave</button></p></div>
+      <div><div class="tile aero-leave-scale"><code>aero-leave-scale</code></div><p class="row"><button class="btn" type="button">Leave</button></p></div>
+      <div><div class="tile aero-leave-wipe-right"><code>aero-leave-wipe-right</code></div><p class="row"><button class="btn" type="button">Leave</button></p></div>
+    </div>
+    <div class="snippet"><pre><code>&lt;div class="aero-leave-right"&gt;...&lt;/div&gt;
+
+Aero.leave(el);                    // plays the exit, keeps the element
+Aero.leave(el, { remove: true });  // plays the exit, then removes it</code></pre></div>
+  </div>
+</section>
+
+<section id="overlays">
+  <div class="wrap">
+    <h2>Dialogs, drawers and popovers</h2>
+    <p>Put <code>aero-dialog</code>, <code>aero-drawer</code> (or <code>-left</code>, <code>-bottom</code>) on a <code>&lt;dialog&gt;</code>, or <code>aero-popover</code> on a <code>popover</code> element. They animate open everywhere. Closing animates in Chrome and Edge; Firefox and Safari close at once. Aero only moves them, so a drawer's size and position are yours.</p>
+    <div class="row">
+      <button class="btn" id="open-dialog" type="button">Open dialog</button>
+      <button class="btn" id="open-drawer" type="button">Open drawer</button>
+      <button class="btn" type="button" popovertarget="demo-popover">Toggle popover</button>
+    </div>
+    <dialog class="aero-dialog" id="demo-dialog">
+      <h3>A dialog</h3>
+      <p>It fades in, growing slightly. Press Escape or the button to close it.</p>
+      <button class="btn primary" type="button" data-close>Close</button>
+    </dialog>
+    <dialog class="aero-drawer" id="demo-drawer">
+      <h3>A drawer</h3>
+      <p>It slides in from the right edge.</p>
+      <button class="btn primary" type="button" data-close>Close</button>
+    </dialog>
+    <div popover class="aero-popover" id="demo-popover">A popover. Click outside to dismiss it.</div>
+    <div class="snippet"><pre><code>&lt;dialog class="aero-dialog" id="d"&gt;...&lt;button onclick="d.close()"&gt;Close&lt;/button&gt;&lt;/dialog&gt;
+&lt;button onclick="d.showModal()"&gt;Open&lt;/button&gt;
+
+&lt;dialog class="aero-drawer"&gt;...&lt;/dialog&gt;
+&lt;style&gt;
+  dialog.aero-drawer { position: fixed; inset: 0 0 0 auto; height: 100dvh;
+    margin: 0; max-height: none; width: 360px; }
+&lt;/style&gt;
+
+&lt;button popovertarget="p"&gt;Toggle&lt;/button&gt;
+&lt;div popover class="aero-popover" id="p"&gt;...&lt;/div&gt;</code></pre></div>
+  </div>
+</section>
+
+<section id="attention">
+  <div class="wrap">
+    <h2>Attention</h2>
+    <p><code>aero-shake</code> and <code>aero-pop</code> play once. Call <code>Aero.replay(el)</code> to play them again. <code>aero-spin</code>, <code>aero-pulse</code>, <code>aero-ping</code>, <code>aero-bounce</code> and <code>aero-float</code> loop, and so does <code>aero-shimmer</code>, a light band across a loading skeleton.</p>
+    <div class="cols">
+      <div class="tile">
+        <h3>Shake on error</h3>
+        <div class="row"><input id="shake-input" class="aero-shake" type="text" placeholder="Type something" aria-label="Demo input"><button class="btn" id="shake-btn" type="button">Check</button></div>
+      </div>
+      <div class="tile">
+        <h3>Pop on change</h3>
+        <div class="row"><span class="badge aero-pop" id="pop-badge">0</span><button class="btn" id="pop-btn" type="button">+1</button></div>
+      </div>
+    </div>
+    <div class="cols sub">
+      <div class="tile"><h3>aero-spin</h3><div class="spinner aero-spin"></div></div>
+      <div class="tile"><h3>aero-pulse</h3><div class="skeleton aero-pulse"></div></div>
+      <div class="tile"><h3>aero-ping</h3><span class="live"><span class="dot aero-ping"></span><span class="dot"></span></span></div>
+      <div class="tile"><h3>aero-bounce</h3><span class="live aero-bounce" style="width: 24px; height: 24px; margin-top: 20px"><span class="dot"></span></span></div>
+      <div class="tile"><h3>aero-float</h3><div class="tile solid aero-float" style="width: 60px; height: 40px; padding: 0"></div></div>
+      <div class="tile"><h3>aero-shimmer</h3><div class="aero-shimmer skel" style="--aero-shimmer-color: rgb(255 255 255 / 0.6)"></div><div class="aero-shimmer skel" style="width: 60%"></div></div>
+    </div>
+    <h3 class="sub">Marquee</h3>
+    <p><code>aero-marquee</code> on a container whose single child is the track: the track scrolls left forever and loops seamlessly. <code>aero.js</code> copies the items once (the copies are hidden from screen readers), so the items together should be wider than the container, and spaced with padding or margin rather than <code>gap</code>. Hover or focus pauses it. <code>--aero-marquee-duration</code> (30s) sets one full loop; <code>aero-marquee-reverse</code> goes the other way.</p>
+    <div class="aero-marquee" style="--aero-marquee-duration: 14s; border: 1px solid var(--line); border-radius: 10px; padding: 14px 0">
+      <div><span class="marquee-item">Entrances</span><span class="marquee-item">Scroll-linked</span><span class="marquee-item">Hover</span><span class="marquee-item">Cursor</span><span class="marquee-item">Text</span><span class="marquee-item">Numbers</span></div>
+    </div>
+    <div class="aero-marquee aero-marquee-reverse" style="--aero-marquee-duration: 14s; border: 1px solid var(--line); border-radius: 10px; padding: 14px 0; margin-top: 12px">
+      <div><span class="marquee-item">Reverse</span><span class="marquee-item">Pauses on hover</span><span class="marquee-item">Seamless</span><span class="marquee-item">Reverse</span><span class="marquee-item">Pauses on hover</span><span class="marquee-item">Seamless</span></div>
+    </div>
+    <div class="snippet"><pre><code>&lt;input class="aero-shake" id="email"&gt;
+&lt;script&gt;
+  // on each failed check
+  email.classList.add("aero-shake");
+  Aero.replay(email);
+&lt;/script&gt;
+
+&lt;span class="aero-pop" id="count"&gt;3&lt;/span&gt;   &lt;!-- Aero.replay(count) after changing it --&gt;
+&lt;div class="spinner aero-spin"&gt;&lt;/div&gt;
+&lt;div class="skeleton aero-pulse"&gt;&lt;/div&gt;
+&lt;span class="dot"&gt;&lt;span class="dot aero-ping"&gt;&lt;/span&gt;&lt;span class="dot"&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class="aero-bounce"&gt;...&lt;/span&gt;
+&lt;span class="aero-float"&gt;...&lt;/span&gt;
+&lt;div class="skeleton aero-shimmer"&gt;&lt;/div&gt;
+
+&lt;div class="aero-marquee" style="--aero-marquee-duration: 20s"&gt;
+  &lt;div&gt;&lt;span style="padding-right: 32px"&gt;One&lt;/span&gt;&lt;span style="padding-right: 32px"&gt;Two&lt;/span&gt;...&lt;/div&gt;
+&lt;/div&gt;</code></pre></div>
+  </div>
+</section>
+
+<section id="disclosure">
+  <div class="wrap">
+    <h2>Disclosure</h2>
+    <p><code>aero-collapse</code> on a <code>&lt;details&gt;</code> slides its content open and closed (Chrome and Edge today; elsewhere it just opens). <code>aero-flip</code> turns a two-faced card over on hover, on focus inside, or when you add <code>aero-flipped</code>. Hover alone does not flip on touch screens. An <code>aero-collapse-icon</code> in the summary, such as a "+", turns by <code>--aero-collapse-turn</code> (45deg) when it opens, as the first one does.</p>
+    <div class="cols">
+      <div class="tile">
+        <details class="aero-collapse"><summary>What does the collapse do? <span class="aero-collapse-icon" aria-hidden="true">+</span></summary><p style="margin: 12px 0 0">The content opens and closes with a block-size transition. The library never sets <code>interpolate-size</code> on <code>:root</code>; it is set on the element.</p></details>
+        <details class="aero-collapse" style="margin-top: 12px"><summary>Can I change the speed?</summary><p style="margin: 12px 0 0">Yes: <code>--aero-duration</code> and <code>--aero-easing</code>.</p></details>
+      </div>
+      <div class="aero-flip" id="flip-demo" style="--aero-flip-duration: 0.6s">
+        <div class="aero-front tile solid flip-face">Hover or focus me</div>
+        <div class="aero-back tile flip-face" style="border-color: var(--accent)">Back <a href="#disclosure" style="margin-left: 8px">a link</a></div>
+      </div>
+      <div class="aero-flip" id="flip-click" tabindex="-1">
+        <div class="aero-front tile solid flip-face">Click to flip</div>
+        <div class="aero-back tile flip-face">Flipped by a class</div>
+      </div>
+    </div>
+    <div class="snippet"><pre><code>&lt;details class="aero-collapse"&gt;
+  &lt;summary&gt;Question &lt;span class="aero-collapse-icon"&gt;+&lt;/span&gt;&lt;/summary&gt;
+  Answer
+&lt;/details&gt;
+
+&lt;div class="aero-flip" style="--aero-flip-duration: 0.6s"&gt;
+  &lt;div class="aero-front"&gt;...&lt;/div&gt;
+  &lt;div class="aero-back"&gt;...&lt;/div&gt;
+&lt;/div&gt;
+&lt;script&gt;card.classList.toggle("aero-flipped")&lt;/script&gt;</code></pre></div>
+  </div>
+</section>
+
+<section id="text">
+  <div class="wrap">
+    <h2>Text</h2>
+    <p><code>aero-split</code> breaks a heading into words, or letters with <code>data-aero-split="letters"</code>, and each piece plays the entrance variant one after another. Screen readers still get the text once, whole. <code>aero-hover-wave</code> makes the pieces rise on hover.</p>
+    <div class="row"><button class="btn" id="text-replay" type="button">Replay</button></div>
+    <div id="text-demo">
+      <h2 class="aero-split aero-fade-up">Motion, out of thin air</h2>
+      <h2 class="aero-split aero-wipe-up" data-aero-split="letters">Letter by letter</h2>
+      <ul class="muted" style="list-style: none; padding: 0">
+        <li><a class="aero-hover-group" href="#text" style="font-size: 1.25rem"><span class="aero-split aero-hover-wave" data-aero-split="letters">Hover this link</span></a></li>
+      </ul>
+    </div>
+    <p style="margin-top: 24px"><code>data-aero-split="lines"</code> gives each line of text its own mask, and each line rises from behind it. It splits again on resize until it has played.</p>
+    <p class="aero-split aero-fade-up" data-aero-split="lines" style="--aero-distance: 100%; font-size: 1.4rem; max-width: 30ch">Each line of this paragraph rises from behind its own edge, however the text happens to wrap on your screen.</p>
+    <div class="snippet"><pre><code>&lt;h2 class="aero-split aero-fade-up"&gt;Motion, out of thin air&lt;/h2&gt;
+&lt;h2 class="aero-split aero-wipe-up" data-aero-split="letters"&gt;Letter by letter&lt;/h2&gt;
+&lt;a class="aero-hover-group" href="/"&gt;
+  &lt;span class="aero-split aero-hover-wave" data-aero-split="letters"&gt;Hover this link&lt;/span&gt;
+&lt;/a&gt;
+
+&lt;p class="aero-split aero-fade-up" data-aero-split="lines" style="--aero-distance: 100%"&gt;...&lt;/p&gt;</code></pre></div>
+  </div>
+</section>
+
+<section id="numbers">
+  <div class="wrap">
+    <h2>Numbers</h2>
+    <p><code>aero-count</code> counts up to the number in its text when it comes into view, keeping commas, decimals and any text around it. Add <code>aero-enter</code> and <code>aero-repeat</code> and it counts again each time it scrolls back into view, as the middle stat does.</p>
+    <div class="cols">
+      <div class="tile"><div class="stat aero-count">1,250</div><span class="muted">loads moved</span></div>
+      <div class="tile"><div class="stat aero-count aero-enter aero-fade-up aero-repeat">99.9%</div><span class="muted">uptime, repeats</span></div>
+      <div class="tile"><div class="stat aero-count">€40+</div><span class="muted">per seat</span></div>
+    </div>
+    <div class="snippet"><pre><code>&lt;div class="aero-count"&gt;1,250&lt;/div&gt;
+&lt;div class="aero-count aero-enter aero-fade-up aero-repeat"&gt;99.9%&lt;/div&gt;</code></pre></div>
+  </div>
+</section>
+
+<section id="layout">
+  <div class="wrap">
+    <h2>Layout</h2>
+    <p>Give elements <code>aero-morph</code>, then change the layout inside <code>Aero.swap(() =&gt; ...)</code>. Each element glides and resizes to its new place.</p>
+    <div class="row"><button class="btn primary" id="shuffle" type="button">Shuffle</button></div>
+    <div class="row" id="morph-row" style="flex-wrap: nowrap">
+      <div class="morph-box aero-morph" style="background: #40826d">1</div>
+      <div class="morph-box aero-morph" style="background: #2f6f9a">2</div>
+      <div class="morph-box aero-morph" style="background: #b5683a">3</div>
+      <div class="morph-box aero-morph" style="background: #7a5aa6">4</div>
+      <div class="morph-box aero-morph" style="background: #a8403f">5</div>
+    </div>
+    <div class="snippet"><pre><code>&lt;div class="aero-morph"&gt;...&lt;/div&gt;
+
+Aero.swap(() =&gt; {
+  list.append(...shuffled);   // any layout change
+});</code></pre></div>
+  </div>
+</section>
+
+<section id="pages">
+  <div class="wrap">
+    <h2>Between pages</h2>
+    <p>Three steps give you cross-page transitions. Opt in to view transitions in your CSS, load <code>aero-pages.js</code> in the <code>&lt;head&gt;</code> of every page (not deferred), and mark the pages that sit on top of others. Sheets slide in from the right over the last page and slide away on the way back. Firefox gets the same direction from <code>aero-arrive</code>.</p>
+    <div class="snippet"><pre><code>/* 1. your CSS */
+@view-transition { navigation: auto; }
+
+&lt;!-- 2. in the head of every page --&gt;
+&lt;script src="aero-pages.js"&gt;&lt;/script&gt;
+
+&lt;!-- 3. on pages that sit on top --&gt;
+&lt;html lang="en" data-aero-page="sheet"&gt;</code></pre></div>
+  </div>
+</section>
+
+<section id="edge">
+  <div class="wrap">
+    <h2>Edge</h2>
+    <p>An <code>aero-edge</code> panel is fixed at the left edge of the page. As a mouse pointer nears the edge (within <code>--aero-edge-zone</code>, 220px) <code>aero.js</code> eases <code>--aero-edge</code> from 0 to 1 on <code>&lt;html&gt;</code>, and the panel widens to <code>--aero-edge-reach</code> (24vw; set on <code>:root</code>, here 280px). Inside it, <code>aero-edge-drift</code> drifts in from the left and <code>aero-edge-fade</code> fades in late. <code>aero-edge-shift</code> on the page's blocks slides them aside with it. Mouse only, and it stays shut while a button is held, a dialog is open or text is selected.</p>
+    <p>It is live on this page: move your mouse to the left edge. The nav, the sections and the footer slide aside, and the panel takes clicks once it is open.</p>
+    <p class="muted" id="edge-msg" aria-live="polite">Clicking the panel shows a message here.</p>
+    <div class="snippet"><pre><code>:root { --aero-edge-reach: 280px; }
+
+&lt;div class="aero-edge"&gt;
+  &lt;button class="aero-edge-drift"&gt;
+    &lt;span class="aero-edge-fade"&gt;Back to the overview&lt;/span&gt;
+  &lt;/button&gt;
+&lt;/div&gt;
+
+&lt;main class="aero-edge-shift"&gt;...&lt;/main&gt;</code></pre></div>
   </div>
 </section>
 
@@ -270,7 +657,7 @@ footer a { margin-right: 16px; }
 </section>
 </main>
 
-<footer>
+<footer class="aero-edge-shift">
   <div class="wrap">
     <p>Aero is MIT licensed.</p>
     <a href="https://github.com/thinair-studios/aero">GitHub</a>
@@ -294,13 +681,58 @@ document.querySelectorAll(".snippet").forEach(function (s) {
 });
 
 document.getElementById("replay").addEventListener("click", function () {
-  var els = document.querySelectorAll("#entrance-grid .aero-enter, #preset-grid .aero-enter, #stagger-grid .aero-enter");
+  var els = document.querySelectorAll("#entrance-grid .aero-enter, #preset-grid .aero-enter, #stagger-grid .aero-enter, #wipe-grid .aero-enter, #stagger-order-grid .aero-enter, #draw-grid");
   els.forEach(function (e) { e.classList.remove("aero-in", "ae-in"); });
   void document.body.offsetHeight;
   requestAnimationFrame(function () {
     els.forEach(function (e) { e.classList.add("aero-in", "ae-in"); });
   });
 });
+
+document.querySelectorAll("#leave-grid .btn").forEach(function (b) {
+  b.addEventListener("click", function () { Aero.leave(b.closest("div").querySelector(".tile")); });
+});
+document.getElementById("leave-reset").addEventListener("click", function () {
+  document.querySelectorAll("#leave-grid .tile").forEach(function (e) { e.classList.remove("aero-out", "ae-out"); });
+});
+
+function wire(id, fn) { document.getElementById(id).addEventListener("click", fn); }
+wire("open-dialog", function () { document.getElementById("demo-dialog").showModal(); });
+wire("open-drawer", function () { document.getElementById("demo-drawer").showModal(); });
+document.querySelectorAll("[data-close]").forEach(function (b) {
+  b.addEventListener("click", function () { b.closest("dialog").close(); });
+});
+
+wire("shake-btn", function () {
+  var i = document.getElementById("shake-input");
+  i.classList.add("aero-shake");
+  Aero.replay(i);
+});
+var n = 0;
+wire("pop-btn", function () {
+  var b = document.getElementById("pop-badge");
+  b.textContent = ++n;
+  Aero.replay(b);
+});
+
+wire("flip-click", function () { this.classList.toggle("aero-flipped"); });
+wire("text-replay", function () { Aero.replay(document.getElementById("text")); });
+
+wire("shuffle", function () {
+  var row = document.getElementById("morph-row");
+  Aero.swap(function () {
+    var kids = Array.from(row.children).sort(function () { return Math.random() - 0.5; });
+    kids.forEach(function (k) { row.appendChild(k); });
+  });
+});
+
+wire("underline-next", function () {
+  var links = Array.from(document.querySelectorAll("#underline-nav .aero-underline"));
+  var i = links.findIndex(function (l) { return l.classList.contains("aero-on"); });
+  links.forEach(function (l) { l.classList.remove("aero-on", "ae-on"); });
+  links[(i + 1) % links.length].classList.add("aero-on");
+});
+wire("edge-btn", function () { document.getElementById("edge-msg").textContent = "This is where your way back goes."; });
 
 var rm = document.getElementById("rm");
 rm.addEventListener("click", function () {

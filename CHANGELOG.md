@@ -1,5 +1,43 @@
 # Changelog
 
+## 2.2.0 — 2026-11-20
+
+Aero now covers things leaving as well as arriving.
+
+- **Exits.** `aero-leave-*` (fade, up, down, left, right, scale, wipe) started by `.aero-out` or `Aero.leave(el, { remove })`.
+- **Dialogs, drawers and popovers** that animate open and closed in pure CSS: `aero-dialog`, `aero-drawer` (`-left`, `-bottom`), `aero-popover`, backdrop included.
+- **Page transitions.** `aero-pages.js` in `<head>` plus `data-aero-page="sheet"`: sheets slide in and away, sheets cross-fade between each other, the back button included; Firefox gets the same direction through page arrival.
+- **Layout changes.** `Aero.swap(update)` with `.aero-morph`.
+- **Text split** into words or letters (`aero-split`), and `aero-hover-wave`.
+- **Attention** effects: `aero-shake`, `aero-pop`, `aero-spin`, `aero-pulse`, `aero-ping`, `aero-bounce`, `aero-float`.
+- **Wipes**: `aero-wipe-right` / `-left` / `-up` / `-down` entrances, scrubbable too.
+- **Numbers**: `aero-count` counts up to the number in its text.
+- **`aero-draw`**: an SVG stroke drawing in, as an entrance or scrubbed; `aero.js` sets `pathLength="1"` on the shapes.
+- **`aero-collapse`** (a `<details>` that opens and closes smoothly) and **`aero-flip`** (a two-faced card), in a new `disclosure` module.
+- **`aero-marquee`** (a seamless loop; `aero-marquee-reverse`, `--aero-marquee-duration`) and **`aero-shimmer`** (a loading-skeleton sweep).
+- **`aero-depth`**: scroll parallax, `aero-scrub aero-depth` with `--aero-depth`.
+- **`aero-magnetic`**: a button leaning toward the pointer inside an `.aero-cursor` area.
+- **`aero-underline`**: a link underline that draws in on hover and out on leave.
+- **Real springs and bounce**: `aero-ease-spring` is now a `linear()` spring with a slight overshoot (old browsers keep the cubic-bezier), plus `aero-ease-spring-soft` and `aero-ease-bounce`.
+- **Stagger order**: `data-aero-stagger-from="end" | "center" | "random"`.
+- **Text lines**: `data-aero-split="lines"` reveals each rendered line from behind its own mask.
+- **Fix:** the `aero.js` scroll fallback now works on SVG elements, which have no `offsetTop`.
+- **Underline states**: `aero-underline` also draws while current (`.aero-on`, `aria-current`); `aero-underline-side` and `aero-underline-shown`; and `aero-hover-appear` for things that show on hover.
+- **Scroll**: `aero-slide-left` / `-right` and `aero-fade-out` for scrubbed motion; `--aero-opacity-from` for any fade.
+- **The edge**: `aero-edge`, `aero-edge-shift`, `-drift`, `-pin`, `-fade`: a panel at the left edge that opens as the mouse nears it. Only layers move while it opens. `--aero-edge` lives on the panel (not `<html>`), and aero.js writes `translate` on the shifted blocks while it is open.
+- **Glide**: `aero-glide` flies from a measured spot through a waypoint into place (a logo from a hero into a header); fades can start hidden with `--aero-visibility-from`.
+- **Collapse icon**: `aero-collapse-icon` turns when its details opens.
+- **Fix:** `aero-flip` turns its faces, not the card, so a pointer near its edge no longer makes it flicker.
+- **Fix:** line masks (`data-aero-split="lines"`) leave room for descenders (`--aero-line-bleed`, .25em above and below; the mask is now a clip-path, so a page reset can't undo it).
+- **Edge in two stages**: `--aero-edge-peek`, `.aero-edge-more`, `--aero-edge-full`, `.aero-edge-full-fade`, `--aero-edge-y`; a panel named `aero-edge` fades out in place through a page transition.
+- **Hover reveal**: `aero-hover-reveal` grows a circle out of the pointer to cover its element. The cursor values now start where the pointer comes in and stay where it leaves.
+- **Carry on from a gesture**: `aero:transition` can pass an `offset`, and going back slides the sheet off from there.
+- **The edge glides**: it follows the pointer like a damped spring (`--aero-edge-follow`, 380ms), the same on any screen.
+- **Pulse depth**: `--aero-pulse` sets how far `aero-pulse` fades (0.45).
+- **Attention, letter by letter**: on split text the attention effects stagger like entrances; `Aero.settle(el)` stops a loop at the end of its turn.
+- **Hover, plus your own**: `--aero-hover-also` adds transitions next to the hover move instead of replacing it. The edge also stays shut while a popover is open.
+- **Replay on scroll** with `aero-repeat`, events `aero:in` and `aero:done`, and `Aero.replay(el)`.
+
 ## 2.1.0 — 2026-11-19
 
 - **Pinned scroll.** `.aero-track` on a tall wrapper and `.aero-scrub-track` on its (sticky) contents: they animate through the wrapper's progress, so they can stay pinned while they move. Ranges also accept `contain` now, in CSS and in the `aero.js` fallback.

@@ -1,0 +1,36 @@
+/* Aero 2.2.0 — text. https://github.com/thinair-studios/aero (MIT) */
+@layer aero {
+.aero-split, .ae-split { --aero-stagger: 45ms; }
+.aero-split .aero-word, .ae-split .ae-word { display: inline-block; white-space: nowrap; }
+.aero-split .aero-piece, .ae-split .ae-piece { display: inline-block; }
+.aero-split .aero-line, .ae-split .ae-line {
+ display: block;
+ clip-path: inset(calc(var(--aero-line-bleed, 0.25em) * -1) 0);
+}
+.aero-split .aero-line > .aero-piece, .ae-split .ae-line > .ae-piece { display: block; }
+.aero-split-text, .ae-split-text {
+ position: absolute;
+ width: 1px;
+ height: 1px;
+ overflow: hidden;
+ clip-path: inset(50%);
+ white-space: nowrap;
+}
+.aero-hover-wave:is(:hover, :focus-visible) .aero-piece,
+.aero-hover-group:is(:hover, :focus-within) .aero-hover-wave .aero-piece, .ae-hover-wave:is(:hover, :focus-visible) .ae-piece,
+.ae-hover-group:is(:hover, :focus-within) .ae-hover-wave .ae-piece {
+ animation: aero-wave var(--aero-hover-duration, 0.7s) both;
+ animation-delay: calc(var(--aero-i, 0) * var(--aero-stagger, 45ms));
+}
+@media (hover: none) {
+ .aero-hover-wave:hover:not(:focus-visible) .aero-piece,
+ .aero-hover-group:hover:not(:focus-within) .aero-hover-wave .aero-piece, .ae-hover-wave:hover:not(:focus-visible) .ae-piece,
+ .ae-hover-group:hover:not(:focus-within) .ae-hover-wave .ae-piece {
+  animation: none;
+ }
+}
+@keyframes aero-wave {
+ 0%, 100% { transform: none; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+ 40% { transform: translateY(calc(var(--aero-wave, 0.3em) * -1)); animation-timing-function: cubic-bezier(0.32, 0, 0.67, 0); }
+}
+}

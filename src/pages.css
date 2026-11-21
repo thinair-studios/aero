@@ -1,0 +1,127 @@
+/* ============================================================================
+ * Aero — moving between pages, and layout changes within one
+ *
+ * Between pages (cross-document View Transitions):
+ *   1. In your CSS:  @view-transition { navigation: auto; }
+ *   2. On every page, in <head> and not deferred:  <script src="aero-pages.js">
+ *   3. Mark pages that sit on top of others:  <html data-aero-page="sheet">
+ *
+ * aero-pages.js tags each navigation, and these rules animate it:
+ *   aero-sheet       to a sheet page: it slides in from the right over the last one
+ *   aero-sheet-back  from a sheet to a page under it: the sheet slides away
+ *   aero-fade        between two sheets: a quick cross-fade
+ *   aero-reveal      from a link with data-aero-transition="reveal": the new page opens
+ *                    as a circle growing out of the point you clicked
+ *   aero-reveal-back going back: the page closes into that same point
+ * Browsers without them (Firefox) get the same direction from aero-arrive.
+ *
+ *   --aero-page-duration  default 0.6s      --aero-page-easing  default an ease-in-out
+ *   --aero-page-fade      the cross-fade (default 0.3s)
+ * (set them on :root: page transitions read them from <html>)
+ *
+ * Within a page: give elements .aero-morph and change the layout inside
+ * Aero.swap(() => …): each element moves and resizes to its new place.
+ * ========================================================================= */
+
+html:active-view-transition-type(aero-sheet)::view-transition-old(root) {
+ animation: none;
+}
+html:active-view-transition-type(aero-sheet)::view-transition-new(root) {
+ animation: aero-sheet-in var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
+}
+html:active-view-transition-type(aero-sheet-back)::view-transition-new(root) {
+ animation: none;
+}
+html:active-view-transition-type(aero-sheet-back)::view-transition-old(root) {
+ animation: aero-sheet-out var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
+ z-index: 1;
+}
+html:active-view-transition-type(aero-fade)::view-transition-group(root) {
+ animation-duration: var(--aero-page-fade, 0.3s);
+}
+/* The page underneath steps back and dims a little, so the circle's edge reads. */
+html:active-view-transition-type(aero-reveal)::view-transition-old(root) {
+ animation: aero-recede var(--aero-page-duration, 0.7s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
+}
+html:active-view-transition-type(aero-reveal)::view-transition-new(root) {
+ animation: aero-reveal-in var(--aero-page-duration, 0.7s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
+}
+html:active-view-transition-type(aero-reveal-back)::view-transition-new(root) {
+ animation: aero-recede var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) reverse both;
+}
+html:active-view-transition-type(aero-reveal-back)::view-transition-old(root) {
+ animation: aero-reveal-out var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both;
+ z-index: 1;
+}
+/* Behind the receding page: a dark ground, so dimming it is a cheap opacity change, not a filter. */
+html:active-view-transition-type(aero-reveal, aero-reveal-back)::view-transition-image-pair(root) {
+ background: var(--aero-reveal-ground, #1b1d20);
+}
+@keyframes aero-recede {
+ to { transform: scale(0.95); opacity: 0.72; }
+}
+@keyframes aero-reveal-in {
+ from { clip-path: circle(0 at var(--aero-reveal-x, 50%) var(--aero-reveal-y, 50%)); }
+ to { clip-path: circle(var(--aero-reveal-r, 150vmax) at var(--aero-reveal-x, 50%) var(--aero-reveal-y, 50%)); }
+}
+@keyframes aero-reveal-out {
+ from { clip-path: circle(var(--aero-reveal-r, 150vmax) at var(--aero-reveal-x, 50%) var(--aero-reveal-y, 50%)); }
+ to { clip-path: circle(0 at var(--aero-reveal-x, 50%) var(--aero-reveal-y, 50%)); }
+}
+@keyframes aero-sheet-in {
+ from { transform: translateX(100%); }
+}
+/* Carrying on from a gesture (aero-pages.js): the arriving page comes in whole. */
+:is(.aero-carrying, .ae-carrying) * { view-transition-name: none !important; }
+@keyframes aero-sheet-out {
+ from { transform: translateX(var(--aero-sheet-from, 0px)); } /* aero-pages.js: where a gesture left the page */
+ to { transform: translateX(100%); }
+}
+
+.aero-morph {
+ view-transition-name: match-element;
+ view-transition-class: aero-morph;
+}
+::view-transition-group(.aero-morph) {
+ animation-duration: var(--aero-morph-duration, 0.5s);
+ animation-timing-function: var(--aero-morph-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+/* ---- The edge: a way back at the side of the page (aero.js drives it) ----------------------------------
+ * <div class="aero-edge">…</div>  fixed at the left edge. As the pointer nears the edge (within
+ * --aero-edge-zone, 220px) aero.js eases --aero-edge from 0 to 1 on the panel (not on <html>: a long page would restyle every element each
+ * frame) and adds .aero-edge-on to <html>. It follows the pointer like a damped spring, settling in --aero-edge-follow (380ms).
+ * The panel opens to --aero-edge-reach (24vw) and takes clicks once it's open (.aero-edge-live). It slides in
+ * rather than widening, so the browser only moves layers (no layout or repaint per frame).
+ * .aero-edge-shift on the page's blocks slides them aside with it. Inside the panel, .aero-edge-drift drifts
+ * in from the left (a page underneath, say), .aero-edge-pin stays put on screen as the panel uncovers it, and
+ * .aero-edge-fade fades in late. Mouse only; set the reach on :root.
+ * Two stages: with --aero-edge-peek (a length) nearing the edge opens it only that far, enough for a handle; an
+ * .aero-edge-more inside it (the handle) opens it all the way, and it holds while the pointer stays on it.
+ * --aero-edge-full (0..1) is that second stage, and --aero-edge-y the pointer's height, for the handle. */
+/* The panel's parts are always layers (they're small and fixed); the page's blocks become layers only while it's
+   open, so a long page isn't kept as one. aero.js writes the blocks' translate on them. */
+:is(.aero-edge, .aero-edge-drift, .aero-edge-pin) { will-change: translate; }
+.aero-edge-on .aero-edge-shift { will-change: translate; }
+.aero-edge {
+ position: fixed;
+ z-index: 40;
+ inset: 0 auto 0 0;
+ width: calc(var(--aero-edge-reach, 24vw) + var(--aero-edge-strip, 10px));
+ translate: calc((var(--aero-edge, 0) - 1) * var(--aero-edge-reach, 24vw)) 0;
+ overflow: clip;
+ opacity: min(1, calc(var(--aero-edge, 0) * 8));
+ pointer-events: none;
+}
+.aero-edge.aero-edge-live { pointer-events: auto; }
+.aero-edge-on, .aero-edge-on body { overflow-x: clip; }
+/* On screen these sit at -6vw -> 0 (drift) and still (pin); the panel's own slide is taken back out. */
+.aero-edge-drift { translate: calc((1 - var(--aero-edge, 0)) * (var(--aero-edge-reach, 24vw) - 6vw)) 0; }
+.aero-edge-pin { translate: calc((1 - var(--aero-edge, 0)) * var(--aero-edge-reach, 24vw)) 0; }
+.aero-edge-fade { opacity: max(0, calc(var(--aero-edge, 0) * 1.6 - 0.35)); }
+.aero-edge-full-fade { opacity: var(--aero-edge-full, 0); } /* only in the second stage */
+
+/* Going back after the edge has moved a page aside: name the panel aero-edge for the snapshot (at pageswap) and it
+   stays where it was, fading out over the slide instead of vanishing or sliding off with the page. */
+::view-transition-old(aero-edge) { animation: aero-edge-out var(--aero-page-duration, 0.6s) var(--aero-page-easing, cubic-bezier(0.65, 0, 0.35, 1)) both; }
+@keyframes aero-edge-out { to { opacity: 0; } }

@@ -15,6 +15,10 @@
  *                   --aero-spotlight-color; -sm 180, -lg 480)
  *   aero-parallax   moves with the pointer (--aero-parallax-depth 8px;
  *                   -xs 3, -sm 6, -md 12, -lg 20, -xl 32)
+ *   aero-magnetic   a button or link leaning toward the pointer by up to
+ *                   --aero-magnetic (10px); centred at rest. Put it inside an
+ *                   .aero-cursor area, or on the .aero-cursor element itself.
+ *                   Uses the individual `translate` property.
  * ========================================================================= */
 
 .aero-tilt {
@@ -63,3 +67,10 @@
 .aero-parallax-md { --aero-parallax-depth: 12px; }
 .aero-parallax-lg { --aero-parallax-depth: 20px; }
 .aero-parallax-xl { --aero-parallax-depth: 32px; }
+
+.aero-magnetic {
+ translate:
+  calc(var(--aero-cursor-cx, 0) * var(--aero-magnetic, 10px) * var(--aero-cursor-active, 0))
+  calc(var(--aero-cursor-cy, 0) * var(--aero-magnetic, 10px) * var(--aero-cursor-active, 0));
+ transition: translate var(--aero-hover-duration, 0.35s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}

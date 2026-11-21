@@ -1,0 +1,42 @@
+/* Aero 2.2.0 — exits. https://github.com/thinair-studios/aero (MIT) */
+@layer aero {
+.aero-out.aero-out:is(.aero-leave-fade, .aero-leave-up, .aero-leave-down, .aero-leave-left, .aero-leave-right, .aero-leave-scale, .aero-leave-wipe-right, .aero-leave-wipe-left), .ae-out.ae-out:is(.ae-leave-fade, .ae-leave-up, .ae-leave-down, .ae-leave-left, .ae-leave-right, .ae-leave-scale, .ae-leave-wipe-right, .ae-leave-wipe-left) {
+ animation-duration: var(--aero-leave-duration, 0.35s);
+ animation-timing-function: var(--aero-leave-easing, cubic-bezier(0.55, 0, 1, 0.45));
+ animation-delay: 0s;
+ animation-fill-mode: forwards;
+ pointer-events: none;
+}
+.aero-out.aero-out.aero-leave-fade, .ae-out.ae-out.ae-leave-fade { animation-name: aero-leave-fade; }
+.aero-out.aero-out.aero-leave-up, .ae-out.ae-out.ae-leave-up { animation-name: aero-leave-up; }
+.aero-out.aero-out.aero-leave-down, .ae-out.ae-out.ae-leave-down { animation-name: aero-leave-down; }
+.aero-out.aero-out.aero-leave-left, .ae-out.ae-out.ae-leave-left { animation-name: aero-leave-left; }
+.aero-out.aero-out.aero-leave-right, .ae-out.ae-out.ae-leave-right { animation-name: aero-leave-right; }
+.aero-out.aero-out.aero-leave-scale, .ae-out.ae-out.ae-leave-scale { animation-name: aero-leave-scale; }
+.aero-out.aero-out.aero-leave-wipe-right, .ae-out.ae-out.ae-leave-wipe-right { animation-name: aero-leave-wipe-right; }
+.aero-out.aero-out.aero-leave-wipe-left, .ae-out.ae-out.ae-leave-wipe-left { animation-name: aero-leave-wipe-left; }
+@keyframes aero-leave-fade {
+ to { opacity: 0; }
+}
+@keyframes aero-leave-up {
+ to { opacity: 0; transform: translateY(calc(var(--aero-distance, 32px) * -1)); }
+}
+@keyframes aero-leave-down {
+ to { opacity: 0; transform: translateY(var(--aero-distance, 32px)); }
+}
+@keyframes aero-leave-left {
+ to { opacity: 0; transform: translateX(calc(var(--aero-distance, 32px) * -1)); }
+}
+@keyframes aero-leave-right {
+ to { opacity: 0; transform: translateX(var(--aero-distance, 32px)); }
+}
+@keyframes aero-leave-scale {
+ to { opacity: 0; transform: scale(var(--aero-scale-to, 0.94)); }
+}
+@keyframes aero-leave-wipe-right {
+ to { clip-path: inset(0 0 0 100%); }
+}
+@keyframes aero-leave-wipe-left {
+ to { clip-path: inset(0 100% 0 0); }
+}
+}

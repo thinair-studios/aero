@@ -12,6 +12,17 @@
  *   aero-hover-rise   lift and scale together (6px, 1.03): a card coming forward
  *   aero-hover-nudge  sideways by --aero-hover-nudge (4px; negative goes left)
  *   aero-hover-shift  any move plus scale: --aero-hover-x / -y / -scale
+ *   aero-underline    a link's underline drawing in from the left on hover or
+ *                     focus, and out to the right on leave (replaces the
+ *                     link's own underline). --aero-underline-color (currentColor)
+ *                     --aero-underline-thickness (2px) --aero-underline-offset (0.15em)
+ *                     Also drawn while the link is current: .aero-on or aria-current.
+ *   aero-underline-side   the same as a bar on the link's left (a table of contents)
+ *   aero-underline-shown  drawn at rest, and drawing out on hover instead
+ *   aero-hover-reveal a circle growing out of the pointer to cover its element
+ *   aero-hover-appear something that shows on hover (an arrow, an icon): it fades in
+ *                     and slides in from --aero-hover-from (-0.35em), after
+ *                     --aero-hover-delay (0s); leaving, it goes at once
  *
  * Only transform is animated. On touch screens hover movement is cancelled so
  * a tap doesn't leave things stuck; keyboard focus still moves them.
@@ -23,8 +34,9 @@
 .aero-hover-nudge { --aero-hover-to: translateX(var(--aero-hover-nudge, 4px)); }
 .aero-hover-shift { --aero-hover-to: translate(var(--aero-hover-x, 0px), var(--aero-hover-y, 0px)) scale(var(--aero-hover-scale, 1)); }
 
+/* --aero-hover-also adds your own transitions (border-color .2s, box-shadow .45s) without overriding this one. */
 :is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift) {
- transition: transform var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+ transition: transform var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1)), var(--aero-hover-also, --aero-hover-none 0s);
 }
 
 :is(.aero-hover-lift, .aero-hover-scale, .aero-hover-rise, .aero-hover-nudge, .aero-hover-shift):not(.aero-hover-target):is(:hover, :focus-visible),
@@ -48,3 +60,105 @@
   transform: none;
  }
 }
+
+/* Underline: scaleX 0 -> 1 from the left on hover/focus; the origin flips so it leaves to the right. */
+.aero-underline {
+ position: relative;
+ text-decoration: none;
+}
+.aero-underline::after {
+ content: "";
+ position: absolute;
+ left: 0;
+ right: 0;
+ bottom: calc(var(--aero-underline-offset, 0.15em) * -1);
+ height: var(--aero-underline-thickness, 2px);
+ background: var(--aero-underline-color, currentColor);
+ transform: scaleX(0);
+ transform-origin: right;
+ transition: transform var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+/* :where() keeps the states at zero weight, so the -side and -shown variants below can override them. */
+.aero-underline:where(:hover, :focus-visible, .aero-on, [aria-current]:not([aria-current="false"]))::after {
+ transform: scaleX(1);
+ transform-origin: left;
+}
+@media (hover: none) {
+ .aero-underline:hover:not(:focus-visible, .aero-on, [aria-current]:not([aria-current="false"]))::after {
+  transform: scaleX(0);
+  transform-origin: right;
+ }
+}
+/* Side: a bar on the left, growing down. */
+.aero-underline-side::after {
+ left: calc(var(--aero-underline-offset, 0px) * -1);
+ right: auto;
+ top: 0;
+ bottom: 0;
+ width: var(--aero-underline-thickness, 2px);
+ height: auto;
+ transform: scaleY(0);
+ transform-origin: bottom;
+}
+.aero-underline-side:where(:hover, :focus-visible, .aero-on, [aria-current]:not([aria-current="false"]))::after {
+ transform: scaleY(1);
+ transform-origin: top;
+}
+/* Shown: drawn at rest; hovering draws it out to the right. */
+.aero-underline-shown::after {
+ transform: scaleX(1);
+ transform-origin: left;
+}
+.aero-underline-shown:is(:hover, :focus-visible)::after {
+ transform: scaleX(0);
+ transform-origin: right;
+}
+@media (hover: none) {
+ .aero-underline-shown:hover:not(:focus-visible)::after {
+  transform: scaleX(1);
+ }
+}
+
+/* Appear: hidden until its group is hovered or focused; it arrives after --aero-hover-delay and leaves at once. */
+.aero-hover-appear {
+ opacity: 0;
+ translate: var(--aero-hover-from, -0.35em) 0;
+ transition:
+  opacity var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1)),
+  translate var(--aero-hover-duration, 0.45s) var(--aero-hover-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+.aero-hover-group:is(:hover, :focus-within) .aero-hover-appear {
+ opacity: 1;
+ translate: 0 0;
+ transition-delay: var(--aero-hover-delay, 0s);
+}
+@media (hover: none) {
+ .aero-hover-group:hover:not(:focus-within) .aero-hover-appear {
+  opacity: 0;
+  translate: var(--aero-hover-from, -0.35em) 0;
+ }
+}
+
+/* Hover reveal: a circle grows out of the pointer to cover its element, follows the pointer, and shrinks back toward
+ * where it leaves; keyboard focus grows it from the middle. Put it inside an .aero-hover-group that is also an
+ * .aero-cursor (aero.js tracks the pointer there) with overflow clipped:
+ *   <a class="aero-hover-group aero-cursor" style="position: relative; overflow: clip; isolation: isolate">
+ *     <span class="aero-hover-reveal" aria-hidden="true"></span> Label </a>
+ * --aero-hover-reveal-color (currentColor)  --aero-hover-reveal-size (250% of the width: enough for anything wider
+ * than it is tall)  --aero-hover-duration (0.6s)  --aero-hover-easing (an ease-in-out) */
+.aero-hover-reveal {
+ position: absolute;
+ z-index: -1;
+ left: calc(var(--aero-cursor-x, 0.5) * 100%);
+ top: calc(var(--aero-cursor-y, 0.5) * 100%);
+ width: var(--aero-hover-reveal-size, 250%);
+ aspect-ratio: 1;
+ border-radius: 50%;
+ translate: -50% -50%;
+ scale: 0;
+ background: var(--aero-hover-reveal-color, currentColor);
+ pointer-events: none;
+ transition: scale var(--aero-hover-duration, 0.6s) var(--aero-hover-easing, cubic-bezier(0.65, 0, 0.35, 1));
+}
+.aero-hover-group:is(:hover, :focus-visible) .aero-hover-reveal { scale: 1; }
+@media (hover: none) { .aero-hover-group:hover:not(:focus-visible) .aero-hover-reveal { scale: 0; } }

@@ -1,14 +1,22 @@
-/* Aero 2.1.0 — scroll. https://github.com/thinair-studios/aero (MIT) */
+/* Aero 2.2.0 — scroll. https://github.com/thinair-studios/aero (MIT) */
 @layer aero {
 .aero-scrub, .ae-scrub {
  animation-duration: 1s;
  animation-timing-function: linear;
  animation-fill-mode: both;
 }
+.aero-scrub.aero-depth, .ae-scrub.ae-depth { animation-name: aero-depth; }
+@keyframes aero-depth {
+ from { translate: 0 var(--aero-depth, 80px); }
+ to { translate: 0 calc(var(--aero-depth, 80px) * -1); }
+}
 @supports (animation-timeline: view()) {
  .aero-scrub, .ae-scrub {
   animation-timeline: view();
   animation-range: var(--aero-scrub-range, entry 0% entry 80%);
+ }
+ .aero-scrub.aero-depth, .ae-scrub.ae-depth {
+  animation-range: var(--aero-scrub-range, cover 0% cover 100%);
  }
  .aero-scrub.aero-scrub-root, .ae-scrub.ae-scrub-root {
   animation-timeline: scroll(root);
@@ -25,5 +33,19 @@
 .aero-scrub-js .aero-scrub, .ae-scrub-js .ae-scrub {
  animation-play-state: paused;
  animation-delay: 0s;
+}
+.aero-scrub.aero-slide-left, .ae-scrub.ae-slide-left { animation-name: aero-slide-left; }
+.aero-scrub.aero-slide-right, .ae-scrub.ae-slide-right { animation-name: aero-slide-right; }
+.aero-scrub.aero-fade-out, .ae-scrub.ae-fade-out { animation-name: aero-fade-out; }
+@keyframes aero-slide-left {
+ from { translate: var(--aero-slide-start, 0px) 0; }
+ to { translate: calc(var(--aero-slide, 30%) * -1) 0; }
+}
+@keyframes aero-slide-right {
+ from { translate: calc(var(--aero-slide, 30%) * -1) 0; }
+ to { translate: var(--aero-slide-start, 0px) 0; }
+}
+@keyframes aero-fade-out {
+ to { opacity: var(--aero-opacity-to, 0); }
 }
 }
