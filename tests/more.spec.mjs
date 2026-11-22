@@ -39,6 +39,32 @@ test("attention: shake plays, Aero.replay starts it again, spin loops", async ({
   expect(r.spin).toBe(Infinity);
 });
 
+test("attention: --aero-bounce sets the height; a positive value bounces down", async ({ page }) => {
+  await page.goto("/tests/more.html");
+  const y = await page.evaluate(() => ["bounce", "bounce-down"].map((id) => {
+    const el = document.getElementById(id);
+    const a = el.getAnimations()[0];
+    a.pause();
+    a.currentTime = a.effect.getComputedTiming().duration / 2;
+    return new DOMMatrix(getComputedStyle(el).transform).m42;
+  }));
+  expect(y[0]).toBeCloseTo(-10, 0); // -25% of 40px: up
+  expect(y[1]).toBeCloseTo(12, 0); // 30% of 40px: down
+});
+
+test("entrances: --aero-fan-opacity makes a lift fade in; by default it starts fully visible", async ({ page }) => {
+  await page.goto("/tests/more.html");
+  const o = await page.evaluate(() => ["lift", "lift-fade"].map((id) => {
+    const el = document.getElementById(id);
+    const a = el.getAnimations().find((x) => x.animationName === "aero-lift");
+    a.pause();
+    a.currentTime = 0;
+    return parseFloat(getComputedStyle(el).opacity);
+  }));
+  expect(o[0]).toBe(1);
+  expect(o[1]).toBeLessThan(0.05);
+});
+
 test("text split: words keep inline markup, letters stay readable", async ({ page }) => {
   await page.goto("/tests/more.html");
   const r = await page.evaluate(() => {

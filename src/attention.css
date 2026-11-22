@@ -29,6 +29,8 @@
  *   --aero-shake                how far a shake goes (default 6px)
  *   --aero-pop                  how big a pop gets (default 1.15)
  *   --aero-pulse                how far a pulse fades (default 0.45)
+ *   --aero-bounce               how high a bounce goes (default -25%, of its own height); a
+ *                               positive value bounces down, as if hanging from the ceiling
  * ========================================================================= */
 
 .aero-shake { animation: aero-shake var(--aero-attention-duration, 0.5s) cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
@@ -62,9 +64,11 @@
 @keyframes aero-ping {
  75%, 100% { transform: scale(2); opacity: 0; }
 }
+/* The easings work on distance from rest, not on up or down: slow at rest, fastest at the far end.
+   So a positive --aero-bounce is the same bounce mirrored, gravity reversed, and needs no keyframes of its own. */
 @keyframes aero-bounce {
  0%, 100% { transform: translateY(0); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
- 50% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+ 50% { transform: translateY(var(--aero-bounce, -25%)); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
 }
 @keyframes aero-float {
  50% { transform: translateY(calc(var(--aero-distance, 8px) * -1)); }

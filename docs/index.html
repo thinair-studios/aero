@@ -158,7 +158,9 @@ footer a { margin-right: 16px; }
       <div class="tile aero-enter aero-lift"><code>aero-lift</code></div>
     </div>
     <div class="snippet"><pre><code>&lt;div class="aero-enter aero-grow-up" style="transform-origin: 50% 100%"&gt;...&lt;/div&gt;
-&lt;div class="aero-enter aero-fan-left"&gt;...&lt;/div&gt;</code></pre></div>
+&lt;div class="aero-enter aero-fan-left"&gt;...&lt;/div&gt;
+&lt;div class="aero-enter aero-lift" style="--aero-fan-opacity: 0.4"&gt;...&lt;/div&gt;</code></pre></div>
+    <p>Fan and lift move the card but keep it visible, like a stack that is already there. <code>--aero-fan-x</code>, <code>--aero-fan-y</code> and <code>--aero-fan-rot</code> set how far it moves; <code>--aero-fan-opacity</code> (1) makes it fade in from that opacity too.</p>
 
     <h3 class="sub">Presets</h3>
     <p>Speed and easing are classes. Each tile below uses the same fade-up with a different preset.</p>
@@ -462,7 +464,7 @@ Aero.leave(el, { remove: true });  // plays the exit, then removes it</code></pr
 <section id="attention">
   <div class="wrap">
     <h2>Attention</h2>
-    <p><code>aero-shake</code> and <code>aero-pop</code> play once. Call <code>Aero.replay(el)</code> to play them again. <code>aero-spin</code>, <code>aero-pulse</code>, <code>aero-ping</code>, <code>aero-bounce</code> and <code>aero-float</code> loop, and so does <code>aero-shimmer</code>, a light band across a loading skeleton.</p>
+    <p><code>aero-shake</code> and <code>aero-pop</code> play once. Call <code>Aero.replay(el)</code> to play them again. <code>aero-spin</code>, <code>aero-pulse</code>, <code>aero-ping</code>, <code>aero-bounce</code> and <code>aero-float</code> loop, and so does <code>aero-shimmer</code>, a light band across a loading skeleton. <code>--aero-bounce</code> (-25% of its height) sets how high a bounce goes; a positive value bounces down, as if hanging from the ceiling.</p>
     <div class="cols">
       <div class="tile">
         <h3>Shake on error</h3>
@@ -500,7 +502,7 @@ Aero.leave(el, { remove: true });  // plays the exit, then removes it</code></pr
 &lt;div class="spinner aero-spin"&gt;&lt;/div&gt;
 &lt;div class="skeleton aero-pulse"&gt;&lt;/div&gt;
 &lt;span class="dot"&gt;&lt;span class="dot aero-ping"&gt;&lt;/span&gt;&lt;span class="dot"&gt;&lt;/span&gt;&lt;/span&gt;
-&lt;span class="aero-bounce"&gt;...&lt;/span&gt;
+&lt;span class="aero-bounce"&gt;...&lt;/span&gt;   &lt;!-- style="--aero-bounce: 25%" bounces down --&gt;
 &lt;span class="aero-float"&gt;...&lt;/span&gt;
 &lt;div class="skeleton aero-shimmer"&gt;&lt;/div&gt;
 

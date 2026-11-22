@@ -82,10 +82,10 @@
  from { opacity: 0; transform: translateX(calc(var(--aero-distance, 30%) * -1)) scaleX(var(--aero-grow, 0.85)); }
 }
 @keyframes aero-fan-left {
- from { translate: calc(var(--aero-fan-x, 4%) * -1) var(--aero-fan-y, 12%); rotate: calc(var(--aero-fan-rot, 1deg) * -1); }
+ from { translate: calc(var(--aero-fan-x, 4%) * -1) var(--aero-fan-y, 12%); rotate: calc(var(--aero-fan-rot, 1deg) * -1); opacity: var(--aero-fan-opacity, 1); }
 }
 @keyframes aero-fan-right {
- from { translate: var(--aero-fan-x, 4%) var(--aero-fan-y, 12%); rotate: var(--aero-fan-rot, 1deg); }
+ from { translate: var(--aero-fan-x, 4%) var(--aero-fan-y, 12%); rotate: var(--aero-fan-rot, 1deg); opacity: var(--aero-fan-opacity, 1); }
 }
 @keyframes aero-wipe-right {
  from { clip-path: inset(0 100% 0 0); }
@@ -100,7 +100,7 @@
  from { clip-path: inset(0 0 100% 0); }
 }
 @keyframes aero-lift {
- from { translate: 0 var(--aero-fan-y, 10%); }
+ from { translate: 0 var(--aero-fan-y, 10%); opacity: var(--aero-fan-opacity, 1); }
 }
 @keyframes aero-pass {
  0% { opacity: 0; }
