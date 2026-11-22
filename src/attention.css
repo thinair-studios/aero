@@ -17,7 +17,8 @@
  *        children once (copies are aria-hidden and inert) so the loop is seamless, so
  *        the items together should be wider than the container, and spaced with
  *        margin or padding, not `gap` (a gap leaves a seam). aero-marquee-reverse
- *        goes the other way; hover or focus inside pauses it.
+ *        goes the other way; hover or focus inside pauses it. aero-marquee-live keeps
+ *        the copies hoverable (not inert; what's focusable in them gets tabindex -1).
  *        --aero-marquee-duration (30s) for one full loop.
  *
  * To play a once-effect again, call Aero.replay(el).

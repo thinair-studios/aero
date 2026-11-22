@@ -213,6 +213,55 @@ test("marquee: the track is duplicated once (aria-hidden, inert), scrolls, and p
   expect(await page.evaluate(() => document.querySelector("#marquee-r > div").getAnimations()[0].effect.getComputedTiming().direction)).toBe("reverse");
 });
 
+test("marquee-live: copies are aria-hidden but not inert, keep out of the keyboard order, and take hover", async ({ page }) => {
+  await page.goto(P2);
+  const r = await page.evaluate(() => {
+    const kids = [...document.getElementById("track-live").children], copies = kids.slice(4);
+    const F = "a[href], button, input, select, textarea, [tabindex], summary, [contenteditable]";
+    const focusables = copies.flatMap((c) => [c, ...c.querySelectorAll(F)].filter((f) => f.matches(F)));
+    copies[0].addEventListener("pointerenter", () => { window.entered = true; });
+    return {
+      n: kids.length, hidden: kids.map((k) => k.getAttribute("aria-hidden")), inert: kids.map((k) => k.inert),
+      tabs: focusables.map((f) => f.getAttribute("tabindex")), originals: kids.slice(0, 4).map((k) => k.getAttribute("tabindex")),
+      pieces: kids.map((k) => k.querySelectorAll(".aero-piece").length).filter(Boolean),
+    };
+  });
+  expect(r.n).toBe(8);
+  expect(r.hidden).toEqual([null, null, null, null, "true", "true", "true", "true"]);
+  expect(r.inert).toEqual(Array(8).fill(false));
+  expect(r.tabs).toEqual(["-1", "-1", "-1", "-1"]); // a, button, [tabindex] and the link inside the fourth
+  expect(r.originals).toEqual([null, null, "0", null]);
+  expect(r.pieces).toEqual([2, 2]); // the split text in the copy is split once, like the original
+  const p = await pointOf(page, "#track-live > :nth-child(5)");
+  await page.mouse.move(p.x, p.y);
+  expect(await page.evaluate(() => window.entered === true && document.querySelector("#track-live > :nth-child(5)").matches(":hover"))).toBe(true);
+  // Tab from the last focusable original leaves the marquee instead of landing on a copy.
+  await page.focus("#track-live > :nth-child(4) a");
+  await page.keyboard.press("Tab");
+  expect(await page.evaluate(() => !!document.activeElement.closest("#track-live > :nth-child(n+5)"))).toBe(false);
+});
+
+test("marquee: text that was split before the marquee copied it is not split again in the copy", async ({ page }) => {
+  await page.goto(P2);
+  const r = await page.evaluate(() => {
+    const box = document.createElement("div");
+    box.innerHTML = '<div><p class="aero-split" data-aero-split="letters">Hi there</p></div>';
+    document.body.append(box);
+    Aero.refresh(); // split first
+    box.className = "aero-marquee";
+    Aero.refresh(); // then copied
+    const [a, b] = box.firstElementChild.children;
+    return {
+      pieces: [a, b].map((p) => p.querySelectorAll(".aero-piece").length), nested: b.querySelectorAll(".aero-piece .aero-piece").length,
+      sr: [a, b].map((p) => p.querySelectorAll(".aero-split-text").length), text: b.querySelector(".aero-split-text").textContent,
+    };
+  });
+  expect(r.pieces).toEqual([7, 7]);
+  expect(r.nested).toBe(0);
+  expect(r.sr).toEqual([1, 1]);
+  expect(r.text).toBe("Hi there");
+});
+
 for (const q of ["", "?nonative"]) {
   test(`depth: moves against the scroll, down below its place before it passes and up after ${q}`, async ({ page }) => {
     await page.goto(P2 + q);

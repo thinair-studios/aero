@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- **`aero-marquee-live`**: the marquee's copies take hover like the originals (they are not `inert`; anything focusable in them gets `tabindex="-1"`), for items that react to the pointer.
+- **Fix:** a marquee copying text that was already split no longer splits it a second time; the copy gets the text from before and is split on its own.
+
 ## 2.2.0 — 2026-11-20
 
 Aero now covers things leaving as well as arriving.

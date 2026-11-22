@@ -125,7 +125,7 @@ Once: `aero-shake`, `aero-pop`. Loops: `aero-spin`, `aero-pulse`, `aero-ping`, `
 </div>
 ```
 
-The track scrolls left forever. `aero.js` copies its children once (the copies are `aria-hidden` and `inert`, and lose any `id`), so the items together should be wider than the container, and spaced with margin or padding, not `gap`. Hovering or focusing inside pauses it; `aero-marquee-reverse` goes the other way. Setting: `--aero-marquee-duration` (30s for one full loop). Children added later are not copied.
+The track scrolls left forever. `aero.js` copies its children once (the copies are `aria-hidden` and `inert`, and lose any `id`), so the items together should be wider than the container, and spaced with margin or padding, not `gap`. Hovering or focusing inside pauses it; `aero-marquee-reverse` goes the other way. Add `aero-marquee-live` when the items react to hover themselves: the copies are then not `inert`, so they take hover like the originals, and anything focusable in them gets `tabindex="-1"` to stay out of the keyboard order. Setting: `--aero-marquee-duration` (30s for one full loop). Children added later are not copied.
 
 ## Disclosure
 

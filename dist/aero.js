@@ -17,7 +17,8 @@
  *     the entrance on a piece inside it. Re-split on resize until it has played.
  *  9. Draw: sets pathLength="1" on the shapes in .aero-draw if missing.
  * 10. Marquee: duplicates the children of .aero-marquee's track once (aria-hidden, inert) so the
- *     loop is seamless.
+ *     loop is seamless. With .aero-marquee-live the copies aren't inert, so they still take hover;
+ *     whatever is focusable in them gets tabindex="-1" instead.
  *
  * 11. Edge: with an .aero-edge on the page, the pointer nearing the left edge eases --aero-edge
  *     from 0 to 1 on <html> (pages.css). Mouse only.
@@ -101,7 +102,7 @@
   };
 
   // ---- Text split: words, or letters kept inside their words; each piece plays the parent's variant.
-  const splits = new WeakSet(), lineEls = [], lineSrc = new WeakMap();
+  const splits = new WeakMap(), lineEls = [], lineSrc = new WeakMap(); // split -> its markup before
   const noId = (n) => { n.removeAttribute("id"); n.querySelectorAll("[id]").forEach((x) => x.removeAttribute("id")); return n; };
   // Lines: split into words, group them by rendered line (offsetTop), then wrap each line in a
   // clipping .aero-line with one piece inside it. Inline markup is kept by cloning its tags per line.
@@ -180,7 +181,7 @@
   if (document.fonts) document.fonts.ready.then(resplit);
   const split = (el) => {
     if (splits.has(el)) return;
-    splits.add(el);
+    splits.set(el, el.innerHTML);
     const lines = el.dataset.aeroSplit === "lines", letters = el.dataset.aeroSplit === "letters";
     const variants = [...el.classList].filter((c) => /^(aero|ae)-((fade|scale|grow|wipe)-[a-z]+|repeat)$/.test(c));
     const cls = variants.some((c) => !c.endsWith("repeat")) ? ["aero-piece", "aero-enter", ...variants] : ["aero-piece"];
@@ -297,6 +298,7 @@
 
   // ---- Stagger order, draw, marquee
   const SHAPES = "path, line, polyline, polygon, circle, ellipse, rect";
+  const FOCUSABLE = "a[href], button, input, select, textarea, [tabindex], summary, [contenteditable]";
   const ordered = new WeakMap(), looped = new WeakSet(); // stagger -> what it was ordered for
   const order = (el) => {
     const from = el.dataset.aeroStaggerFrom, kids = [...el.children], n = kids.length;
@@ -319,10 +321,16 @@
       const track = el.firstElementChild;
       if (!track || looped.has(el)) continue;
       looped.add(el);
+      const live = has(el, "marquee-live");
       for (const c of [...track.children]) {
-        const copy = noId(c.cloneNode(true));
+        const copy = c.cloneNode(true);
+        // A text split that already ran: give the copy the markup from before, so it's split on its own like the rest.
+        const from = [c, ...c.querySelectorAll($(["split"]))], to = [copy, ...copy.querySelectorAll($(["split"]))];
+        from.forEach((s, i) => { if (splits.has(s)) to[i].innerHTML = splits.get(s); });
+        noId(copy);
         copy.setAttribute("aria-hidden", "true");
-        copy.setAttribute("inert", "");
+        if (!live) copy.setAttribute("inert", "");
+        else for (const f of [copy, ...copy.querySelectorAll(FOCUSABLE)]) if (f.matches(FOCUSABLE)) f.setAttribute("tabindex", "-1"); // hover yes, keyboard no
         track.append(copy);
       }
     }
