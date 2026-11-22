@@ -29,4 +29,48 @@ details.aero-collapse[open]::details-content, details.ae-collapse[open]::details
 details.aero-collapse[open] > summary .aero-collapse-icon, details.ae-collapse[open] > summary .ae-collapse-icon {
  rotate: var(--aero-collapse-turn, 45deg);
 }
+.aero-collapse-icon:is(.aero-collapse-plus, .aero-collapse-filled), .ae-collapse-icon:is(.ae-collapse-plus, .ae-collapse-filled) {
+ position: relative;
+ inline-size: var(--aero-collapse-size, 1.5em);
+ block-size: var(--aero-collapse-size, 1.5em);
+ vertical-align: middle;
+}
+.aero-collapse-icon.aero-collapse-filled, .ae-collapse-icon.ae-collapse-filled {
+ display: inline-grid;
+ place-items: center;
+ border-radius: 50%;
+ background-color: var(--aero-collapse-fill, currentColor);
+ -webkit-text-fill-color: var(--aero-collapse-ink, Canvas);
+ transition:
+  rotate var(--aero-duration, 0.35s) var(--aero-easing, cubic-bezier(0.22, 1, 0.36, 1)),
+  background-color var(--aero-duration, 0.35s) var(--aero-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+details.aero-collapse[open] > summary .aero-collapse-icon.aero-collapse-filled, details.ae-collapse[open] > summary .ae-collapse-icon.ae-collapse-filled {
+ background-color: var(--aero-collapse-fill-open, var(--aero-collapse-fill, currentColor));
+}
+.aero-collapse-icon.aero-collapse-plus, .ae-collapse-icon.ae-collapse-plus {
+ overflow: hidden;
+ -webkit-text-fill-color: transparent;
+}
+.aero-collapse-icon.aero-collapse-plus::before,
+.aero-collapse-icon.aero-collapse-plus::after, .ae-collapse-icon.ae-collapse-plus::before,
+.ae-collapse-icon.ae-collapse-plus::after {
+ content: "";
+ position: absolute;
+ inset: 0;
+ margin: auto;
+ inline-size: var(--aero-collapse-plus, 45%);
+ block-size: var(--aero-collapse-bar, 2px);
+ border-radius: 999px;
+ background: currentColor;
+}
+.aero-collapse-icon.aero-collapse-plus::after, .ae-collapse-icon.ae-collapse-plus::after {
+ inline-size: var(--aero-collapse-bar, 2px);
+ block-size: var(--aero-collapse-plus, 45%);
+}
+.aero-collapse-icon.aero-collapse-plus.aero-collapse-filled::before,
+.aero-collapse-icon.aero-collapse-plus.aero-collapse-filled::after, .ae-collapse-icon.ae-collapse-plus.ae-collapse-filled::before,
+.ae-collapse-icon.ae-collapse-plus.ae-collapse-filled::after {
+ background: var(--aero-collapse-ink, Canvas);
+}
 }

@@ -140,6 +140,12 @@ The track scrolls left forever. `aero.js` copies its children once (the copies a
 
 `aero-collapse` on a `<details>` opens and closes its content with a block-size transition. It sets `interpolate-size` on the element itself, never on `:root`. Where the browser has no `::details-content` or `interpolate-size` (Firefox and Safari today) it just opens at once. Settings: `--aero-duration` `--aero-easing`.
 
+An `aero-collapse-icon` inside the summary turns by `--aero-collapse-turn` (45deg) when it opens, so a "+" becomes a "×". A text "+" sits above the middle of its box, so add `aero-collapse-plus` to draw the plus instead: two bars in `currentColor`, centred on the box, so it sits in the middle and turns about it. Its own text is hidden; leave it empty or keep a "+" for when the CSS does not load. Settings: `--aero-collapse-size` (1.5em, the box) `--aero-collapse-plus` (45%, bar length) `--aero-collapse-bar` (2px, bar thickness). Add `aero-collapse-filled`, with or without `-plus`, for a filled circle: `--aero-collapse-fill` (currentColor) `--aero-collapse-ink` (`Canvas`, the mark) `--aero-collapse-fill-open` (the fill, once open). A width and height of your own win over `--aero-collapse-size`.
+
+```html
+<summary>Question <span class="aero-collapse-icon aero-collapse-plus aero-collapse-filled" aria-hidden="true"></span></summary>
+```
+
 `aero-flip` is a card with two faces: `.aero-front` sets the size, `.aero-back` is laid over it. Hover, focus inside, or the class `aero-flipped` (add it to flip on click) turns it 180deg around the vertical axis. On touch screens hover alone does not flip it. Settings: `--aero-flip-duration` (0.6s) `--aero-flip-perspective` (900px) `--aero-hover-easing`.
 
 ## Text

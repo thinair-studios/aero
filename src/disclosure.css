@@ -13,6 +13,20 @@
  *                 lacks ::details-content or interpolate-size it just opens at
  *                 once. Settings: --aero-duration (.35s) --aero-easing.
  *
+ * aero-collapse-icon  inside the summary, turns by --aero-collapse-turn (45deg)
+ *                 when the details opens, so a "+" becomes a "×". Two opt-in
+ *                 modifiers, alone or together:
+ *   aero-collapse-plus    draws the plus itself, two bars in currentColor
+ *                 centred on the box, so it sits in the middle and turns about
+ *                 it (a text "+" sits high). Its own text is hidden; leave it
+ *                 empty or keep a "+" for when the CSS doesn't load.
+ *                 --aero-collapse-size (1.5em, the box)  --aero-collapse-plus
+ *                 (45%, bar length)  --aero-collapse-bar (2px, bar thickness)
+ *   aero-collapse-filled  a filled circle of --aero-collapse-size.
+ *                 --aero-collapse-fill (currentColor)
+ *                 --aero-collapse-ink (Canvas, the mark on it)
+ *                 --aero-collapse-fill-open (the fill, once open)
+ *
  * aero-flip      a card with two faces. .aero-front sets the size, .aero-back is
  *                 laid over it. Hover, focus inside, or .aero-flipped (add it to
  *                 flip on click) turns it 180deg around the vertical axis.
@@ -55,4 +69,53 @@ details.aero-collapse[open]::details-content { block-size: auto; }
 }
 details.aero-collapse[open] > summary .aero-collapse-icon {
  rotate: var(--aero-collapse-turn, 45deg);
+}
+
+/* A box of its own, so the bars can be centred on it. Sized by --aero-collapse-size; an author
+   width and height win (the library sits in a layer). */
+.aero-collapse-icon:is(.aero-collapse-plus, .aero-collapse-filled) {
+ position: relative;
+ inline-size: var(--aero-collapse-size, 1.5em);
+ block-size: var(--aero-collapse-size, 1.5em);
+ vertical-align: middle;
+}
+/* The ink goes in the text fill, not in color, so the fill can default to the color it inherits. */
+.aero-collapse-icon.aero-collapse-filled {
+ display: inline-grid;
+ place-items: center;
+ border-radius: 50%;
+ background-color: var(--aero-collapse-fill, currentColor);
+ -webkit-text-fill-color: var(--aero-collapse-ink, Canvas);
+ transition:
+  rotate var(--aero-duration, 0.35s) var(--aero-easing, cubic-bezier(0.22, 1, 0.36, 1)),
+  background-color var(--aero-duration, 0.35s) var(--aero-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+details.aero-collapse[open] > summary .aero-collapse-icon.aero-collapse-filled {
+ background-color: var(--aero-collapse-fill-open, var(--aero-collapse-fill, currentColor));
+}
+/* The text stays in the page but paints nothing, and the fixed box keeps it from taking space. */
+.aero-collapse-icon.aero-collapse-plus {
+ overflow: hidden;
+ -webkit-text-fill-color: transparent;
+}
+/* Both bars sit on the box's exact centre (inset 0 and auto margins), so the turn spins about it. */
+.aero-collapse-icon.aero-collapse-plus::before,
+.aero-collapse-icon.aero-collapse-plus::after {
+ content: "";
+ position: absolute;
+ inset: 0;
+ margin: auto;
+ inline-size: var(--aero-collapse-plus, 45%);
+ block-size: var(--aero-collapse-bar, 2px);
+ border-radius: 999px;
+ background: currentColor;
+}
+/* The upright bar is drawn upright, not turned: a turned box is rounded to pixels less evenly. */
+.aero-collapse-icon.aero-collapse-plus::after {
+ inline-size: var(--aero-collapse-bar, 2px);
+ block-size: var(--aero-collapse-plus, 45%);
+}
+.aero-collapse-icon.aero-collapse-plus.aero-collapse-filled::before,
+.aero-collapse-icon.aero-collapse-plus.aero-collapse-filled::after {
+ background: var(--aero-collapse-ink, Canvas);
 }

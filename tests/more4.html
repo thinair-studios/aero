@@ -1,0 +1,23 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Aero test fixture: collapse icon modifiers (drawn plus, filled)</title>
+<link rel="stylesheet" href="/dist/aero.css">
+<style>
+  body { margin: 0; padding: 40px; font: 16px/24px sans-serif; background: #fff; color: #000; }
+  details { margin-bottom: 24px; --aero-duration: 0s; }
+  /* A cell that centres the icon on whole pixels, so the browser's snapping to pixels doesn't move
+     the paint. The bars inside are still at whatever fraction their sizes give. */
+  .cell { display: flex; align-items: center; justify-content: center; width: 80px; height: 48px; list-style: none; }
+  .cell::-webkit-details-marker { display: none; }
+  /* Each bar in a colour of its own, and either one can be hidden, so the test measures them apart. */
+  .bars::before { background: rgb(255, 0, 0); }
+  .bars::after { background: rgb(0, 0, 255); }
+  .only-before::after, .only-after::before { visibility: hidden; }
+</style>
+<details class="aero-collapse" id="d-plus"><summary class="cell" aria-label="Plus"><i class="aero-collapse-icon aero-collapse-plus bars" id="plus"></i></summary><p>A</p></details>
+<details class="aero-collapse" id="d-button"><summary class="cell" aria-label="Button"><span class="aero-collapse-icon aero-collapse-plus aero-collapse-filled bars" id="button" style="width: 34px; height: 34px; display: grid; place-items: center; --aero-collapse-fill: #fff">+</span></summary><p>A</p></details>
+<details class="ae-collapse" id="d-sized"><summary class="cell" aria-label="Other sizes"><span class="ae-collapse-icon ae-collapse-plus bars" id="sized" style="--aero-collapse-size: 30px; --aero-collapse-plus: 60%; --aero-collapse-bar: 2.5px">+</span></summary><p>A</p></details>
+<details class="aero-collapse" id="d-plain"><summary>Plain <i class="aero-collapse-icon" id="plain">+</i></summary><p>A</p></details>
+<details class="aero-collapse" id="d-inline"><summary>Inline <i class="aero-collapse-icon aero-collapse-plus" id="inline">+</i> in a line</summary><p>A</p></details>
+<details class="aero-collapse" id="d-filled"><summary>Filled <b class="aero-collapse-icon aero-collapse-filled" id="filled" style="color: rgb(10, 20, 30)">+</b></summary><p>A</p></details>
+<details class="aero-collapse" id="d-fp"><summary>Filled plus <span class="aero-collapse-icon aero-collapse-plus aero-collapse-filled" id="fp" style="--aero-collapse-fill: rgb(64, 130, 109); --aero-collapse-ink: rgb(255, 255, 255); --aero-collapse-fill-open: rgb(200, 50, 50)"></span></summary><p>A</p></details>
