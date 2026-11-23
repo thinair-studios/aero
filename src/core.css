@@ -12,6 +12,7 @@
  *   Entrances  --aero-duration (.6s)  --aero-delay (0s)  --aero-easing
  *              --aero-distance (32px)  --aero-scale-from (.96)  --aero-grow
  *              --aero-fan-x (4%)  --aero-fan-y (12%)  --aero-fan-rot (1deg)
+ *              --aero-fan-opacity (1)
  *              --aero-pass-to (.18)  --aero-stagger (80ms)  --aero-i (0)
  *   Scroll     --aero-scrub-range (entry 0% entry 80%)
  *   Hover      --aero-hover-duration (.45s)  --aero-hover-easing

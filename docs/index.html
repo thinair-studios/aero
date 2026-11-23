@@ -158,7 +158,9 @@ footer a { margin-right: 16px; }
       <div class="tile aero-enter aero-lift"><code>aero-lift</code></div>
     </div>
     <div class="snippet"><pre><code>&lt;div class="aero-enter aero-grow-up" style="transform-origin: 50% 100%"&gt;...&lt;/div&gt;
-&lt;div class="aero-enter aero-fan-left"&gt;...&lt;/div&gt;</code></pre></div>
+&lt;div class="aero-enter aero-fan-left"&gt;...&lt;/div&gt;
+&lt;div class="aero-enter aero-lift" style="--aero-fan-opacity: 0.4"&gt;...&lt;/div&gt;</code></pre></div>
+    <p>Fan and lift move the card but keep it visible, like a stack that is already there. <code>--aero-fan-x</code>, <code>--aero-fan-y</code> and <code>--aero-fan-rot</code> set how far it moves; <code>--aero-fan-opacity</code> (1) makes it fade in from that opacity too.</p>
 
     <h3 class="sub">Presets</h3>
     <p>Speed and easing are classes. Each tile below uses the same fade-up with a different preset.</p>
@@ -462,7 +464,7 @@ Aero.leave(el, { remove: true });  // plays the exit, then removes it</code></pr
 <section id="attention">
   <div class="wrap">
     <h2>Attention</h2>
-    <p><code>aero-shake</code> and <code>aero-pop</code> play once. Call <code>Aero.replay(el)</code> to play them again. <code>aero-spin</code>, <code>aero-pulse</code>, <code>aero-ping</code>, <code>aero-bounce</code> and <code>aero-float</code> loop, and so does <code>aero-shimmer</code>, a light band across a loading skeleton.</p>
+    <p><code>aero-shake</code> and <code>aero-pop</code> play once. Call <code>Aero.replay(el)</code> to play them again. <code>aero-spin</code>, <code>aero-pulse</code>, <code>aero-ping</code>, <code>aero-bounce</code> and <code>aero-float</code> loop, and so does <code>aero-shimmer</code>, a light band across a loading skeleton. <code>--aero-bounce</code> (-25% of its height) sets how high a bounce goes; a positive value bounces down, as if hanging from the ceiling.</p>
     <div class="cols">
       <div class="tile">
         <h3>Shake on error</h3>
@@ -482,7 +484,7 @@ Aero.leave(el, { remove: true });  // plays the exit, then removes it</code></pr
       <div class="tile"><h3>aero-shimmer</h3><div class="aero-shimmer skel" style="--aero-shimmer-color: rgb(255 255 255 / 0.6)"></div><div class="aero-shimmer skel" style="width: 60%"></div></div>
     </div>
     <h3 class="sub">Marquee</h3>
-    <p><code>aero-marquee</code> on a container whose single child is the track: the track scrolls left forever and loops seamlessly. <code>aero.js</code> copies the items once (the copies are hidden from screen readers), so the items together should be wider than the container, and spaced with padding or margin rather than <code>gap</code>. Hover or focus pauses it. <code>--aero-marquee-duration</code> (30s) sets one full loop; <code>aero-marquee-reverse</code> goes the other way.</p>
+    <p><code>aero-marquee</code> on a container whose single child is the track: the track scrolls left forever and loops seamlessly. <code>aero.js</code> copies the items once (the copies are hidden from screen readers), so the items together should be wider than the container, and spaced with padding or margin rather than <code>gap</code>. Hover or focus pauses it. Copies can't be hovered; add <code>aero-marquee-live</code> when the items react to hover themselves, and the copies take hover too (whatever is focusable in them gets <code>tabindex="-1"</code>, so the keyboard skips them). <code>--aero-marquee-duration</code> (30s) sets one full loop; <code>aero-marquee-reverse</code> goes the other way.</p>
     <div class="aero-marquee" style="--aero-marquee-duration: 14s; border: 1px solid var(--line); border-radius: 10px; padding: 14px 0">
       <div><span class="marquee-item">Entrances</span><span class="marquee-item">Scroll-linked</span><span class="marquee-item">Hover</span><span class="marquee-item">Cursor</span><span class="marquee-item">Text</span><span class="marquee-item">Numbers</span></div>
     </div>
@@ -500,7 +502,7 @@ Aero.leave(el, { remove: true });  // plays the exit, then removes it</code></pr
 &lt;div class="spinner aero-spin"&gt;&lt;/div&gt;
 &lt;div class="skeleton aero-pulse"&gt;&lt;/div&gt;
 &lt;span class="dot"&gt;&lt;span class="dot aero-ping"&gt;&lt;/span&gt;&lt;span class="dot"&gt;&lt;/span&gt;&lt;/span&gt;
-&lt;span class="aero-bounce"&gt;...&lt;/span&gt;
+&lt;span class="aero-bounce"&gt;...&lt;/span&gt;   &lt;!-- style="--aero-bounce: 25%" bounces down --&gt;
 &lt;span class="aero-float"&gt;...&lt;/span&gt;
 &lt;div class="skeleton aero-shimmer"&gt;&lt;/div&gt;
 
@@ -513,11 +515,11 @@ Aero.leave(el, { remove: true });  // plays the exit, then removes it</code></pr
 <section id="disclosure">
   <div class="wrap">
     <h2>Disclosure</h2>
-    <p><code>aero-collapse</code> on a <code>&lt;details&gt;</code> slides its content open and closed (Chrome and Edge today; elsewhere it just opens). <code>aero-flip</code> turns a two-faced card over on hover, on focus inside, or when you add <code>aero-flipped</code>. Hover alone does not flip on touch screens. An <code>aero-collapse-icon</code> in the summary, such as a "+", turns by <code>--aero-collapse-turn</code> (45deg) when it opens, as the first one does.</p>
+    <p><code>aero-collapse</code> on a <code>&lt;details&gt;</code> slides its content open and closed (Chrome and Edge today; elsewhere it just opens). <code>aero-flip</code> turns a two-faced card over on hover, on focus inside, or when you add <code>aero-flipped</code>. Hover alone does not flip on touch screens. An <code>aero-collapse-icon</code> in the summary turns by <code>--aero-collapse-turn</code> (45deg) when it opens. A text "+" sits above the middle of its box, so <code>aero-collapse-plus</code> draws the plus instead, centred, as the first one does (<code>--aero-collapse-size</code> 1.5em, <code>--aero-collapse-plus</code> 45%, <code>--aero-collapse-bar</code> 2px). <code>aero-collapse-filled</code> makes it a filled circle, as the second one: <code>--aero-collapse-fill</code> (currentColor), <code>--aero-collapse-ink</code> (Canvas), <code>--aero-collapse-fill-open</code>.</p>
     <div class="cols">
       <div class="tile">
-        <details class="aero-collapse"><summary>What does the collapse do? <span class="aero-collapse-icon" aria-hidden="true">+</span></summary><p style="margin: 12px 0 0">The content opens and closes with a block-size transition. The library never sets <code>interpolate-size</code> on <code>:root</code>; it is set on the element.</p></details>
-        <details class="aero-collapse" style="margin-top: 12px"><summary>Can I change the speed?</summary><p style="margin: 12px 0 0">Yes: <code>--aero-duration</code> and <code>--aero-easing</code>.</p></details>
+        <details class="aero-collapse"><summary>What does the collapse do? <span class="aero-collapse-icon aero-collapse-plus" aria-hidden="true">+</span></summary><p style="margin: 12px 0 0">The content opens and closes with a block-size transition. The library never sets <code>interpolate-size</code> on <code>:root</code>; it is set on the element.</p></details>
+        <details class="aero-collapse" style="margin-top: 12px"><summary>Can I change the speed? <span class="aero-collapse-icon aero-collapse-plus aero-collapse-filled" aria-hidden="true" style="--aero-collapse-fill: var(--accent); --aero-collapse-ink: var(--accent-ink)"></span></summary><p style="margin: 12px 0 0">Yes: <code>--aero-duration</code> and <code>--aero-easing</code>.</p></details>
       </div>
       <div class="aero-flip" id="flip-demo" style="--aero-flip-duration: 0.6s">
         <div class="aero-front tile solid flip-face">Hover or focus me</div>
@@ -529,7 +531,12 @@ Aero.leave(el, { remove: true });  // plays the exit, then removes it</code></pr
       </div>
     </div>
     <div class="snippet"><pre><code>&lt;details class="aero-collapse"&gt;
-  &lt;summary&gt;Question &lt;span class="aero-collapse-icon"&gt;+&lt;/span&gt;&lt;/summary&gt;
+  &lt;summary&gt;Question &lt;span class="aero-collapse-icon aero-collapse-plus"&gt;+&lt;/span&gt;&lt;/summary&gt;
+  Answer
+&lt;/details&gt;
+
+&lt;details class="aero-collapse"&gt;
+  &lt;summary&gt;Question &lt;span class="aero-collapse-icon aero-collapse-plus aero-collapse-filled"&gt;&lt;/span&gt;&lt;/summary&gt;
   Answer
 &lt;/details&gt;
 

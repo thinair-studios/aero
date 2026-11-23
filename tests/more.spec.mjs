@@ -39,6 +39,32 @@ test("attention: shake plays, Aero.replay starts it again, spin loops", async ({
   expect(r.spin).toBe(Infinity);
 });
 
+test("attention: --aero-bounce sets the height; a positive value bounces down", async ({ page }) => {
+  await page.goto("/tests/more.html");
+  const y = await page.evaluate(() => ["bounce", "bounce-down"].map((id) => {
+    const el = document.getElementById(id);
+    const a = el.getAnimations()[0];
+    a.pause();
+    a.currentTime = a.effect.getComputedTiming().duration / 2;
+    return new DOMMatrix(getComputedStyle(el).transform).m42;
+  }));
+  expect(y[0]).toBeCloseTo(-10, 0); // -25% of 40px: up
+  expect(y[1]).toBeCloseTo(12, 0); // 30% of 40px: down
+});
+
+test("entrances: --aero-fan-opacity makes a lift fade in; by default it starts fully visible", async ({ page }) => {
+  await page.goto("/tests/more.html");
+  const o = await page.evaluate(() => ["lift", "lift-fade"].map((id) => {
+    const el = document.getElementById(id);
+    const a = el.getAnimations().find((x) => x.animationName === "aero-lift");
+    a.pause();
+    a.currentTime = 0;
+    return parseFloat(getComputedStyle(el).opacity);
+  }));
+  expect(o[0]).toBe(1);
+  expect(o[1]).toBeLessThan(0.05);
+});
+
 test("text split: words keep inline markup, letters stay readable", async ({ page }) => {
   await page.goto("/tests/more.html");
   const r = await page.evaluate(() => {
@@ -211,6 +237,55 @@ test("marquee: the track is duplicated once (aria-hidden, inert), scrolls, and p
   await page.mouse.move(0, 0);
   await expect.poll(() => page.evaluate(() => document.getElementById("track").getAnimations()[0].playState)).toBe("running");
   expect(await page.evaluate(() => document.querySelector("#marquee-r > div").getAnimations()[0].effect.getComputedTiming().direction)).toBe("reverse");
+});
+
+test("marquee-live: copies are aria-hidden but not inert, keep out of the keyboard order, and take hover", async ({ page }) => {
+  await page.goto(P2);
+  const r = await page.evaluate(() => {
+    const kids = [...document.getElementById("track-live").children], copies = kids.slice(4);
+    const F = "a[href], button, input, select, textarea, [tabindex], summary, [contenteditable]";
+    const focusables = copies.flatMap((c) => [c, ...c.querySelectorAll(F)].filter((f) => f.matches(F)));
+    copies[0].addEventListener("pointerenter", () => { window.entered = true; });
+    return {
+      n: kids.length, hidden: kids.map((k) => k.getAttribute("aria-hidden")), inert: kids.map((k) => k.inert),
+      tabs: focusables.map((f) => f.getAttribute("tabindex")), originals: kids.slice(0, 4).map((k) => k.getAttribute("tabindex")),
+      pieces: kids.map((k) => k.querySelectorAll(".aero-piece").length).filter(Boolean),
+    };
+  });
+  expect(r.n).toBe(8);
+  expect(r.hidden).toEqual([null, null, null, null, "true", "true", "true", "true"]);
+  expect(r.inert).toEqual(Array(8).fill(false));
+  expect(r.tabs).toEqual(["-1", "-1", "-1", "-1"]); // a, button, [tabindex] and the link inside the fourth
+  expect(r.originals).toEqual([null, null, "0", null]);
+  expect(r.pieces).toEqual([2, 2]); // the split text in the copy is split once, like the original
+  const p = await pointOf(page, "#track-live > :nth-child(5)");
+  await page.mouse.move(p.x, p.y);
+  expect(await page.evaluate(() => window.entered === true && document.querySelector("#track-live > :nth-child(5)").matches(":hover"))).toBe(true);
+  // Tab from the last focusable original leaves the marquee instead of landing on a copy.
+  await page.focus("#track-live > :nth-child(4) a");
+  await page.keyboard.press("Tab");
+  expect(await page.evaluate(() => !!document.activeElement.closest("#track-live > :nth-child(n+5)"))).toBe(false);
+});
+
+test("marquee: text that was split before the marquee copied it is not split again in the copy", async ({ page }) => {
+  await page.goto(P2);
+  const r = await page.evaluate(() => {
+    const box = document.createElement("div");
+    box.innerHTML = '<div><p class="aero-split" data-aero-split="letters">Hi there</p></div>';
+    document.body.append(box);
+    Aero.refresh(); // split first
+    box.className = "aero-marquee";
+    Aero.refresh(); // then copied
+    const [a, b] = box.firstElementChild.children;
+    return {
+      pieces: [a, b].map((p) => p.querySelectorAll(".aero-piece").length), nested: b.querySelectorAll(".aero-piece .aero-piece").length,
+      sr: [a, b].map((p) => p.querySelectorAll(".aero-split-text").length), text: b.querySelector(".aero-split-text").textContent,
+    };
+  });
+  expect(r.pieces).toEqual([7, 7]);
+  expect(r.nested).toBe(0);
+  expect(r.sr).toEqual([1, 1]);
+  expect(r.text).toBe("Hi there");
 });
 
 for (const q of ["", "?nonative"]) {
@@ -732,4 +807,118 @@ test("edge in two stages: near the edge it opens to the peek; on the handle all 
   expect((await read()).e).toBeGreaterThan(0.97);
   await page.mouse.move(900, 500, { steps: 8 }); await page.waitForTimeout(900); // off it
   expect((await read()).e).toBe(0);
+});
+
+// ---- collapse icon modifiers: the drawn plus and the filled circle
+const P4 = "/tests/more4.html";
+
+// Where one bar is painted, from a screenshot around the icon read back in the page. The fixture paints
+// ::before red and ::after blue on white and hides the other bar. The centre is the coverage-weighted
+// middle of the bar, which for a bar is the centre of its bounding box, without rounding to whole pixels.
+async function bar(page, id, which) {
+  await page.locator(`#${id}`).evaluate((el, which) => { el.classList.remove("only-before", "only-after"); el.classList.add(`only-${which}`); }, which);
+  const box = await page.locator(`#${id}`).evaluate((el) => { const r = el.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; });
+  const clip = { x: Math.floor(box.x) - 4, y: Math.floor(box.y) - 4 };
+  clip.width = Math.ceil(box.x + box.w) + 4 - clip.x; clip.height = Math.ceil(box.y + box.h) + 4 - clip.y;
+  const png = (await page.screenshot({ clip, animations: "disabled" })).toString("base64");
+  const at = await page.evaluate(async ({ png, which, width }) => {
+    const img = new Image(); img.src = "data:image/png;base64," + png; await img.decode();
+    const c = document.createElement("canvas"); c.width = img.width; c.height = img.height;
+    const g = c.getContext("2d"); g.drawImage(img, 0, 0);
+    const d = g.getImageData(0, 0, c.width, c.height).data, k = img.width / width; // device pixels per CSS pixel
+    let sum = 0, sx = 0, sy = 0, x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (let y = 0; y < c.height; y++) for (let x = 0; x < c.width; x++) {
+      const i = (y * c.width + x) * 4, a = Math.max(0, which === "before" ? d[i] - d[i + 2] : d[i + 2] - d[i]) / 255;
+      if (a < 0.02) continue;
+      sum += a; sx += a * (x + 0.5); sy += a * (y + 0.5);
+      if (a > 0.5) { x0 = Math.min(x0, x); x1 = Math.max(x1, x + 1); y0 = Math.min(y0, y); y1 = Math.max(y1, y + 1); }
+    }
+    return sum ? { x: sx / sum / k, y: sy / sum / k, size: Math.max(x1 - x0, y1 - y0) / k } : null;
+  }, { png, which, width: clip.width });
+  return { centre: { x: box.x + box.w / 2 - clip.x, y: box.y + box.h / 2 - clip.y }, bar: at };
+}
+
+// At 4 device pixels to the CSS pixel, so the measure is finer than the half pixel it checks.
+test.describe("collapse plus, measured", () => {
+  test.use({ deviceScaleFactor: 4 });
+  for (const id of ["plus", "button", "sized"]) {
+    test(`collapse plus: both bars are centred on the icon box, closed and open (${id})`, async ({ page }) => {
+      await page.goto(P4);
+      for (const open of [false, true]) {
+        if (open) { await page.evaluate((id) => { document.getElementById(`d-${id}`).open = true; }, id); await page.waitForTimeout(100); } // not a click: no focus ring in the shot
+        for (const which of ["before", "after"]) {
+          const m = await bar(page, id, which);
+          expect(m.bar).toBeTruthy();
+          expect(m.bar.size).toBeGreaterThan(5); // really drawn
+          expect(Math.abs(m.bar.x - m.centre.x)).toBeLessThanOrEqual(0.5);
+          expect(Math.abs(m.bar.y - m.centre.y)).toBeLessThanOrEqual(0.5);
+        }
+        expect(await page.locator(`#${id}`).evaluate((el) => getComputedStyle(el).rotate)).toBe(open ? "45deg" : "none");
+      }
+    });
+  }
+});
+
+test("collapse plus: the box is --aero-collapse-size, the text paints nothing and takes no space", async ({ page }) => {
+  await page.goto(P4);
+  const s = await page.evaluate(() => {
+    const el = document.getElementById("inline"), r = el.getBoundingClientRect(), cs = getComputedStyle(el);
+    const before = getComputedStyle(el, "::before");
+    return { w: r.width, h: r.height, fill: cs.getPropertyValue("-webkit-text-fill-color"), bar: parseFloat(before.height), len: parseFloat(before.width), sized: document.getElementById("sized").getBoundingClientRect().width };
+  });
+  expect(s.w).toBeCloseTo(24, 1); // 1.5em of 16px
+  expect(s.h).toBeCloseTo(24, 1);
+  expect(s.fill).toBe("rgba(0, 0, 0, 0)");
+  expect(s.bar).toBeCloseTo(2, 1);
+  expect(s.len).toBeCloseTo(24 * 0.45, 1);
+  expect(s.sized).toBeCloseTo(30, 1); // --aero-collapse-size, with the ae- prefix
+});
+
+test("collapse filled: paints the fill and the ink; the fill defaults to the color, and changes once open", async ({ page }) => {
+  await page.goto(P4);
+  const read = () => page.evaluate(() => {
+    const f = document.getElementById("filled"), fp = document.getElementById("fp");
+    return {
+      bg: getComputedStyle(f).backgroundColor, ink: getComputedStyle(f).getPropertyValue("-webkit-text-fill-color"), radius: getComputedStyle(f).borderTopLeftRadius,
+      fpBg: getComputedStyle(fp).backgroundColor, fpBar: getComputedStyle(fp, "::before").backgroundColor, fpBar2: getComputedStyle(fp, "::after").backgroundColor,
+    };
+  });
+  const s = await read();
+  expect(s.bg).toBe("rgb(10, 20, 30)"); // currentColor
+  expect(s.ink).not.toBe("rgb(10, 20, 30)"); // Canvas
+  expect(s.ink).not.toBe("rgba(0, 0, 0, 0)");
+  expect(s.radius).toBe("50%");
+  expect(s.fpBg).toBe("rgb(64, 130, 109)");
+  expect(s.fpBar).toBe("rgb(255, 255, 255)");
+  expect(s.fpBar2).toBe("rgb(255, 255, 255)");
+  // And it paints them: the middle of the drawn plus is ink, a point inside the circle off the bars is fill.
+  const box = await page.locator("#fp").boundingBox();
+  const px = async (x, y) => {
+    const png = (await page.screenshot({ clip: { x: Math.round(x), y: Math.round(y), width: 1, height: 1 } })).toString("base64");
+    return page.evaluate(async (png) => { const img = new Image(); img.src = "data:image/png;base64," + png; await img.decode(); const c = document.createElement("canvas"); c.width = c.height = 1; const g = c.getContext("2d"); g.drawImage(img, 0, 0); return [...g.getImageData(0, 0, 1, 1).data.slice(0, 3)]; }, png);
+  };
+  const near = (a, b) => a.every((v, i) => Math.abs(v - b[i]) <= 3);
+  expect(near(await px(box.x + box.width / 2 - 0.5, box.y + box.height / 2 - 0.5), [255, 255, 255])).toBe(true);
+  expect(near(await px(box.x + box.width * 0.3, box.y + box.height * 0.3), [64, 130, 109])).toBe(true);
+  await page.click("#d-fp summary"); await page.click("#d-filled summary"); await page.waitForTimeout(100);
+  const o = await read();
+  expect(o.fpBg).toBe("rgb(200, 50, 50)"); // --aero-collapse-fill-open
+  expect(o.bg).toBe("rgb(10, 20, 30)"); // no -open: stays the fill
+});
+
+test("collapse icon: without a modifier it is unchanged", async ({ page }) => {
+  await page.goto(P4);
+  const s = await page.evaluate(() => {
+    const el = document.getElementById("plain"), cs = getComputedStyle(el);
+    return { display: cs.display, position: cs.position, align: cs.verticalAlign, bg: cs.backgroundColor, overflow: cs.overflow, radius: cs.borderTopLeftRadius,
+      fill: cs.getPropertyValue("-webkit-text-fill-color"), color: cs.color, before: getComputedStyle(el, "::before").content, after: getComputedStyle(el, "::after").content,
+      property: cs.transitionProperty, w: el.getBoundingClientRect().width };
+  });
+  expect(s).toMatchObject({ display: "inline-block", position: "static", align: "baseline", bg: "rgba(0, 0, 0, 0)", overflow: "visible", radius: "0px", property: "rotate" });
+  expect(s.fill).toBe(s.color);
+  expect(["none", "normal"]).toContain(s.before);
+  expect(["none", "normal"]).toContain(s.after);
+  expect(s.w).toBeLessThan(20); // as wide as its "+", not a 1.5em box
+  await page.click("#d-plain summary"); await page.waitForTimeout(100);
+  expect(await page.locator("#plain").evaluate((el) => getComputedStyle(el).rotate)).toBe("45deg");
 });

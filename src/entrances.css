@@ -15,6 +15,8 @@
  *   aero-fan-left / -right  a card fanning out of a stack (individual
  *                   translate / rotate, so a transform hover never fights it)
  *   aero-lift       the top card of a stack rising into place
+ *                   (fan and lift: --aero-fan-x/-y/-rot, and --aero-fan-opacity
+ *                   to fade in from that opacity, default 1)
  *   aero-pass       arrives, holds, steps back (best scrubbed)
  *   aero-glide      flies in from a measured spot through a waypoint
  *                   (--aero-glide-x/-y/-scale, -mid-*, -end-*), best scrubbed
@@ -47,7 +49,8 @@
  animation-fill-mode: both;
 }
 
-/* Fan and lift move the card, not its opacity: the stack is visible from the start. */
+/* Fan and lift move the card, not its opacity: the stack is visible from the start,
+   unless --aero-fan-opacity sets where they fade in from. */
 .aero-enter.aero-fan-left,
 .aero-enter.aero-fan-right,
 .aero-enter.aero-lift {
@@ -123,10 +126,10 @@
  from { opacity: 0; transform: translateX(calc(var(--aero-distance, 30%) * -1)) scaleX(var(--aero-grow, 0.85)); }
 }
 @keyframes aero-fan-left {
- from { translate: calc(var(--aero-fan-x, 4%) * -1) var(--aero-fan-y, 12%); rotate: calc(var(--aero-fan-rot, 1deg) * -1); }
+ from { translate: calc(var(--aero-fan-x, 4%) * -1) var(--aero-fan-y, 12%); rotate: calc(var(--aero-fan-rot, 1deg) * -1); opacity: var(--aero-fan-opacity, 1); }
 }
 @keyframes aero-fan-right {
- from { translate: var(--aero-fan-x, 4%) var(--aero-fan-y, 12%); rotate: var(--aero-fan-rot, 1deg); }
+ from { translate: var(--aero-fan-x, 4%) var(--aero-fan-y, 12%); rotate: var(--aero-fan-rot, 1deg); opacity: var(--aero-fan-opacity, 1); }
 }
 @keyframes aero-wipe-right {
  from { clip-path: inset(0 100% 0 0); }
@@ -141,7 +144,7 @@
  from { clip-path: inset(0 0 100% 0); }
 }
 @keyframes aero-lift {
- from { translate: 0 var(--aero-fan-y, 10%); }
+ from { translate: 0 var(--aero-fan-y, 10%); opacity: var(--aero-fan-opacity, 1); }
 }
 @keyframes aero-pass {
  0% { opacity: 0; }

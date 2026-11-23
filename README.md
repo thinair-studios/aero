@@ -40,7 +40,7 @@ The script is needed for in-view entrances, the scroll fallback, cursor effects,
 ```
 
 Variants: `aero-fade-up` `-down` `-left` `-right` `-in`, `aero-scale-up`, `aero-grow-up`, `aero-grow-right`, `aero-fan-left`, `aero-fan-right`, `aero-lift`, `aero-pass`.
-Settings: `--aero-duration` `--aero-delay` `--aero-easing` `--aero-distance` `--aero-scale-from` `--aero-grow` `--aero-fan-x` `--aero-fan-y` `--aero-fan-rot` `--aero-stagger`.
+Settings: `--aero-duration` `--aero-delay` `--aero-easing` `--aero-distance` `--aero-scale-from` `--aero-grow` `--aero-fan-x` `--aero-fan-y` `--aero-fan-rot` `--aero-fan-opacity` `--aero-stagger`. `--aero-fan-opacity` (1) makes fan and lift fade in from that opacity.
 Presets: `aero-fast` `aero-slow` `aero-slower`, `aero-ease-expo` `-quart` `-back` `-spring` `-spring-soft` `-bounce`. The spring (a slight overshoot), the soft spring and the bounce are real curves (CSS `linear()`); browsers too old for `linear()` get a smooth cubic-bezier.
 
 `aero-draw` draws an SVG stroke in, on a shape or on the whole `<svg>`:
@@ -109,7 +109,7 @@ Pure CSS: they animate in when they open and out when they close, backdrop inclu
 <span class="aero-spin">…</span>             <!-- loops -->
 ```
 
-Once: `aero-shake`, `aero-pop`. Loops: `aero-spin`, `aero-pulse`, `aero-ping`, `aero-bounce`, `aero-float`, `aero-shimmer`. Settings: `--aero-attention-duration` `--aero-shake` `--aero-pop` `--aero-pulse`. On split text (`.aero-split`) they go one letter after another, `--aero-stagger` apart. To stop a loop that runs while something is hovered, `Aero.settle(el)` lets it finish the turn it's on and takes its class off, so it comes to rest instead of jumping back.
+Once: `aero-shake`, `aero-pop`. Loops: `aero-spin`, `aero-pulse`, `aero-ping`, `aero-bounce`, `aero-float`, `aero-shimmer`. Settings: `--aero-attention-duration` `--aero-shake` `--aero-pop` `--aero-pulse` `--aero-bounce` (-25% of its height; a positive value bounces down). On split text (`.aero-split`) they go one letter after another, `--aero-stagger` apart. To stop a loop that runs while something is hovered, `Aero.settle(el)` lets it finish the turn it's on and takes its class off, so it comes to rest instead of jumping back.
 
 `aero-shimmer` sweeps a light band across a loading skeleton (a `::after` that moves with `translateX`, clipped by the element). Settings: `--aero-shimmer-color` (`rgb(255 255 255 / .35)`) and `--aero-attention-duration` (1.6s here).
 
@@ -125,7 +125,7 @@ Once: `aero-shake`, `aero-pop`. Loops: `aero-spin`, `aero-pulse`, `aero-ping`, `
 </div>
 ```
 
-The track scrolls left forever. `aero.js` copies its children once (the copies are `aria-hidden` and `inert`, and lose any `id`), so the items together should be wider than the container, and spaced with margin or padding, not `gap`. Hovering or focusing inside pauses it; `aero-marquee-reverse` goes the other way. Setting: `--aero-marquee-duration` (30s for one full loop). Children added later are not copied.
+The track scrolls left forever. `aero.js` copies its children once (the copies are `aria-hidden` and `inert`, and lose any `id`), so the items together should be wider than the container, and spaced with margin or padding, not `gap`. Hovering or focusing inside pauses it; `aero-marquee-reverse` goes the other way. Add `aero-marquee-live` when the items react to hover themselves: the copies are then not `inert`, so they take hover like the originals, and anything focusable in them gets `tabindex="-1"` to stay out of the keyboard order. Setting: `--aero-marquee-duration` (30s for one full loop). Children added later are not copied.
 
 ## Disclosure
 
@@ -139,6 +139,12 @@ The track scrolls left forever. `aero.js` copies its children once (the copies a
 ```
 
 `aero-collapse` on a `<details>` opens and closes its content with a block-size transition. It sets `interpolate-size` on the element itself, never on `:root`. Where the browser has no `::details-content` or `interpolate-size` (Firefox and Safari today) it just opens at once. Settings: `--aero-duration` `--aero-easing`.
+
+An `aero-collapse-icon` inside the summary turns by `--aero-collapse-turn` (45deg) when it opens, so a "+" becomes a "×". A text "+" sits above the middle of its box, so add `aero-collapse-plus` to draw the plus instead: two bars in `currentColor`, centred on the box, so it sits in the middle and turns about it. Its own text is hidden; leave it empty or keep a "+" for when the CSS does not load. Settings: `--aero-collapse-size` (1.5em, the box) `--aero-collapse-plus` (45%, bar length) `--aero-collapse-bar` (2px, bar thickness). Add `aero-collapse-filled`, with or without `-plus`, for a filled circle: `--aero-collapse-fill` (currentColor) `--aero-collapse-ink` (`Canvas`, the mark) `--aero-collapse-fill-open` (the fill, once open). A width and height of your own win over `--aero-collapse-size`.
+
+```html
+<summary>Question <span class="aero-collapse-icon aero-collapse-plus aero-collapse-filled" aria-hidden="true"></span></summary>
+```
 
 `aero-flip` is a card with two faces: `.aero-front` sets the size, `.aero-back` is laid over it. Hover, focus inside, or the class `aero-flipped` (add it to flip on click) turns it 180deg around the vertical axis. On touch screens hover alone does not flip it. Settings: `--aero-flip-duration` (0.6s) `--aero-flip-perspective` (900px) `--aero-hover-easing`.
 

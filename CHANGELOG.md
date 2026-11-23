@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- **`aero-marquee-live`**: the marquee's copies take hover like the originals (they are not `inert`; anything focusable in them gets `tabindex="-1"`), for items that react to the pointer.
+- **`--aero-bounce`**: how high `aero-bounce` goes (default `-25%`); a positive value bounces down instead.
+- **`--aero-fan-opacity`**: `aero-fan-left`, `aero-fan-right` and `aero-lift` fade in from this opacity (default `1`, no fade).
+- **`aero-collapse-plus`**: an `aero-collapse-icon` that draws its plus from two bars centred on the box, so it sits in the middle and turns about it; a text "+" sits high and wobbles. `--aero-collapse-size` (1.5em) `--aero-collapse-plus` (45%) `--aero-collapse-bar` (2px).
+- **`aero-collapse-filled`**: the icon as a filled circle, with or without `-plus`. `--aero-collapse-fill` (currentColor) `--aero-collapse-ink` (`Canvas`) `--aero-collapse-fill-open`.
+- **Fix:** a marquee copying text that was already split no longer splits it a second time; the copy gets the text from before and is split on its own.
+
 ## 2.2.0 — 2026-11-20
 
 Aero now covers things leaving as well as arriving.
